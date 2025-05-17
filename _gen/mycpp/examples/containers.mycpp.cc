@@ -1,0 +1,349 @@
+// _gen/mycpp/examples/containers.mycpp.cc - generated from Python source code
+
+#include "mycpp/runtime.h"
+
+// BEGIN mycpp output
+namespace containers {  // forward declare
+  class Point;
+  class HasDictMember;
+}
+
+GLOBAL_STR(S_Aoo, "");
+GLOBAL_STR(S_DAB, "345 no");
+GLOBAL_STR(S_Fia, "345 yes");
+GLOBAL_STR(S_uCo, "357 no");
+GLOBAL_STR(S_Cmd, "357 yes");
+GLOBAL_STR(S_mdd, "OK: NewDict result is None");
+GLOBAL_STR(S_gCD, "a");
+GLOBAL_STR(S_jFv, "b");
+GLOBAL_STR(S_clt, "bar");
+GLOBAL_STR(S_mas, "bar is a member");
+GLOBAL_STR(S_yls, "bye");
+GLOBAL_STR(S_emj, "c");
+GLOBAL_STR(S_Dne, "eggs");
+GLOBAL_STR(S_lqB, "foo");
+GLOBAL_STR(S_kfD, "hello");
+GLOBAL_STR(S_cEk, "hi");
+GLOBAL_STR(S_pod, "hi no");
+GLOBAL_STR(S_Bjx, "hi yes");
+GLOBAL_STR(S_Dxe, "no");
+GLOBAL_STR(S_Eow, "spam");
+GLOBAL_STR(S_vxl, "tu 345 no");
+GLOBAL_STR(S_und, "tu 345 yes");
+GLOBAL_STR(S_mgb, "tu 357 no");
+GLOBAL_STR(S_brh, "tu 357 yes");
+GLOBAL_STR(S_Bxn, "yes");
+
+namespace containers {  // declare
+
+extern BigStr* gstr;
+extern List<int>* glist_int;
+extern List<BigStr*>* glist_str;
+extern Dict<BigStr*, BigStr*>* gEmptyDict;
+extern Dict<BigStr*, int>* gdict;
+extern Dict<int, BigStr*>* gdict_is;
+extern Dict<BigStr*, BigStr*>* gdict_ss;
+void ListDemo();
+class Point {
+ public:
+  Point(int x, int y);
+  int x{};
+  int y{};
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassScanned(0, sizeof(Point));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(Point)
+};
+
+void TupleDemo();
+void DictDemo();
+void ContainsDemo();
+class HasDictMember {
+ public:
+  HasDictMember();
+  BigStr* Get(BigStr* k);
+  Dict<BigStr*, BigStr*>* builtins{};
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassScanned(1, sizeof(HasDictMember));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(HasDictMember)
+};
+
+void NewDict_test();
+void run_tests();
+void run_benchmarks();
+
+}  // declare namespace containers
+
+namespace containers {  // define
+
+BigStr* gstr = S_lqB;
+GLOBAL_LIST(glist_int, int, 2, {1 COMMA 2});
+GLOBAL_LIST(glist_str, BigStr*, 2, {S_Eow COMMA S_Dne});
+GLOBAL_DICT(gEmptyDict, BigStr*, BigStr*, 0, {}, {});
+GLOBAL_DICT(gdict, BigStr*, int, 2, {S_gCD COMMA S_jFv}, {42 COMMA 43});
+GLOBAL_DICT(gdict_is, int, BigStr*, 3, {5 COMMA 6 COMMA 7}, {S_lqB COMMA S_clt COMMA S_Eow});
+GLOBAL_DICT(gdict_ss, BigStr*, BigStr*, 1, {S_lqB}, {S_lqB});
+
+void ListDemo() {
+  List<int>* intlist = nullptr;
+  List<int>* local_list = nullptr;
+  List<BigStr*>* strlist = nullptr;
+  BigStr* x = nullptr;
+  BigStr* no_str = nullptr;
+  List<BigStr*>* blank = nullptr;
+  StackRoot _root0(&intlist);
+  StackRoot _root1(&local_list);
+  StackRoot _root2(&strlist);
+  StackRoot _root3(&x);
+  StackRoot _root4(&no_str);
+  StackRoot _root5(&blank);
+
+  intlist = Alloc<List<int>>();
+  intlist->append(1);
+  intlist->append(2);
+  intlist->append(3);
+  local_list = NewList<int>(std::initializer_list<int>{1, 2});
+  mylib::print_stderr(StrFormat("local_list = %d", len(local_list)));
+  intlist->set(1, 42);
+  mylib::print_stderr(StrFormat("len(intlist) = %d", len(intlist)));
+  for (ListIter<int> it(intlist); !it.Done(); it.Next()) {
+    int i = it.Value();
+    mylib::print_stderr(StrFormat("i = %d", i));
+  }
+  mylib::print_stderr(StrFormat("1? %d", list_contains(intlist, 1)));
+  mylib::print_stderr(StrFormat("42? %d", list_contains(intlist, 42)));
+  intlist->clear();
+  mylib::print_stderr(StrFormat("len() after del = %d", len(intlist)));
+  strlist = Alloc<List<BigStr*>>();
+  strlist->append(S_gCD);
+  strlist->append(S_jFv);
+  mylib::print_stderr(StrFormat("len(strlist) = %d", len(strlist)));
+  for (ListIter<BigStr*> it(strlist); !it.Done(); it.Next()) {
+    BigStr* s = it.Value();
+    StackRoot _for(&s  );
+    mylib::print_stderr(StrFormat("s = %s", s));
+  }
+  mylib::print_stderr(StrFormat("a? %d", list_contains(strlist, S_gCD)));
+  mylib::print_stderr(StrFormat("foo? %d", list_contains(strlist, S_lqB)));
+  mylib::print_stderr(StrFormat("len(strlist) = %d", len(strlist)));
+  x = strlist->pop();
+  mylib::print_stderr(StrFormat("x = %s", x));
+  no_str = nullptr;
+  blank = list_repeat(no_str, 3);
+  mylib::print_stderr(StrFormat("len(blank) = %d", len(blank)));
+}
+
+Point::Point(int x, int y) {
+  this->x = x;
+  this->y = y;
+}
+
+void TupleDemo() {
+  Tuple2<int, BigStr*>* t2 = nullptr;
+  int myint;
+  BigStr* mystr = nullptr;
+  int x;
+  containers::Point* p = nullptr;
+  BigStr* s = nullptr;
+  StackRoot _root0(&t2);
+  StackRoot _root1(&mystr);
+  StackRoot _root2(&p);
+  StackRoot _root3(&s);
+
+  t2 = (Alloc<Tuple2<int, BigStr*>>(3, S_kfD));
+  Tuple2<int, BigStr*>* tup0 = t2;
+  myint = tup0->at0();
+  mystr = tup0->at1();
+  mylib::print_stderr(StrFormat("myint = %d", myint));
+  mylib::print_stderr(StrFormat("mystr = %s", mystr));
+  x = 3;
+  if ((x == 3 || x == 4 || x == 5)) {
+    print(S_Bxn);
+  }
+  else {
+    print(S_Dxe);
+  }
+  p = Alloc<Point>(3, 4);
+  if ((p->x == 3 || p->x == 4 || p->x == 5)) {
+    print(S_Bxn);
+  }
+  else {
+    print(S_Dxe);
+  }
+  s = S_lqB;
+  if ((str_equals(s, S_lqB) || str_equals(s, S_clt))) {
+    print(S_Bxn);
+  }
+  else {
+    print(S_Dxe);
+  }
+  mylib::print_stderr(StrFormat("glist_int = %d", len(glist_int)));
+  mylib::print_stderr(StrFormat("glist_str = %d", len(glist_str)));
+}
+
+void DictDemo() {
+  Dict<BigStr*, int>* d = nullptr;
+  Dict<BigStr*, int>* ordered = nullptr;
+  Dict<BigStr*, int>* lit = nullptr;
+  StackRoot _root0(&d);
+  StackRoot _root1(&ordered);
+  StackRoot _root2(&lit);
+
+  d = Alloc<Dict<BigStr*, int>>();
+  d->set(S_lqB, 42);
+  ordered = Alloc<Dict<BigStr*, int>>();
+  ordered->set(S_gCD, 10);
+  ordered->set(S_jFv, 11);
+  ordered->set(S_emj, 12);
+  ordered->set(S_gCD, 50);
+  for (DictIter<BigStr*, int> it(ordered); !it.Done(); it.Next()) {
+    BigStr* k = it.Key();
+    int v = it.Value();
+    mylib::print_stderr(StrFormat("%s %d", k, v));
+  }
+  mylib::print_stderr(StrFormat("len gEmptyDict = %d", len(gEmptyDict)));
+  mylib::print_stderr(StrFormat("len gdict = %d", len(gdict)));
+  mylib::print_stderr(StrFormat("len gdict_is = %d", len(gdict_is)));
+  mylib::print_stderr(StrFormat("len gdict_ss = %d", len(gdict_ss)));
+  mylib::print_stderr(StrFormat("gdict[\"a\"] = %d", gdict->at(S_gCD)));
+  mylib::print_stderr(StrFormat("gdict_is[5] = %s", gdict_is->at(5)));
+  mylib::print_stderr(StrFormat("gdict_ss[\"foo\"] = %s", gdict_ss->at(S_lqB)));
+  lit = Alloc<Dict<BigStr*, int>>(std::initializer_list<BigStr*>{S_lqB, S_clt}, std::initializer_list<int>{42, 43});
+  mylib::print_stderr(StrFormat("foo = %d", lit->at(S_lqB)));
+  if (dict_contains(lit, S_clt)) {
+    mylib::print_stderr(S_mas);
+  }
+}
+
+void ContainsDemo() {
+  int x;
+  BigStr* s = nullptr;
+  StackRoot _root0(&s);
+
+  x = 4;
+  if (list_contains(NewList<int>(std::initializer_list<int>{3, 4, 5}), x)) {
+    print(S_Fia);
+  }
+  else {
+    print(S_DAB);
+  }
+  if (list_contains(NewList<int>(std::initializer_list<int>{3, 5, 7}), x)) {
+    print(S_Cmd);
+  }
+  else {
+    print(S_uCo);
+  }
+  x = 4;
+  if ((x == 3 || x == 4 || x == 5)) {
+    print(S_und);
+  }
+  else {
+    print(S_vxl);
+  }
+  if ((x == 3 || x == 5 || x == 7)) {
+    print(S_brh);
+  }
+  else {
+    print(S_mgb);
+  }
+  s = S_cEk;
+  if ((str_equals(s, S_cEk) || str_equals(s, S_yls))) {
+    print(S_Bjx);
+  }
+  else {
+    print(S_pod);
+  }
+  if ((!str_equals(s, S_cEk) && !str_equals(s, S_yls))) {
+    print(S_Bjx);
+  }
+  else {
+    print(S_pod);
+  }
+}
+
+HasDictMember::HasDictMember() {
+  this->builtins = Alloc<Dict<BigStr*, BigStr*>>();
+  auto* non_member = Alloc<Dict<BigStr*, int>>();
+}
+
+BigStr* HasDictMember::Get(BigStr* k) {
+  StackRoot _root0(&k);
+
+  return this->builtins->get(k);
+}
+
+void NewDict_test() {
+  containers::HasDictMember* h = nullptr;
+  BigStr* result = nullptr;
+  StackRoot _root0(&h);
+  StackRoot _root1(&result);
+
+  h = Alloc<HasDictMember>();
+  result = h->Get(S_lqB);
+  if (result != nullptr) {
+    print(StrFormat("result %r", result));
+  }
+  else {
+    print(S_mdd);
+  }
+  h->builtins = Alloc<Dict<BigStr*, BigStr*>>();
+}
+
+void run_tests() {
+  List<int>* a = nullptr;
+  StackRoot _root0(&a);
+
+  NewDict_test();
+  mylib::print_stderr(S_Aoo);
+  ListDemo();
+  mylib::print_stderr(S_Aoo);
+  TupleDemo();
+  mylib::print_stderr(S_Aoo);
+  DictDemo();
+  mylib::print_stderr(S_Aoo);
+  ContainsDemo();
+  mylib::print_stderr(S_Aoo);
+  a = Alloc<List<int>>();
+  a->append(42);
+}
+
+void run_benchmarks() {
+  int n;
+  int i;
+  List<int>* intlist = nullptr;
+  List<BigStr*>* strlist = nullptr;
+  StackRoot _root0(&intlist);
+  StackRoot _root1(&strlist);
+
+  n = 1000000;
+  i = 0;
+  intlist = Alloc<List<int>>();
+  strlist = Alloc<List<BigStr*>>();
+  while (i < n) {
+    intlist->append(i);
+    strlist->append(S_lqB);
+    i += 1;
+  }
+  mylib::print_stderr(StrFormat("Appended %d items to 2 lists", n));
+}
+
+}  // define namespace containers
+
+int main(int argc, char **argv) {
+  gHeap.Init();
+
+  char* b = getenv("BENCHMARK");
+  if (b && strlen(b)) {  // match Python's logic
+    fprintf(stderr, "Benchmarking...\n");
+    containers::run_benchmarks();
+  } else {
+    containers::run_tests();
+  }
+
+  gHeap.CleanProcessExit();
+}

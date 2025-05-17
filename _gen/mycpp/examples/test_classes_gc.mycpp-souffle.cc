@@ -1,0 +1,383 @@
+// _gen/mycpp/examples/test_classes_gc.mycpp-souffle.cc - generated from Python source code
+
+#include "mycpp/runtime.h"
+
+// BEGIN mycpp output
+namespace test_classes_gc {  // forward declare
+  class Opaque;
+  class OpaqueBase;
+  class OpaqueDerived;
+  class Pointers;
+  class PointersBase;
+  class PointersDerived;
+  class BaseWithMethod;
+  class DerivedWithMethod;
+  class WithDict;
+  class _Builtin;
+  class Printf;
+}
+
+GLOBAL_STR(S_jsr, "Printf");
+GLOBAL_STR(S_cqk, "S");
+GLOBAL_STR(S_cor, "T");
+GLOBAL_STR(S_sDr, "U");
+GLOBAL_STR(S_Ema, "_Builtin");
+GLOBAL_STR(S_lqB, "foo");
+GLOBAL_STR(S_oxc, "heap");
+GLOBAL_STR(S_gDl, "key");
+GLOBAL_STR(S_tFk, "value");
+
+namespace test_classes_gc {  // declare
+
+class Opaque {
+ public:
+  Opaque();
+  int i{};
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassScanned(0, sizeof(Opaque));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(Opaque)
+};
+
+class OpaqueBase {
+ public:
+  OpaqueBase();
+  int j{};
+  
+  static constexpr uint32_t field_mask() {
+    return kZeroMask;
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(OpaqueBase));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(OpaqueBase)
+};
+
+class OpaqueDerived : public ::test_classes_gc::OpaqueBase {
+ public:
+  OpaqueDerived();
+
+  int k{};
+  
+  static constexpr uint32_t field_mask() {
+    return ::test_classes_gc::OpaqueBase::field_mask();
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(OpaqueDerived));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(OpaqueDerived)
+};
+
+class Pointers {
+ public:
+  Pointers();
+  BigStr* s{};
+  BigStr* t{};
+  int i{};
+  int j{};
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassScanned(2, sizeof(Pointers));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(Pointers)
+};
+
+class PointersBase {
+ public:
+  PointersBase();
+  int i{};
+  BigStr* s{};
+  
+  static constexpr uint32_t field_mask() {
+    return maskbit(offsetof(PointersBase, s));
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(PointersBase));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(PointersBase)
+};
+
+class PointersDerived : public ::test_classes_gc::PointersBase {
+ public:
+  PointersDerived();
+
+  int j{};
+  BigStr* t{};
+  
+  static constexpr uint32_t field_mask() {
+    return ::test_classes_gc::PointersBase::field_mask()
+         | maskbit(offsetof(PointersDerived, t));
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(PointersDerived));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(PointersDerived)
+};
+
+class BaseWithMethod {
+ public:
+  BaseWithMethod();
+  virtual int Method();
+  int i{};
+  BigStr* s{};
+  
+  static constexpr uint32_t field_mask() {
+    return maskbit(offsetof(BaseWithMethod, s));
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(BaseWithMethod));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(BaseWithMethod)
+};
+
+class DerivedWithMethod : public ::test_classes_gc::BaseWithMethod {
+ public:
+  DerivedWithMethod();
+  virtual int Method();
+
+  int j{};
+  BigStr* t{};
+  BigStr* u{};
+  
+  static constexpr uint32_t field_mask() {
+    return ::test_classes_gc::BaseWithMethod::field_mask()
+         | maskbit(offsetof(DerivedWithMethod, t))
+         | maskbit(offsetof(DerivedWithMethod, u));
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(DerivedWithMethod));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(DerivedWithMethod)
+};
+
+class WithDict {
+ public:
+  WithDict();
+  BigStr* s{};
+  Dict<BigStr*, BigStr*>* d{};
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassScanned(2, sizeof(WithDict));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(WithDict)
+};
+
+class _Builtin {
+ public:
+  _Builtin();
+  virtual void Run();
+  
+  static constexpr uint32_t field_mask() {
+    return kZeroMask;
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(_Builtin));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(_Builtin)
+};
+
+class Printf : public ::test_classes_gc::_Builtin {
+ public:
+  Printf();
+  virtual void Run();
+
+  Dict<BigStr*, BigStr*>* cache{};
+  
+  static constexpr uint32_t field_mask() {
+    return ::test_classes_gc::_Builtin::field_mask()
+         | maskbit(offsetof(Printf, cache));
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(Printf));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(Printf)
+};
+
+void run_tests();
+void run_benchmarks();
+
+}  // declare namespace test_classes_gc
+
+namespace test_classes_gc {  // define
+
+
+Opaque::Opaque() {
+  this->i = 0;
+}
+
+OpaqueBase::OpaqueBase() {
+  this->j = 0;
+}
+
+OpaqueDerived::OpaqueDerived() : ::test_classes_gc::OpaqueBase() {
+  this->k = 0;
+}
+
+Pointers::Pointers() {
+  this->i = 0;
+  this->s = S_cqk;
+  this->j = 42;
+  this->t = S_cor;
+}
+
+PointersBase::PointersBase() {
+  this->i = 0;
+  this->s = S_cqk;
+}
+
+PointersDerived::PointersDerived() : ::test_classes_gc::PointersBase() {
+  this->j = 42;
+  this->t = S_cor;
+}
+
+BaseWithMethod::BaseWithMethod() {
+  this->i = 0;
+  this->s = S_cqk;
+}
+
+int BaseWithMethod::Method() {
+  return 42;
+}
+
+DerivedWithMethod::DerivedWithMethod() : ::test_classes_gc::BaseWithMethod() {
+  this->j = 42;
+  this->t = S_cor;
+  this->u = S_sDr;
+}
+
+int DerivedWithMethod::Method() {
+  return 99;
+}
+
+WithDict::WithDict() {
+  this->s = S_lqB;
+  this->d = Alloc<Dict<BigStr*, BigStr*>>();
+}
+
+_Builtin::_Builtin() {
+  ;  // pass
+}
+
+void _Builtin::Run() {
+  print(S_Ema);
+}
+
+Printf::Printf() : ::test_classes_gc::_Builtin() {
+  this->cache = Alloc<Dict<BigStr*, BigStr*>>();
+}
+
+void Printf::Run() {
+  print(S_jsr);
+}
+
+void run_tests() {
+  test_classes_gc::Opaque* o1 = nullptr;
+  test_classes_gc::OpaqueBase* o2 = nullptr;
+  test_classes_gc::OpaqueDerived* o3 = nullptr;
+  test_classes_gc::Pointers* p1 = nullptr;
+  test_classes_gc::PointersBase* p2 = nullptr;
+  test_classes_gc::PointersDerived* p3 = nullptr;
+  test_classes_gc::BaseWithMethod* m1 = nullptr;
+  test_classes_gc::DerivedWithMethod* m2 = nullptr;
+  test_classes_gc::WithDict* c = nullptr;
+  BigStr* s = nullptr;
+  test_classes_gc::Printf* p = nullptr;
+  StackRoot _root0(&p1);
+  StackRoot _root1(&c);
+  StackRoot _root2(&p);
+
+  o1 = Alloc<Opaque>();
+  o2 = Alloc<OpaqueBase>();
+  o3 = Alloc<OpaqueDerived>();
+  p1 = Alloc<Pointers>();
+  p2 = Alloc<PointersBase>();
+  p3 = Alloc<PointersDerived>();
+  m1 = Alloc<BaseWithMethod>();
+  m2 = Alloc<DerivedWithMethod>();
+  c = Alloc<WithDict>();
+  c->d->set(S_gDl, S_tFk);
+  mylib::MaybeCollect();
+  s = S_oxc;
+  p1->s = s->slice(1);
+  print(c->d->at(S_gDl));
+  p = Alloc<Printf>();
+  mylib::MaybeCollect();
+  mylib::print_stderr(StrFormat("cache length %d", len(p->cache)));
+}
+
+void run_benchmarks() {
+  List<test_classes_gc::OpaqueBase*>* op = nullptr;
+  List<test_classes_gc::PointersBase*>* p = nullptr;
+  List<test_classes_gc::BaseWithMethod*>* m = nullptr;
+  test_classes_gc::Opaque* o1 = nullptr;
+  test_classes_gc::OpaqueBase* o2 = nullptr;
+  test_classes_gc::OpaqueDerived* o3 = nullptr;
+  test_classes_gc::Pointers* p1 = nullptr;
+  test_classes_gc::PointersBase* p2 = nullptr;
+  test_classes_gc::PointersDerived* p3 = nullptr;
+  test_classes_gc::BaseWithMethod* m1 = nullptr;
+  test_classes_gc::DerivedWithMethod* m2 = nullptr;
+  StackRoot _root0(&op);
+  StackRoot _root1(&p);
+  StackRoot _root2(&m);
+
+  op = Alloc<List<test_classes_gc::OpaqueBase*>>();
+  p = Alloc<List<test_classes_gc::PointersBase*>>();
+  m = Alloc<List<test_classes_gc::BaseWithMethod*>>();
+  for (int i = 0; i < 1000; ++i) {
+    o1 = Alloc<Opaque>();
+    o2 = Alloc<OpaqueBase>();
+    o3 = Alloc<OpaqueDerived>();
+    op->append(o2);
+    op->append(o3);
+    p1 = Alloc<Pointers>();
+    p2 = Alloc<PointersBase>();
+    p3 = Alloc<PointersDerived>();
+    p->append(p2);
+    p->append(p3);
+    m1 = Alloc<BaseWithMethod>();
+    m2 = Alloc<DerivedWithMethod>();
+    m->append(m1);
+    m->append(m2);
+    mylib::MaybeCollect();
+  }
+  mylib::print_stderr(StrFormat("len(op) = %d", len(op)));
+  mylib::print_stderr(StrFormat("len(p) = %d", len(p)));
+  mylib::print_stderr(StrFormat("len(m) = %d", len(m)));
+}
+
+}  // define namespace test_classes_gc
+
+int main(int argc, char **argv) {
+  gHeap.Init();
+
+  char* b = getenv("BENCHMARK");
+  if (b && strlen(b)) {  // match Python's logic
+    fprintf(stderr, "Benchmarking...\n");
+    test_classes_gc::run_benchmarks();
+  } else {
+    test_classes_gc::run_tests();
+  }
+
+  gHeap.CleanProcessExit();
+}

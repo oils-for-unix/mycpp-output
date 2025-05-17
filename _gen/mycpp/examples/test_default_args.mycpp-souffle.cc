@@ -1,0 +1,98 @@
+// _gen/mycpp/examples/test_default_args.mycpp-souffle.cc - generated from Python source code
+
+#include "mycpp/runtime.h"
+
+// BEGIN mycpp output
+namespace test_default_args {  // forward declare
+  class Foo;
+}
+
+GLOBAL_STR(S_Aoo, "");
+GLOBAL_STR(S_uDl, "const");
+GLOBAL_STR(S_lqB, "foo");
+
+namespace test_default_args {  // declare
+
+void f(int x, bool b = false);
+void g(int x, BigStr* s = S_Aoo);
+class Foo {
+ public:
+  Foo(int x, int y = 42);
+  void Print();
+  int x{};
+  int y{};
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassScanned(0, sizeof(Foo));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(Foo)
+};
+
+void run_tests();
+void run_benchmarks();
+
+}  // declare namespace test_default_args
+
+namespace test_default_args {  // define
+
+
+void f(int x, bool b) {
+  mylib::print_stderr(StrFormat("x = %d", x));
+  mylib::print_stderr(StrFormat("b = %d", b));
+}
+
+void g(int x, BigStr* s) {
+  mylib::print_stderr(StrFormat("x = %d", x));
+  mylib::print_stderr(StrFormat("s = %r", s));
+}
+
+Foo::Foo(int x, int y) {
+  this->x = x;
+  this->y = y;
+}
+
+void Foo::Print() {
+  mylib::print_stderr(StrFormat("x = %d", this->x));
+  mylib::print_stderr(StrFormat("y = %d", this->y));
+}
+
+void run_tests() {
+  test_default_args::Foo* f1 = nullptr;
+  test_default_args::Foo* f2 = nullptr;
+  test_default_args::Foo* f3 = nullptr;
+  f(5);
+  f(6, true);
+  f(7, true);
+  g(99, S_lqB);
+  f1 = Alloc<Foo>(8);
+  f2 = Alloc<Foo>(9, 43);
+  f3 = Alloc<Foo>(0, 44);
+  f1->Print();
+  f2->Print();
+  f3->Print();
+  print(S_uDl);
+  print(StrFormat("print formatted = %d", true));
+  mylib::print_stderr(S_uDl);
+  mylib::print_stderr(StrFormat("log formatted = %d", true));
+}
+
+void run_benchmarks() {
+  FAIL(kNotImplemented);  // Python NotImplementedError
+}
+
+}  // define namespace test_default_args
+
+int main(int argc, char **argv) {
+  gHeap.Init();
+
+  char* b = getenv("BENCHMARK");
+  if (b && strlen(b)) {  // match Python's logic
+    fprintf(stderr, "Benchmarking...\n");
+    test_default_args::run_benchmarks();
+  } else {
+    test_default_args::run_tests();
+  }
+
+  gHeap.CleanProcessExit();
+}

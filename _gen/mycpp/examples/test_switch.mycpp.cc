@@ -1,0 +1,131 @@
+// _gen/mycpp/examples/test_switch.mycpp.cc - generated from Python source code
+
+#include "mycpp/runtime.h"
+
+// BEGIN mycpp output
+namespace test_switch {  // forward declare
+}
+
+GLOBAL_STR(S_Aoo, "");
+GLOBAL_STR(S_gpk, "--");
+GLOBAL_STR(S_fnv, "BAR");
+GLOBAL_STR(S_EFk, "FOO");
+GLOBAL_STR(S_lmk, "SPAM");
+GLOBAL_STR(S_xfs, "another");
+GLOBAL_STR(S_clt, "bar");
+GLOBAL_STR(S_vlb, "default");
+GLOBAL_STR(S_nma, "different len");
+GLOBAL_STR(S_lqB, "foo");
+GLOBAL_STR(S_rFb, "neither");
+GLOBAL_STR(S_mvE, "one or two");
+GLOBAL_STR(S_Eow, "spam");
+GLOBAL_STR(S_toa, "three or four");
+GLOBAL_STR(S_Bxn, "yes");
+GLOBAL_STR(S_kfd, "zero");
+GLOBAL_STR(S_asE, "zzz");
+
+namespace test_switch {  // declare
+
+void TestString(BigStr* s);
+void TestNumSwitch();
+void run_tests();
+void run_benchmarks();
+
+}  // declare namespace test_switch
+
+namespace test_switch {  // define
+
+
+void TestString(BigStr* s) {
+  StackRoot _root0(&s);
+
+  switch (len(s)) {
+    case 3: {
+      if (str_equals_c(s, "foo", 3)) {
+        print(StrFormat("== %s ==", s));
+        print(S_EFk);
+      }
+      else if (str_equals_c(s, "bar", 3)) {
+        print(StrFormat("== %s ==", s));
+        print(S_fnv);
+      }
+      else {
+        goto str_switch_default;
+      }
+    }
+      break;
+    case 4: {
+      if (str_equals_c(s, "spam", 4)) {
+        print(StrFormat("== %s ==", s));
+        print(S_lmk);
+        print(S_Bxn);
+      }
+      else {
+        goto str_switch_default;
+      }
+    }
+      break;
+
+    str_switch_default:
+    default: {
+      print(StrFormat("== %s ==", s));
+      print(S_rFb);
+    }
+  }
+  print(S_gpk);
+  print(S_Aoo);
+}
+
+void TestNumSwitch() {
+  int x;
+  x = 5;
+  switch (x) {
+    case 0: {
+      print(S_kfd);
+      print(S_kfd);
+    }
+      break;
+    case 1: 
+    case 2: {
+      print(S_mvE);
+    }
+      break;
+    case 3: 
+    case 4: {
+      print(S_toa);
+    }
+      break;
+    default: {
+      print(S_vlb);
+      print(S_xfs);
+    }
+  }
+}
+
+void run_tests() {
+  TestString(S_Eow);
+  TestString(S_clt);
+  TestString(S_asE);
+  TestString(S_nma);
+  TestNumSwitch();
+}
+
+void run_benchmarks() {
+  FAIL(kNotImplemented);  // Python NotImplementedError
+}
+
+}  // define namespace test_switch
+
+int main(int argc, char **argv) {
+  gHeap.Init();
+
+  char* b = getenv("BENCHMARK");
+  if (b && strlen(b)) {  // match Python's logic
+    fprintf(stderr, "Benchmarking...\n");
+    test_switch::run_benchmarks();
+  } else {
+    test_switch::run_tests();
+  }
+
+  gHeap.CleanProcessExit();
+}

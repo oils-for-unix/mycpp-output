@@ -1,0 +1,186 @@
+// _gen/mycpp/examples/test_iterators.mycpp.cc - generated from Python source code
+
+#include "mycpp/runtime.h"
+
+// BEGIN mycpp output
+namespace test_iterators {  // forward declare
+  class Foo;
+}
+
+GLOBAL_STR(S_zAF, "--- iterator assignment");
+GLOBAL_STR(S_Bzr, "--- nested iterators");
+GLOBAL_STR(S_Fpa, "--- simple iterators");
+
+namespace test_iterators {  // declare
+
+void g(int n, List<Tuple2<int, BigStr*>*>* YIELD);
+void f(int n, List<int>* YIELD);
+class Foo {
+ public:
+  Foo();
+  void bar(int n, List<int>* YIELD);
+  void baz(int n, List<Tuple2<int, BigStr*>*>* YIELD);
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassScanned(0, sizeof(Foo));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(Foo)
+};
+
+void run_tests();
+void run_benchmarks();
+
+}  // declare namespace test_iterators
+
+namespace test_iterators {  // define
+
+
+void g(int n, List<Tuple2<int, BigStr*>*>* YIELD) {
+  List<int> YIELD_for_0;
+  f(n, &YIELD_for_0);
+  for (ListIter<int> it(&YIELD_for_0); !it.Done(); it.Next()) {
+    int i = it.Value();
+    YIELD->append((Alloc<Tuple2<int, BigStr*>>(i, StrFormat("2 * %d = %d", i, (2 * i)))));
+  }
+}
+
+void f(int n, List<int>* YIELD) {
+  for (int i = 0; i < n; ++i) {
+    YIELD->append(i);
+  }
+}
+
+Foo::Foo() {
+  ;  // pass
+}
+
+void Foo::bar(int n, List<int>* YIELD) {
+  for (int i = 0; i < n; ++i) {
+    YIELD->append(i);
+  }
+}
+
+void Foo::baz(int n, List<Tuple2<int, BigStr*>*>* YIELD) {
+  List<Tuple2<int, BigStr*>*> YIELD_it_g;
+  g(n, &YIELD_it_g);
+  ListIter<Tuple2<int, BigStr*>*> it_g(&YIELD_it_g);
+  while (true) {
+    try {
+      YIELD->append(it_g.iterNext());
+    }
+    catch (StopIteration*) {
+      break;
+    }
+  }
+}
+
+void run_tests() {
+  test_iterators::Foo* foo = nullptr;
+  int i;
+  BigStr* s = nullptr;
+  List<int>* l = nullptr;
+  StackRoot _root0(&foo);
+  StackRoot _root1(&s);
+  StackRoot _root2(&l);
+
+  mylib::print_stderr(S_Fpa);
+  List<int> YIELD_for_1;
+  f(3, &YIELD_for_1);
+  for (ListIter<int> it(&YIELD_for_1); !it.Done(); it.Next()) {
+    int i = it.Value();
+    mylib::print_stderr(StrFormat("f() gave %d", i));
+  }
+  foo = Alloc<Foo>();
+  List<int> YIELD_for_2;
+  foo->bar(4, &YIELD_for_2);
+  for (ListIter<int> it(&YIELD_for_2); !it.Done(); it.Next()) {
+    int i = it.Value();
+    mylib::print_stderr(StrFormat("Foo.bar() gave %d", i));
+  }
+  mylib::print_stderr(S_Bzr);
+  List<Tuple2<int, BigStr*>*> YIELD_for_3;
+  g(3, &YIELD_for_3);
+  for (ListIter<Tuple2<int, BigStr*>*> it(&YIELD_for_3); !it.Done(); it.Next()) {
+    Tuple2<int, BigStr*>* tup4 = it.Value();
+    int i = tup4->at0();
+    BigStr* s = tup4->at1();
+    StackRoot _unpack_1(&s);
+    mylib::print_stderr(StrFormat("g() gave (%d, %r)", i, s));
+  }
+  List<Tuple2<int, BigStr*>*> YIELD_for_5;
+  foo->baz(3, &YIELD_for_5);
+  for (ListIter<Tuple2<int, BigStr*>*> it(&YIELD_for_5); !it.Done(); it.Next()) {
+    Tuple2<int, BigStr*>* tup6 = it.Value();
+    int i = tup6->at0();
+    BigStr* s = tup6->at1();
+    StackRoot _unpack_1(&s);
+    mylib::print_stderr(StrFormat("Foo.baz() gave (%d, %r)", i, s));
+  }
+  List<int> YIELD_for_7;
+  f(3, &YIELD_for_7);
+  for (ListIter<int> it(&YIELD_for_7); !it.Done(); it.Next()) {
+    int i = it.Value();
+    List<int> YIELD_for_8;
+    f(3, &YIELD_for_8);
+    for (ListIter<int> it(&YIELD_for_8); !it.Done(); it.Next()) {
+      int j = it.Value();
+      mylib::print_stderr(StrFormat("f() gave %d, %d", i, j));
+    }
+  }
+  mylib::print_stderr(S_zAF);
+  List<int> YIELD_it_f;
+  f(5, &YIELD_it_f);
+  ListIter<int> it_f(&YIELD_it_f);
+  while (true) {
+    try {
+      mylib::print_stderr(StrFormat("next(f()) gave %d", it_f.iterNext()));
+    }
+    catch (StopIteration*) {
+      break;
+    }
+  }
+  List<Tuple2<int, BigStr*>*> YIELD_it_g;
+  g(5, &YIELD_it_g);
+  ListIter<Tuple2<int, BigStr*>*> it_g(&YIELD_it_g);
+  while (true) {
+    try {
+      Tuple2<int, BigStr*>* tup9 = it_g.iterNext();
+      i = tup9->at0();
+      s = tup9->at1();
+      mylib::print_stderr(StrFormat("next(g()) gave (%d, %r)", i, s));
+    }
+    catch (StopIteration*) {
+      break;
+    }
+  }
+  List<int> YIELD_it;
+  f(5, &YIELD_it);
+  ListIter<int> it(&YIELD_it);
+  l = list(it);
+  i = 0;
+  for (ListIter<int> it(l); !it.Done(); it.Next(), ++i) {
+    int x = it.Value();
+    mylib::print_stderr(StrFormat("l[%d] = %d", i, x));
+  }
+}
+
+void run_benchmarks() {
+  ;  // pass
+}
+
+}  // define namespace test_iterators
+
+int main(int argc, char **argv) {
+  gHeap.Init();
+
+  char* b = getenv("BENCHMARK");
+  if (b && strlen(b)) {  // match Python's logic
+    fprintf(stderr, "Benchmarking...\n");
+    test_iterators::run_benchmarks();
+  } else {
+    test_iterators::run_tests();
+  }
+
+  gHeap.CleanProcessExit();
+}

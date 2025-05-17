@@ -1,0 +1,254 @@
+// _gen/mycpp/examples/test_cast.mycpp-souffle.cc - generated from Python source code
+
+#include "mycpp/runtime.h"
+
+// BEGIN mycpp output
+namespace test_cast {  // forward declare
+  class ColorOutput;
+  class value_t;
+  class value__Int;
+  class value__Eggex;
+}
+
+GLOBAL_STR(S_xlg, "Eggex");
+GLOBAL_STR(S_Ckc, "Int");
+GLOBAL_STR(S_zlE, "[0-9]");
+GLOBAL_STR(S_gpF, "[0-9]+");
+GLOBAL_STR(S_qgf, "other");
+GLOBAL_STR(S_eog, "yo");
+
+namespace test_cast {  // declare
+
+class ColorOutput {
+ public:
+  ColorOutput(mylib::Writer* f);
+  void WriteRaw(Tuple2<BigStr*, int>* raw);
+  Tuple2<BigStr*, int> GetRaw();
+  mylib::Writer* f{};
+  int num_chars{};
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassScanned(1, sizeof(ColorOutput));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(ColorOutput)
+};
+
+void TestCastBufWriter();
+class value_t {
+ public:
+  value_t();
+  virtual int tag();
+  
+  static constexpr uint32_t field_mask() {
+    return kZeroMask;
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(value_t));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(value_t)
+};
+
+class value__Int : public ::test_cast::value_t {
+ public:
+  value__Int(int i);
+  virtual int tag();
+
+  int i{};
+  
+  static constexpr uint32_t field_mask() {
+    return ::test_cast::value_t::field_mask();
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(value__Int));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(value__Int)
+};
+
+class value__Eggex : public ::test_cast::value_t {
+ public:
+  value__Eggex(BigStr* ere);
+  virtual int tag();
+
+  BigStr* ere{};
+  
+  static constexpr uint32_t field_mask() {
+    return ::test_cast::value_t::field_mask()
+         | maskbit(offsetof(value__Eggex, ere));
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(value__Eggex));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(value__Eggex)
+};
+
+void TestSwitchDowncast(test_cast::value_t* val);
+void TestSwitchDowncastBad(test_cast::value_t* val);
+void TestCastInSwitch();
+void run_tests();
+void run_benchmarks();
+
+}  // declare namespace test_cast
+
+namespace test_cast {  // define
+
+
+ColorOutput::ColorOutput(mylib::Writer* f) {
+  this->f = f;
+  this->num_chars = 0;
+}
+
+void ColorOutput::WriteRaw(Tuple2<BigStr*, int>* raw) {
+  BigStr* s = nullptr;
+  int num_chars;
+  Tuple2<BigStr*, int>* tup0 = raw;
+  s = tup0->at0();
+  num_chars = tup0->at1();
+  this->f->write(s);
+  this->num_chars += num_chars;
+}
+
+Tuple2<BigStr*, int> ColorOutput::GetRaw() {
+  mylib::BufWriter* f = nullptr;
+  f = static_cast<mylib::BufWriter*>(this->f);
+  return Tuple2<BigStr*, int>(f->getvalue(), this->num_chars);
+}
+
+void TestCastBufWriter() {
+  mylib::BufWriter* f = nullptr;
+  test_cast::ColorOutput* out = nullptr;
+  BigStr* s = nullptr;
+  int num_chars;
+  f = Alloc<mylib::BufWriter>();
+  out = Alloc<ColorOutput>(f);
+  out->WriteRaw((Alloc<Tuple2<BigStr*, int>>(S_eog, 2)));
+  Tuple2<BigStr*, int> tup1 = out->GetRaw();
+  s = tup1.at0();
+  num_chars = tup1.at1();
+  print(s);
+}
+
+value_t::value_t() {
+  ;  // pass
+}
+
+int value_t::tag() {
+  FAIL(kNotImplemented);  // Python NotImplementedError
+}
+
+value__Int::value__Int(int i) {
+  this->i = i;
+}
+
+int value__Int::tag() {
+  return 1;
+}
+
+value__Eggex::value__Eggex(BigStr* ere) {
+  this->ere = ere;
+}
+
+int value__Eggex::tag() {
+  return 2;
+}
+
+void TestSwitchDowncast(test_cast::value_t* val) {
+  test_cast::value_t* UP_val = nullptr;
+  UP_val = val;
+  switch (val->tag()) {
+    case 1: {
+      value__Int* val = static_cast<value__Int*>(UP_val);
+      print(StrFormat("Int = %d", val->i));
+    }
+      break;
+    case 2: {
+      value__Eggex* val = static_cast<value__Eggex*>(UP_val);
+      print(StrFormat("Eggex = %r", val->ere));
+    }
+      break;
+    default: {
+      print(S_qgf);
+    }
+  }
+}
+
+void TestSwitchDowncastBad(test_cast::value_t* val) {
+  switch (val->tag()) {
+    case 1: {
+      val = static_cast<value__Int*>(val);
+      print(S_Ckc);
+    }
+      break;
+    case 2: {
+      val = static_cast<value__Eggex*>(val);
+      print(S_xlg);
+    }
+      break;
+    default: {
+      print(S_qgf);
+    }
+  }
+}
+
+void TestCastInSwitch() {
+  test_cast::value__Eggex* e = nullptr;
+  test_cast::value_t* pattern_val = nullptr;
+  test_cast::value__Eggex* pattern_eggex = nullptr;
+  int i;
+  e = Alloc<value__Eggex>(S_gpF);
+  pattern_val = e;
+  pattern_eggex = nullptr;
+  i = 42;
+  switch (pattern_val->tag()) {
+    case 1: {
+      assert(0);  // AssertionError
+    }
+      break;
+    case 2: {
+      pattern_eggex = static_cast<value__Eggex*>(pattern_val);
+    }
+      break;
+    default: {
+      assert(0);  // AssertionError
+    }
+  }
+  print(StrFormat("eggex = %r", pattern_eggex->ere));
+}
+
+void run_tests() {
+  int unused2;
+  (void)unused2;
+  unused2 = 42;
+  TestCastBufWriter();
+  TestSwitchDowncast(Alloc<value__Eggex>(S_zlE));
+  TestSwitchDowncast(Alloc<value__Int>(42));
+  TestSwitchDowncastBad(Alloc<value__Eggex>(S_zlE));
+  TestSwitchDowncastBad(Alloc<value__Int>(42));
+  TestCastInSwitch();
+}
+
+void run_benchmarks() {
+  FAIL(kNotImplemented);  // Python NotImplementedError
+}
+
+}  // define namespace test_cast
+
+int main(int argc, char **argv) {
+  gHeap.Init();
+
+  char* b = getenv("BENCHMARK");
+  if (b && strlen(b)) {  // match Python's logic
+    fprintf(stderr, "Benchmarking...\n");
+    test_cast::run_benchmarks();
+  } else {
+    test_cast::run_tests();
+  }
+
+  gHeap.CleanProcessExit();
+}

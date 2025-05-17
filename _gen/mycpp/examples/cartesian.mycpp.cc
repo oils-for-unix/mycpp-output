@@ -1,0 +1,110 @@
+// _gen/mycpp/examples/cartesian.mycpp.cc - generated from Python source code
+
+#include "mycpp/runtime.h"
+
+// BEGIN mycpp output
+namespace cartesian {  // forward declare
+}
+
+GLOBAL_STR(S_gpk, "--");
+GLOBAL_STR(S_bum, "-|_");
+GLOBAL_STR(S_Cja, "ABC");
+GLOBAL_STR(S_AEi, "ab");
+
+namespace cartesian {  // declare
+
+void Cartesian(List<BigStr*>* dims, List<BigStr*>* out);
+void run_tests();
+void run_benchmarks();
+
+}  // declare namespace cartesian
+
+namespace cartesian {  // define
+
+
+void Cartesian(List<BigStr*>* dims, List<BigStr*>* out) {
+  List<BigStr*>* rest = nullptr;
+  StackRoot _root0(&dims);
+  StackRoot _root1(&out);
+  StackRoot _root2(&rest);
+
+  if (len(dims) == 1) {
+    for (StrIter it(dims->at(0)); !it.Done(); it.Next()) {
+      BigStr* ch = it.Value();
+      StackRoot _for(&ch    );
+      out->append(ch);
+    }
+  }
+  else {
+    rest = Alloc<List<BigStr*>>();
+    Cartesian(dims->slice(1), rest);
+    for (StrIter it(dims->at(0)); !it.Done(); it.Next()) {
+      BigStr* ch = it.Value();
+      StackRoot _for(&ch    );
+      for (ListIter<BigStr*> it(rest); !it.Done(); it.Next()) {
+        BigStr* r = it.Value();
+        StackRoot _for(&r      );
+        out->append(str_concat(ch, r));
+      }
+    }
+  }
+}
+
+void run_tests() {
+  List<BigStr*>* out = nullptr;
+  List<BigStr*>* tmp = nullptr;
+  List<BigStr*>* tmp2 = nullptr;
+  StackRoot _root0(&out);
+  StackRoot _root1(&tmp);
+  StackRoot _root2(&tmp2);
+
+  out = Alloc<List<BigStr*>>();
+  tmp = NewList<BigStr*>(std::initializer_list<BigStr*>{S_AEi});
+  Cartesian(tmp, out);
+  for (ListIter<BigStr*> it(out); !it.Done(); it.Next()) {
+    BigStr* s = it.Value();
+    StackRoot _for(&s  );
+    print(s);
+  }
+  print(S_gpk);
+  out = Alloc<List<BigStr*>>();
+  tmp2 = NewList<BigStr*>(std::initializer_list<BigStr*>{S_AEi, S_bum, S_Cja});
+  Cartesian(tmp2, out);
+  for (ListIter<BigStr*> it(out); !it.Done(); it.Next()) {
+    BigStr* s = it.Value();
+    StackRoot _for(&s  );
+    print(s);
+  }
+}
+
+void run_benchmarks() {
+  int i;
+  int n;
+  List<BigStr*>* out = nullptr;
+  StackRoot _root0(&out);
+
+  i = 0;
+  n = 100000;
+  while (i < n) {
+    out = Alloc<List<BigStr*>>();
+    Cartesian(NewList<BigStr*>(std::initializer_list<BigStr*>{S_AEi, S_bum, S_Cja}), out);
+    i = (i + 1);
+    mylib::MaybeCollect();
+  }
+}
+
+}  // define namespace cartesian
+
+int main(int argc, char **argv) {
+  gHeap.Init();
+
+  char* b = getenv("BENCHMARK");
+  if (b && strlen(b)) {  // match Python's logic
+    fprintf(stderr, "Benchmarking...\n");
+    cartesian::run_benchmarks();
+  } else {
+    cartesian::run_tests();
+  }
+
+  gHeap.CleanProcessExit();
+}

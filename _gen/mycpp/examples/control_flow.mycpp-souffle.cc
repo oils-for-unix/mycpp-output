@@ -1,0 +1,156 @@
+// _gen/mycpp/examples/control_flow.mycpp-souffle.cc - generated from Python source code
+
+#include "mycpp/runtime.h"
+
+// BEGIN mycpp output
+namespace control_flow {  // forward declare
+  class ParseError;
+}
+
+GLOBAL_STR(S_Aoo, "");
+GLOBAL_STR(S_clt, "bar");
+GLOBAL_STR(S_ksc, "f");
+GLOBAL_STR(S_gva, "fail");
+GLOBAL_STR(S_lqB, "foo");
+GLOBAL_STR(S_Alb, "ok");
+GLOBAL_STR(S_Epb, "one");
+GLOBAL_STR(S_aDv, "other number");
+GLOBAL_STR(S_wfa, "started with f");
+GLOBAL_STR(S_yva, "three");
+GLOBAL_STR(S_nfE, "two");
+
+namespace control_flow {  // declare
+
+void IfDemo(int i);
+class ParseError {
+ public:
+  ParseError(BigStr* reason);
+  BigStr* reason{};
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassScanned(1, sizeof(ParseError));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(ParseError)
+};
+
+BigStr* f(BigStr* s);
+void ExceptDemo();
+void run_tests();
+void run_benchmarks();
+
+}  // declare namespace control_flow
+
+namespace control_flow {  // define
+
+
+void IfDemo(int i) {
+  if (i == 1) {
+    print(S_Epb);
+  }
+  else {
+    if (i == 2) {
+      print(S_nfE);
+    }
+    else {
+      if (i == 3) {
+        print(S_yva);
+      }
+      else {
+        if (i == 4) {
+          ;  // pass
+        }
+        else {
+          print(S_aDv);
+        }
+      }
+    }
+  }
+}
+
+ParseError::ParseError(BigStr* reason) {
+  this->reason = reason;
+}
+
+BigStr* f(BigStr* s) {
+  if (str_equals(s->at(0), S_ksc)) {
+    throw Alloc<ParseError>(S_wfa);
+  }
+  return s;
+}
+
+void ExceptDemo() {
+  BigStr* result = nullptr;
+  List<BigStr*>* tmp = nullptr;
+  result = S_Aoo;
+  tmp = NewList<BigStr*>(std::initializer_list<BigStr*>{S_lqB, S_clt});
+  for (ListIter<BigStr*> it(tmp); !it.Done(); it.Next()) {
+    BigStr* prog = it.Value();
+    try {
+      result = f(prog);
+    }
+    catch (ParseError* e) {
+      mylib::print_stderr(StrFormat("error: %s", e->reason));
+      continue;
+    }
+    mylib::print_stderr(StrFormat("result = %s", result));
+  }
+}
+
+void run_tests() {
+  List<int>* tmp = nullptr;
+  tmp = NewList<int>(std::initializer_list<int>{1, 2, 3, 4, 5});
+  for (ListIter<int> it(tmp); !it.Done(); it.Next()) {
+    int i = it.Value();
+    IfDemo(i);
+  }
+  mylib::print_stderr(S_Aoo);
+  ExceptDemo();
+}
+
+void run_benchmarks() {
+  int n;
+  BigStr* result = nullptr;
+  int num_exceptions;
+  int i;
+  List<BigStr*>* cases = nullptr;
+  StackRoot _root0(&cases);
+
+  n = 100000;
+  result = S_Aoo;
+  num_exceptions = 0;
+  i = 0;
+  cases = NewList<BigStr*>(std::initializer_list<BigStr*>{S_gva, S_Alb, S_Alb, S_Alb});
+  while (i < n) {
+    for (ListIter<BigStr*> it(cases); !it.Done(); it.Next()) {
+      BigStr* prog = it.Value();
+      try {
+        result = f(prog);
+      }
+      catch (ParseError* e) {
+        num_exceptions += 1;
+        continue;
+      }
+    }
+    i += 1;
+    mylib::MaybeCollect();
+  }
+  mylib::print_stderr(StrFormat("num_exceptions = %d", num_exceptions));
+  mylib::print_stderr(StrFormat("Ran %d iterations of try/except", n));
+}
+
+}  // define namespace control_flow
+
+int main(int argc, char **argv) {
+  gHeap.Init();
+
+  char* b = getenv("BENCHMARK");
+  if (b && strlen(b)) {  // match Python's logic
+    fprintf(stderr, "Benchmarking...\n");
+    control_flow::run_benchmarks();
+  } else {
+    control_flow::run_tests();
+  }
+
+  gHeap.CleanProcessExit();
+}

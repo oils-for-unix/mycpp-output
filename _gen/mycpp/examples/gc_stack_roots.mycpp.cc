@@ -1,0 +1,218 @@
+// _gen/mycpp/examples/gc_stack_roots.mycpp.cc - generated from Python source code
+
+#include "mycpp/runtime.h"
+
+// BEGIN mycpp output
+namespace gc_stack_roots {  // forward declare
+  class ctx_Stasher;
+}
+
+GLOBAL_STR(S_CCy, "OK");
+GLOBAL_STR(S_clt, "bar");
+GLOBAL_STR(S_mos, "bing");
+GLOBAL_STR(S_qgB, "bong");
+GLOBAL_STR(S_tfu, "collect");
+GLOBAL_STR(S_mFj, "context");
+GLOBAL_STR(S_lqB, "foo");
+GLOBAL_STR(S_kel, "indirect");
+GLOBAL_STR(S_eBz, "member");
+GLOBAL_STR(S_Dxe, "no");
+GLOBAL_STR(S_vAF, "not");
+GLOBAL_STR(S_uha, "out");
+GLOBAL_STR(S_BEE, "swept");
+GLOBAL_STR(S_jzk, "watch");
+
+namespace gc_stack_roots {  // declare
+
+void print_list(List<BigStr*>* l);
+void calls_collect();
+void ignore_and_collect(List<BigStr*>* l);
+List<BigStr*>* collect_and_return(List<BigStr*>* l);
+BigStr* collect_and_slice(BigStr* s);
+class ctx_Stasher {
+ public:
+  ctx_Stasher(List<BigStr*>* l);
+  ~ctx_Stasher();
+  List<BigStr*>* l{};
+
+  DISALLOW_COPY_AND_ASSIGN(ctx_Stasher)
+};
+
+void no_collect();
+void simple_collect();
+void indirect_collect();
+void arg_roots();
+void alias();
+void collect_scoped_resource();
+void collect_in_loop();
+void collect_in_comprehension();
+void run_tests();
+void run_benchmarks();
+
+}  // declare namespace gc_stack_roots
+
+namespace gc_stack_roots {  // define
+
+
+void print_list(List<BigStr*>* l) {
+  StackRoot _root0(&l);
+
+  for (ListIter<BigStr*> it(l); !it.Done(); it.Next()) {
+    BigStr* s = it.Value();
+    StackRoot _for(&s  );
+    print(s);
+  }
+}
+
+void calls_collect() {
+  mylib::MaybeCollect();
+}
+
+void ignore_and_collect(List<BigStr*>* l) {
+  StackRoot _root0(&l);
+
+  mylib::MaybeCollect();
+}
+
+List<BigStr*>* collect_and_return(List<BigStr*>* l) {
+  StackRoot _root0(&l);
+
+  mylib::MaybeCollect();
+  return l;
+}
+
+BigStr* collect_and_slice(BigStr* s) {
+  StackRoot _root0(&s);
+
+  mylib::MaybeCollect();
+  return s->slice(1);
+}
+
+ctx_Stasher::ctx_Stasher(List<BigStr*>* l) {
+  gHeap.PushRoot(reinterpret_cast<RawObject**>(&(this->l)));
+  this->l = l;
+}
+
+ctx_Stasher::~ctx_Stasher() {
+  print_list(this->l);
+  gHeap.PopRoot();
+}
+
+void no_collect() {
+  List<BigStr*>* l = nullptr;
+  StackRoot _root0(&l);
+
+  l = NewList<BigStr*>(std::initializer_list<BigStr*>{S_Dxe, S_tfu});
+  print_list(l);
+}
+
+void simple_collect() {
+  List<BigStr*>* l1 = nullptr;
+  List<BigStr*>* l2 = nullptr;
+  StackRoot _root0(&l1);
+  StackRoot _root1(&l2);
+
+  l1 = NewList<BigStr*>(std::initializer_list<BigStr*>{S_lqB, S_clt});
+  l2 = NewList<BigStr*>(std::initializer_list<BigStr*>{S_mos, S_qgB});
+  print_list(l2);
+  if (len(l1)) {
+    mylib::MaybeCollect();
+  }
+  print_list(l1);
+}
+
+void indirect_collect() {
+  List<BigStr*>* l = nullptr;
+  StackRoot _root0(&l);
+
+  l = NewList<BigStr*>(std::initializer_list<BigStr*>{S_kel, S_tfu});
+  calls_collect();
+  print_list(l);
+}
+
+void arg_roots() {
+  List<BigStr*>* l1 = nullptr;
+  List<BigStr*>* l2 = nullptr;
+  StackRoot _root0(&l1);
+  StackRoot _root1(&l2);
+
+  l1 = NewList<BigStr*>(std::initializer_list<BigStr*>{S_CCy});
+  ignore_and_collect(l1);
+  print_list(l1);
+  l2 = collect_and_return(NewList<BigStr*>(std::initializer_list<BigStr*>{S_vAF, S_BEE}));
+  print_list(l2);
+}
+
+void alias() {
+  List<BigStr*>* l1 = nullptr;
+  List<BigStr*>* l2 = nullptr;
+  StackRoot _root0(&l1);
+  StackRoot _root1(&l2);
+
+  l1 = NewList<BigStr*>(std::initializer_list<BigStr*>{S_lqB, S_clt});
+  l2 = l1;
+  mylib::MaybeCollect();
+  print_list(l2);
+}
+
+void collect_scoped_resource() {
+  {  // with
+    ctx_Stasher ctx{NewList<BigStr*>(std::initializer_list<BigStr*>{S_mFj, S_eBz})};
+
+    mylib::MaybeCollect();
+  }
+}
+
+void collect_in_loop() {
+  for (ListIter<BigStr*> it(NewList<BigStr*>(std::initializer_list<BigStr*>{S_jzk, S_uha})); !it.Done(); it.Next()) {
+    BigStr* s = it.Value();
+    StackRoot _for(&s  );
+    mylib::MaybeCollect();
+    print(s);
+  }
+}
+
+void collect_in_comprehension() {
+  List<BigStr*>* l = nullptr;
+  StackRoot _root0(&l);
+
+  l = Alloc<List<BigStr*>>();
+  for (ListIter<BigStr*> it(NewList<BigStr*>(std::initializer_list<BigStr*>{S_lqB, S_clt})); !it.Done(); it.Next()) {
+    BigStr* s = it.Value();
+    l->append(StrFormat("%s", collect_and_slice(s)));
+  }
+  for (ListIter<BigStr*> it(l); !it.Done(); it.Next()) {
+    BigStr* s = it.Value();
+    StackRoot _for(&s  );
+    print(s);
+  }
+}
+
+void run_tests() {
+  no_collect();
+  simple_collect();
+  indirect_collect();
+  arg_roots();
+  alias();
+  collect_scoped_resource();
+}
+
+void run_benchmarks() {
+  ;  // pass
+}
+
+}  // define namespace gc_stack_roots
+
+int main(int argc, char **argv) {
+  gHeap.Init();
+
+  char* b = getenv("BENCHMARK");
+  if (b && strlen(b)) {  // match Python's logic
+    fprintf(stderr, "Benchmarking...\n");
+    gc_stack_roots::run_benchmarks();
+  } else {
+    gc_stack_roots::run_tests();
+  }
+
+  gHeap.CleanProcessExit();
+}

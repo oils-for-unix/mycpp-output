@@ -1,0 +1,82 @@
+// _gen/mycpp/examples/test_globals.mycpp.cc - generated from Python source code
+
+#include "mycpp/runtime.h"
+
+// BEGIN mycpp output
+namespace test_globals {  // forward declare
+  class MyClass;
+}
+
+
+namespace test_globals {  // declare
+
+class MyClass {
+ public:
+  MyClass(int x);
+  void Print();
+  int x{};
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassScanned(0, sizeof(MyClass));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(MyClass)
+};
+
+int g(int x);
+void run_tests();
+void run_benchmarks();
+
+}  // declare namespace test_globals
+
+namespace test_globals {  // define
+
+
+MyClass::MyClass(int x) {
+  this->x = x;
+}
+
+void MyClass::Print() {
+  mylib::print_stderr(StrFormat("x = %d", this->x));
+}
+
+int g(int x) {
+  print(StrFormat("g %d", x));
+  return x;
+}
+
+void run_tests() {
+  test_globals::MyClass* new_obj = nullptr;
+  int unused;
+  (void)unused;
+  StackRoot _root0(&new_obj);
+
+  for (int i = 0; i < 10; ++i) {
+    mylib::MaybeCollect();
+    new_obj = Alloc<MyClass>(42);
+    new_obj->Print();
+  }
+  for (int j = 0; j < 3; ++j) {
+    unused = g(j);
+  }
+}
+
+void run_benchmarks() {
+  FAIL(kNotImplemented);  // Python NotImplementedError
+}
+
+}  // define namespace test_globals
+
+int main(int argc, char **argv) {
+  gHeap.Init();
+
+  char* b = getenv("BENCHMARK");
+  if (b && strlen(b)) {  // match Python's logic
+    fprintf(stderr, "Benchmarking...\n");
+    test_globals::run_benchmarks();
+  } else {
+    test_globals::run_tests();
+  }
+
+  gHeap.CleanProcessExit();
+}

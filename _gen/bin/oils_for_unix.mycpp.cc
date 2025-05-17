@@ -1964,6 +1964,7 @@ class ctx_MaybePure {
  public:
   ctx_MaybePure(vm::_Executor* pure_ex, cmd_eval::CommandEvaluator* cmd_ev);
   ~ctx_MaybePure();
+  void ctx_EXIT();
   vm::_Executor* pure_ex{};
   vm::_Executor* saved{};
   cmd_eval::CommandEvaluator* cmd_ev{};
@@ -7304,6 +7305,7 @@ class ctx_ModuleEval {
  public:
   ctx_ModuleEval(state::Mem* mem, syntax_asdl::CompoundWord* use_loc, Dict<BigStr*, value_asdl::value_t*>* out_dict, List<BigStr*>* out_errors);
   ~ctx_ModuleEval();
+  void ctx_EXIT();
   state::Mem* mem{};
   Dict<BigStr*, value_asdl::value_t*>* out_dict{};
   List<BigStr*>* out_errors{};
@@ -10927,13 +10929,17 @@ ctx_MaybePure::ctx_MaybePure(vm::_Executor* pure_ex, cmd_eval::CommandEvaluator*
   this->cmd_ev = cmd_ev;
 }
 
-ctx_MaybePure::~ctx_MaybePure() {
+void ctx_MaybePure::ctx_EXIT() {
   if (!this->pure_ex) {
     return ;
   }
   this->cmd_ev->shell_ex = this->saved;
   this->cmd_ev->word_ev->shell_ex = this->saved;
   this->cmd_ev->expr_ev->shell_ex = this->saved;
+}
+
+ctx_MaybePure::~ctx_MaybePure() {
+  ctx_EXIT();
   gHeap.PopRoot();
   gHeap.PopRoot();
   gHeap.PopRoot();
@@ -28788,7 +28794,7 @@ ctx_ModuleEval::ctx_ModuleEval(state::Mem* mem, syntax_asdl::CompoundWord* use_l
   mem->debug_stack->append(use_loc);
 }
 
-ctx_ModuleEval::~ctx_ModuleEval() {
+void ctx_ModuleEval::ctx_EXIT() {
   this->mem->debug_stack->pop();
   this->mem->is_main = this->to_restore;
   this->mem->var_stack->set(0, this->saved_frame);
@@ -28822,6 +28828,10 @@ ctx_ModuleEval::~ctx_ModuleEval() {
       this->out_errors->append(StrFormat("__provide__ should be a List, got %s", ui::ValType(provide_val)));
     }
   }
+}
+
+ctx_ModuleEval::~ctx_ModuleEval() {
+  ctx_EXIT();
   gHeap.PopRoot();
   gHeap.PopRoot();
   gHeap.PopRoot();

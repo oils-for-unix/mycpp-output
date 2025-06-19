@@ -121,6 +121,7 @@ namespace io_osh {  // forward declare
   class Echo;
   class MapFile;
   class Cat;
+  class Sleep;
 }
 
 namespace io_ysh {  // forward declare
@@ -251,6 +252,7 @@ namespace read_osh {  // forward declare
 
 namespace readline_osh {  // forward declare
   class ctx_Keymap;
+  class ctx_EnvVars;
   class BindXCallback;
   class Bind;
   class History;
@@ -705,6 +707,7 @@ GLOBAL_STR(S_eqo, "\"data\":");
 GLOBAL_STR(S_EDa, "\"type\":");
 GLOBAL_STR(S_qEd, "#");
 GLOBAL_STR(S_eyr, "# +");
+GLOBAL_STR(S_gov, "#.qtt8");
 GLOBAL_STR(S_Czx, "$");
 GLOBAL_STR(S_eaw, "$(");
 GLOBAL_STR(S_igC, "$Argc");
@@ -715,6 +718,7 @@ GLOBAL_STR(S_dkr, "%");
 GLOBAL_STR(S_bpf, "%%");
 GLOBAL_STR(S_Dia, "%+");
 GLOBAL_STR(S_aAh, "%-");
+GLOBAL_STR(S_mEv, "%-8s%-12s%-12s%s");
 GLOBAL_STR(S_BDD, "%5s %15s %15s %7s  %s");
 GLOBAL_STR(S_aia, "%H:%M");
 GLOBAL_STR(S_rdE, "%X");
@@ -744,13 +748,17 @@ GLOBAL_STR(S_gpk, "--");
 GLOBAL_STR(S_iEq, "---caper");
 GLOBAL_STR(S_FaA, "--all-for-testing");
 GLOBAL_STR(S_Ajh, "--all-provided");
+GLOBAL_STR(S_ucl, "--builtin");
 GLOBAL_STR(S_pgr, "--dir");
 GLOBAL_STR(S_rxp, "--exists");
+GLOBAL_STR(S_AEn, "--extern");
 GLOBAL_STR(S_cyo, "--false");
 GLOBAL_STR(S_ugu, "--file");
 GLOBAL_STR(S_Aua, "--help");
 GLOBAL_STR(S_Arv, "--one-pass-parse requires noexec (-n)");
 GLOBAL_STR(S_fic, "--pick");
+GLOBAL_STR(S_ybE, "--proc");
+GLOBAL_STR(S_ugu_1, "--sh-func");
 GLOBAL_STR(S_ukB, "--symlink");
 GLOBAL_STR(S_bAm, "--true");
 GLOBAL_STR(S_caA, "--version");
@@ -1027,6 +1035,7 @@ GLOBAL_STR(S_rbb, "Invalid function name");
 GLOBAL_STR(S_xco, "Invalid here doc delimiter");
 GLOBAL_STR(S_dDj, "Invalid hex escape in YSH string (must be \\xHH)");
 GLOBAL_STR(S_myB, "Invalid printf format character");
+GLOBAL_STR(S_yzg, "Invalid quoted word part in YSH (OILS-ERR-17)");
 GLOBAL_STR(S_ucF, "Invalid start of UTF-8 sequence");
 GLOBAL_STR(S_apz, "Invalid token after redirect operator");
 GLOBAL_STR(S_qDr, "Invalid token in bash regex");
@@ -1134,6 +1143,8 @@ GLOBAL_STR(S_wgE, "Process subs aren't allowed in pure mode (OILS-ERR-204)");
 GLOBAL_STR(S_jbj, "Process subs not allowed here because status wouldn't be checked (strict_errexit)");
 GLOBAL_STR(S_Ahj, "Pure JSON does not accept j\"\" prefix");
 GLOBAL_STR(S_lBE, "Quoted range char can't be empty");
+GLOBAL_STR(S_BkF, "READLINE_LINE");
+GLOBAL_STR(S_cbE, "READLINE_POINT");
 GLOBAL_STR(S_wma, "REPLY");
 GLOBAL_STR(S_AEu, "RETURN");
 GLOBAL_STR(S_fEm, "RHS must be Str");
@@ -1171,6 +1182,7 @@ GLOBAL_STR(S_npc, "Slice length: Add explicit zero, or omit : for N (strict_pars
 GLOBAL_STR(S_sDc, "Slice op expected Str or BashArray");
 GLOBAL_STR(S_nli, "Source");
 GLOBAL_STR(S_ezD, "Space required before (");
+GLOBAL_STR(S_vte, "Special builtins can't have prefix bindings (OILS-ERR-302)");
 GLOBAL_STR(S_bgA, "Splat not currently supported");
 GLOBAL_STR(S_etk, "Splice ");
 GLOBAL_STR(S_fFz, "Spread expected a Dict");
@@ -1193,7 +1205,6 @@ GLOBAL_STR(S_Esj, "TODO: --all-for testing not implemented");
 GLOBAL_STR(S_Awz, "TODO: --all-provided not implemented");
 GLOBAL_STR(S_rsr, "TODO: @{.myproc builtin sub}");
 GLOBAL_STR(S_vtm, "TODO: extern");
-GLOBAL_STR(S_ksm, "TODO: invoke");
 GLOBAL_STR(S_Ejt, "TODO:PARSE");
 GLOBAL_STR(S_afz, "TODO:signals");
 GLOBAL_STR(S_wqm, "TSV8 format not implemented");
@@ -1400,12 +1411,13 @@ GLOBAL_STR(S_CgA, "cur");
 GLOBAL_STR(S_CBu, "cword");
 GLOBAL_STR(S_Crn, "d");
 GLOBAL_STR(S_qnE, "data segment size");
-GLOBAL_STR(S_yzg, "debug_stack");
+GLOBAL_STR(S_yzg_1, "debug_stack");
 GLOBAL_STR(S_enx, "declare -");
 GLOBAL_STR(S_vlb, "default");
 GLOBAL_STR(S_cfl, "define");
 GLOBAL_STR(S_nFj, "define expected a name");
 GLOBAL_STR(S_Fuj, "deps");
+GLOBAL_STR(S_xnE, "detail");
 GLOBAL_STR(S_wlA, "dict");
 GLOBAL_STR(S_wse, "dict() expected Dict, Obj, or BashAssoc");
 GLOBAL_STR(S_Coo, "digit");
@@ -1457,9 +1469,12 @@ GLOBAL_STR(S_Ecv, "expected a -c string, like sh -c");
 GLOBAL_STR(S_dae, "expected a block arg");
 GLOBAL_STR(S_top, "expected a command to run");
 GLOBAL_STR(S_CBb, "expected a message to display");
+GLOBAL_STR(S_nrF, "expected a number of seconds");
+GLOBAL_STR(S_iix, "expected arguments");
 GLOBAL_STR(S_Bvq, "expected at least 1 arg, or a literal block { }");
 GLOBAL_STR(S_twC, "expected expr to eval to a Str");
 GLOBAL_STR(S_pDm, "expected flag like --pick after module path");
+GLOBAL_STR(S_tbC, "expected one or more flags like --proc --sh-func --builtin --extern");
 GLOBAL_STR(S_yBg, "expected pattern to be Eggex or Str");
 GLOBAL_STR(S_sdz, "expected separator to be Eggex or Str");
 GLOBAL_STR(S_ACu, "expected substitution to be Str or Expr");
@@ -1555,6 +1570,7 @@ GLOBAL_STR(S_ctf, "json_read");
 GLOBAL_STR(S_EFp, "json_write");
 GLOBAL_STR(S_zcr, "keys");
 GLOBAL_STR(S_evo, "keyword");
+GLOBAL_STR(S_oqC, "kind");
 GLOBAL_STR(S_zfa, "lastIndexOf");
 GLOBAL_STR(S_omo, "leftMatch");
 GLOBAL_STR(S_fDC, "len");
@@ -1621,6 +1637,8 @@ GLOBAL_STR(S_fmh, "prev");
 GLOBAL_STR(S_nld, "print");
 GLOBAL_STR(S_Foo, "printf");
 GLOBAL_STR(S_kjD, "printf arg");
+GLOBAL_STR(S_iFb, "private");
+GLOBAL_STR(S_pkd, "private_");
 GLOBAL_STR(S_aFi, "proc");
 GLOBAL_STR(S_dsk, "proc is a YSH keyword, but this is OSH.");
 GLOBAL_STR(S_qdr, "proc_name\tdoc_comment");
@@ -1677,6 +1695,7 @@ GLOBAL_STR(S_riF, "setVar");
 GLOBAL_STR(S_uem, "setopt");
 GLOBAL_STR(S_scw, "setvar ");
 GLOBAL_STR(S_wiE, "sh");
+GLOBAL_STR(S_rrx, "sh-func");
 GLOBAL_STR(S_jvC, "shSplit");
 GLOBAL_STR(S_jlb, "shell functions can't be defined inside proc or func");
 GLOBAL_STR(S_ozu, "shell {");
@@ -1687,13 +1706,14 @@ GLOBAL_STR(S_Ajx, "should only have 3 arguments or fewer (simple_test_builtin)")
 GLOBAL_STR(S_bBe, "shvar");
 GLOBAL_STR(S_Cko, "shvarGet");
 GLOBAL_STR(S_wzk, "signal");
+GLOBAL_STR(S_dws, "sleep");
 GLOBAL_STR(S_vfo, "slowc");
 GLOBAL_STR(S_cmd, "source");
 GLOBAL_STR(S_uiC, "source-guard");
 GLOBAL_STR(S_vcp, "sourceCode");
 GLOBAL_STR(S_gxr, "source_name");
 GLOBAL_STR(S_iya, "space");
-GLOBAL_STR(S_mcr, "special ");
+GLOBAL_STR(S_Avn, "special");
 GLOBAL_STR(S_umv, "split");
 GLOBAL_STR(S_BDe, "stack size");
 GLOBAL_STR(S_Ekj, "stacks_");
@@ -1868,6 +1888,7 @@ class _Executor {
   void CheckCircularDeps();
   int RunSimpleCommand(cmd_value::Argv* cmd_val, runtime_asdl::CommandStatus* cmd_st, int run_flags);
   virtual int _RunSimpleCommand(BigStr* arg0, syntax_asdl::loc_t* arg0_loc, cmd_value::Argv* cmd_val, runtime_asdl::CommandStatus* cmd_st, int run_flags);
+  virtual int RunExternal(BigStr* arg0, syntax_asdl::loc_t* arg0_loc, cmd_value::Argv* cmd_val, runtime_asdl::CommandStatus* cmd_st, int run_flags);
   int RunBuiltin(int builtin_id, cmd_value::Argv* cmd_val);
   int _RunBuiltinProc(vm::_Builtin* builtin_proc, cmd_value::Argv* cmd_val);
   int _RunInvokable(value_asdl::value_t* proc_val, value_asdl::Obj* self_obj, syntax_asdl::loc_t* arg0_loc, cmd_value::Argv* cmd_val);
@@ -3358,6 +3379,27 @@ class Cat : public ::vm::_Builtin {
   DISALLOW_COPY_AND_ASSIGN(Cat)
 };
 
+class Sleep : public ::vm::_Builtin {
+ public:
+  Sleep(cmd_eval::CommandEvaluator* cmd_ev, iolib::SignalSafe* signal_safe);
+  virtual int Run(cmd_value::Argv* cmd_val);
+
+  cmd_eval::CommandEvaluator* cmd_ev{};
+  iolib::SignalSafe* signal_safe{};
+  
+  static constexpr uint32_t field_mask() {
+    return ::vm::_Builtin::field_mask()
+         | maskbit(offsetof(Sleep, cmd_ev))
+         | maskbit(offsetof(Sleep, signal_safe));
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(Sleep));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(Sleep)
+};
+
 
 }  // declare namespace io_osh
 
@@ -3570,21 +3612,22 @@ class ShellFile : public ::vm::_Builtin {
 };
 
 void _PrintFreeForm(Tuple3<BigStr*, BigStr*, BigStr*>* row);
-void _PrintEntry(arg_types::type* arg, Tuple3<BigStr*, BigStr*, BigStr*>* row);
+extern BigStr* _TABLE_ROW_FMT;
+void _PrintTableRow(Tuple3<BigStr*, BigStr*, BigStr*>* row);
 class Command : public ::vm::_Builtin {
  public:
-  Command(vm::_Executor* shell_ex, state::Procs* funcs, Dict<BigStr*, BigStr*>* aliases, executor::SearchPath* search_path);
+  Command(vm::_Executor* shell_ex, state::Procs* procs, Dict<BigStr*, BigStr*>* aliases, executor::SearchPath* search_path);
   virtual int Run(cmd_value::Argv* cmd_val);
 
   Dict<BigStr*, BigStr*>* aliases{};
-  state::Procs* funcs{};
+  state::Procs* procs{};
   executor::SearchPath* search_path{};
   vm::_Executor* shell_ex{};
   
   static constexpr uint32_t field_mask() {
     return ::vm::_Builtin::field_mask()
          | maskbit(offsetof(Command, aliases))
-         | maskbit(offsetof(Command, funcs))
+         | maskbit(offsetof(Command, procs))
          | maskbit(offsetof(Command, search_path))
          | maskbit(offsetof(Command, shell_ex));
   }
@@ -3641,19 +3684,24 @@ class RunProc : public ::vm::_Builtin {
   DISALLOW_COPY_AND_ASSIGN(RunProc)
 };
 
+int _LookupAnyBuiltin(BigStr* name);
 class Invoke : public ::vm::_Builtin {
  public:
-  Invoke(vm::_Executor* shell_ex, state::Procs* procs, ui::ErrorFormatter* errfmt);
+  Invoke(vm::_Executor* shell_ex, state::Procs* procs, Dict<BigStr*, BigStr*>* aliases, executor::SearchPath* search_path, ui::ErrorFormatter* errfmt);
   virtual int Run(cmd_value::Argv* cmd_val);
 
+  Dict<BigStr*, BigStr*>* aliases{};
   ui::ErrorFormatter* errfmt{};
   state::Procs* procs{};
+  executor::SearchPath* search_path{};
   vm::_Executor* shell_ex{};
   
   static constexpr uint32_t field_mask() {
     return ::vm::_Builtin::field_mask()
+         | maskbit(offsetof(Invoke, aliases))
          | maskbit(offsetof(Invoke, errfmt))
          | maskbit(offsetof(Invoke, procs))
+         | maskbit(offsetof(Invoke, search_path))
          | maskbit(offsetof(Invoke, shell_ex));
   }
 
@@ -3687,22 +3735,23 @@ class Extern : public ::vm::_Builtin {
   DISALLOW_COPY_AND_ASSIGN(Extern)
 };
 
-List<Tuple3<BigStr*, BigStr*, BigStr*>*>* _ResolveName(BigStr* name, state::Procs* procs, Dict<BigStr*, BigStr*>* aliases, executor::SearchPath* search_path, bool do_all);
+List<Tuple3<BigStr*, BigStr*, BigStr*>*>* _ResolveName(BigStr* name, state::Procs* procs, Dict<BigStr*, BigStr*>* aliases, executor::SearchPath* search_path, bool do_all, bool do_private = false);
 class Type : public ::vm::_Builtin {
  public:
-  Type(state::Procs* funcs, Dict<BigStr*, BigStr*>* aliases, executor::SearchPath* search_path, ui::ErrorFormatter* errfmt);
+  Type(state::Procs* procs, Dict<BigStr*, BigStr*>* aliases, executor::SearchPath* search_path, ui::ErrorFormatter* errfmt);
+  void _PrintEntry(arg_types::type* arg, Tuple3<BigStr*, BigStr*, BigStr*>* row);
   virtual int Run(cmd_value::Argv* cmd_val);
 
   Dict<BigStr*, BigStr*>* aliases{};
   ui::ErrorFormatter* errfmt{};
-  state::Procs* funcs{};
+  state::Procs* procs{};
   executor::SearchPath* search_path{};
   
   static constexpr uint32_t field_mask() {
     return ::vm::_Builtin::field_mask()
          | maskbit(offsetof(Type, aliases))
          | maskbit(offsetof(Type, errfmt))
-         | maskbit(offsetof(Type, funcs))
+         | maskbit(offsetof(Type, procs))
          | maskbit(offsetof(Type, search_path));
   }
 
@@ -4668,6 +4717,7 @@ class Wait : public ::vm::_Builtin {
   int _Run(cmd_value::Argv* cmd_val);
 
   ui::ErrorFormatter* errfmt{};
+  optview::Exec* exec_opts{};
   process::JobList* job_list{};
   state::Mem* mem{};
   dev::Tracer* tracer{};
@@ -4676,6 +4726,7 @@ class Wait : public ::vm::_Builtin {
   static constexpr uint32_t field_mask() {
     return ::vm::_Builtin::field_mask()
          | maskbit(offsetof(Wait, errfmt))
+         | maskbit(offsetof(Wait, exec_opts))
          | maskbit(offsetof(Wait, job_list))
          | maskbit(offsetof(Wait, mem))
          | maskbit(offsetof(Wait, tracer))
@@ -5082,14 +5133,27 @@ class ctx_Keymap {
   DISALLOW_COPY_AND_ASSIGN(ctx_Keymap)
 };
 
+class ctx_EnvVars {
+ public:
+  ctx_EnvVars(state::Mem* mem, Dict<BigStr*, BigStr*>* env_vars);
+  ~ctx_EnvVars();
+  state::Mem* mem{};
+  Dict<BigStr*, BigStr*>* env_vars{};
+
+  DISALLOW_COPY_AND_ASSIGN(ctx_EnvVars)
+};
+
 class BindXCallback {
  public:
-  BindXCallback(meta_oils::Eval* eval);
-  Tuple3<int, BigStr*, BigStr*> __call__(BigStr* cmd, BigStr* line_buffer, int point);
+  BindXCallback(meta_oils::Eval* eval, state::Mem* mem, ui::ErrorFormatter* errfmt);
+  Tuple3<int, BigStr*, int> __call__(BigStr* cmd, BigStr* line_buffer, int point);
+  BigStr* _get_rl_env_var(BigStr* envvar_name);
   meta_oils::Eval* eval{};
+  state::Mem* mem{};
+  ui::ErrorFormatter* errfmt{};
 
   static constexpr ObjHeader obj_header() {
-    return ObjHeader::ClassScanned(1, sizeof(BindXCallback));
+    return ObjHeader::ClassScanned(3, sizeof(BindXCallback));
   }
 
   DISALLOW_COPY_AND_ASSIGN(BindXCallback)
@@ -5097,14 +5161,13 @@ class BindXCallback {
 
 class Bind : public ::vm::_Builtin {
  public:
-  Bind(py_readline::Readline* readline, ui::ErrorFormatter* errfmt, state::Mem* mem, readline_osh::BindXCallback* bindx_cb);
+  Bind(py_readline::Readline* readline, ui::ErrorFormatter* errfmt, readline_osh::BindXCallback* bindx_cb);
   virtual int Run(cmd_value::Argv* cmd_val);
   void _BindShellCmd(BigStr* bindseq);
 
   readline_osh::BindXCallback* bindx_cb{};
   ui::ErrorFormatter* errfmt{};
   List<BigStr*>* exclusive_flags{};
-  state::Mem* mem{};
   py_readline::Readline* readline{};
   
   static constexpr uint32_t field_mask() {
@@ -5112,7 +5175,6 @@ class Bind : public ::vm::_Builtin {
          | maskbit(offsetof(Bind, bindx_cb))
          | maskbit(offsetof(Bind, errfmt))
          | maskbit(offsetof(Bind, exclusive_flags))
-         | maskbit(offsetof(Bind, mem))
          | maskbit(offsetof(Bind, readline));
   }
 
@@ -6376,6 +6438,7 @@ class ShellExecutor : public ::vm::_Executor {
   ShellExecutor(state::Mem* mem, optview::Exec* exec_opts, state::MutableOpts* mutable_opts, state::Procs* procs, hay_ysh::HayState* hay_state, Dict<int, vm::_Builtin*>* builtins, dev::Tracer* tracer, ui::ErrorFormatter* errfmt, executor::SearchPath* search_path, process::ExternalProgram* ext_prog, process::Waiter* waiter, process::JobControl* job_control, process::JobList* job_list, process::FdState* fd_state, trap_osh::TrapState* trap_state);
   process::Process* _MakeProcess(syntax_asdl::command_t* node, bool inherit_errexit, bool inherit_errtrace);
   virtual int _RunSimpleCommand(BigStr* arg0, syntax_asdl::loc_t* arg0_loc, cmd_value::Argv* cmd_val, runtime_asdl::CommandStatus* cmd_st, int run_flags);
+  virtual int RunExternal(BigStr* arg0, syntax_asdl::loc_t* arg0_loc, cmd_value::Argv* cmd_val, runtime_asdl::CommandStatus* cmd_st, int run_flags);
   virtual int RunBackgroundJob(syntax_asdl::command_t* node);
   virtual void RunPipeline(command::Pipeline* node, runtime_asdl::CommandStatus* status_out);
   virtual int RunSubshell(syntax_asdl::command_t* node);
@@ -7454,6 +7517,7 @@ class Procs {
   bool IsProc(BigStr* name);
   bool IsInvokableObj(BigStr* name);
   List<BigStr*>* InvokableNames();
+  Tuple2<value_asdl::value_t*, value_asdl::Obj*> GetProc(BigStr* name);
   Tuple2<value_asdl::value_t*, value_asdl::Obj*> GetInvokable(BigStr* name);
   state::Mem* mem{};
   Dict<BigStr*, value::Proc*>* sh_funcs{};
@@ -8775,7 +8839,7 @@ syntax_asdl::command_t* _HasManyStatuses(syntax_asdl::command_t* node);
 value_asdl::value_t* ListInitializeTarget(value_asdl::value_t* old_val, bool has_plus, optview::Exec* exec_opts, syntax_asdl::loc_t* blame_loc, bool destructive = true);
 void ListInitialize(value_asdl::value_t* val, value::InitializerList* initializer, bool has_plus, optview::Exec* exec_opts, syntax_asdl::loc_t* blame_loc, sh_expr_eval::ArithEvaluator* arith_ev);
 value_asdl::value_t* PlusEquals(value_asdl::value_t* old_val, value_asdl::value_t* val);
-bool _IsSpecialBuiltin(runtime_asdl::cmd_value_t* cmd_val, bool posix_mode);
+bool _PrefixBindingsPersist(runtime_asdl::cmd_value_t* cmd_val);
 int _ToInteger(BigStr* s);
 class ControlFlowBuiltin : public ::vm::_Builtin {
  public:
@@ -9632,6 +9696,7 @@ class CompletionWordEvaluator : public ::word_eval::AbstractWordEvaluator {
 namespace word_parse {  // declare
 
 extern List<id_kind_asdl::Kind_t>* KINDS_THAT_END_WORDS;
+bool _IsValidYshWord(syntax_asdl::CompoundWord* w);
 class WordEmitter {
  public:
   WordEmitter();
@@ -10715,6 +10780,15 @@ int _Executor::RunSimpleCommand(cmd_value::Argv* cmd_val, runtime_asdl::CommandS
 }
 
 int _Executor::_RunSimpleCommand(BigStr* arg0, syntax_asdl::loc_t* arg0_loc, cmd_value::Argv* cmd_val, runtime_asdl::CommandStatus* cmd_st, int run_flags) {
+  StackRoot _root0(&arg0);
+  StackRoot _root1(&arg0_loc);
+  StackRoot _root2(&cmd_val);
+  StackRoot _root3(&cmd_st);
+
+  FAIL(kNotImplemented);  // Python NotImplementedError
+}
+
+int _Executor::RunExternal(BigStr* arg0, syntax_asdl::loc_t* arg0_loc, cmd_value::Argv* cmd_val, runtime_asdl::CommandStatus* cmd_st, int run_flags) {
   StackRoot _root0(&arg0);
   StackRoot _root1(&arg0_loc);
   StackRoot _root2(&cmd_val);
@@ -14657,6 +14731,72 @@ int Cat::Run(cmd_value::Argv* cmd_val) {
   return 0;
 }
 
+Sleep::Sleep(cmd_eval::CommandEvaluator* cmd_ev, iolib::SignalSafe* signal_safe) : ::vm::_Builtin() {
+  this->cmd_ev = cmd_ev;
+  this->signal_safe = signal_safe;
+}
+
+int Sleep::Run(cmd_value::Argv* cmd_val) {
+  args::Reader* arg_r = nullptr;
+  BigStr* duration = nullptr;
+  syntax_asdl::loc_t* duration_loc = nullptr;
+  BigStr* msg = nullptr;
+  double total_seconds;
+  double deadline;
+  double secs;
+  int err_num;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&duration);
+  StackRoot _root3(&duration_loc);
+  StackRoot _root4(&msg);
+
+  Tuple2<args::_Attributes*, args::Reader*> tup6 = flag_util::ParseCmdVal(S_dws, cmd_val);
+  arg_r = tup6.at1();
+  Tuple2<BigStr*, syntax_asdl::loc_t*> tup7 = arg_r->Peek2();
+  duration = tup7.at0();
+  duration_loc = tup7.at1();
+  if (duration == nullptr) {
+    throw Alloc<error::Usage>(S_nrF, cmd_val->arg_locs->at(0));
+  }
+  arg_r->Next();
+  arg_r->Done();
+  msg = StrFormat("got invalid number of seconds %r", duration);
+  try {
+    total_seconds = to_float(duration);
+  }
+  catch (ValueError*) {
+    throw Alloc<error::Usage>(msg, duration_loc);
+  }
+  if (total_seconds < 0) {
+    throw Alloc<error::Usage>(msg, duration_loc);
+  }
+  deadline = (time_::time() + total_seconds);
+  secs = total_seconds;
+  while (true) {
+    err_num = libc::sleep_until_error(secs);
+    if (err_num == 0) {
+      break;
+    }
+    else {
+      if (err_num == EINTR) {
+        this->cmd_ev->RunPendingTraps();
+        if (this->signal_safe->PollUntrappedSigInt()) {
+          throw Alloc<KeyboardInterrupt>();
+        }
+      }
+      else {
+        break;
+      }
+    }
+    secs = (deadline - time_::time());
+    if (secs <= 0) {
+      break;
+    }
+  }
+  return 0;
+}
+
 }  // define namespace io_osh
 
 namespace io_ysh {  // define
@@ -15093,6 +15233,7 @@ using syntax_asdl::source;
 using syntax_asdl::loc;
 using syntax_asdl::loc_t;
 using syntax_asdl::CompoundWord;
+using syntax_asdl::command_e;
 using value_asdl::Obj;
 using value_asdl::value;
 using value_asdl::value_t;
@@ -15623,8 +15764,8 @@ void _PrintFreeForm(Tuple3<BigStr*, BigStr*, BigStr*>* row) {
       what = StrFormat("an alias for %s", j8_lite::EncodeString(detail, true));
     }
     else {
-      if ((str_equals(kind, S_aFi) || str_equals(kind, S_jvb))) {
-        what = StrFormat("a YSH %s", kind);
+      if (str_equals(kind, S_aFi)) {
+        what = StrFormat("a YSH %s", detail != nullptr ? detail : kind);
       }
       else {
         if (str_equals(kind, S_utc)) {
@@ -15632,7 +15773,7 @@ void _PrintFreeForm(Tuple3<BigStr*, BigStr*, BigStr*>* row) {
             prefix = S_Aoo;
           }
           else {
-            prefix = S_mcr;
+            prefix = str_concat(detail, S_yfw);
           }
           what = StrFormat("a %sshell %s", prefix, kind);
         }
@@ -15644,36 +15785,44 @@ void _PrintFreeForm(Tuple3<BigStr*, BigStr*, BigStr*>* row) {
   }
   print(StrFormat("%s is %s", name, what));
 }
+BigStr* _TABLE_ROW_FMT = S_mEv;
 
-void _PrintEntry(arg_types::type* arg, Tuple3<BigStr*, BigStr*, BigStr*>* row) {
+void _PrintTableRow(Tuple3<BigStr*, BigStr*, BigStr*>* row) {
+  BigStr* name = nullptr;
   BigStr* kind = nullptr;
   BigStr* detail = nullptr;
-  StackRoot _root0(&arg);
-  StackRoot _root1(&row);
+  BigStr* name_row = nullptr;
+  BigStr* kind_row = nullptr;
+  BigStr* detail_row = nullptr;
+  StackRoot _root0(&row);
+  StackRoot _root1(&name);
   StackRoot _root2(&kind);
   StackRoot _root3(&detail);
+  StackRoot _root4(&name_row);
+  StackRoot _root5(&kind_row);
+  StackRoot _root6(&detail_row);
 
   Tuple3<BigStr*, BigStr*, BigStr*>* tup13 = row;
+  name = tup13->at0();
   kind = tup13->at1();
   detail = tup13->at2();
-  if (arg->t) {
-    print(kind);
+  name_row = j8_lite::EncodeString(name, true);
+  kind_row = kind;
+  if (str_equals(kind, S_cgg)) {
+    kind_row = S_rrx;
   }
   else {
-    if (arg->p) {
-      if (str_equals(kind, S_xeh)) {
-        print(detail);
-      }
-    }
-    else {
-      _PrintFreeForm(row);
+    if (str_equals(kind, S_xeh)) {
+      kind_row = S_Fvh;
     }
   }
+  detail_row = detail != nullptr ? j8_lite::EncodeString(detail, true) : S_Bjq;
+  print(StrFormat(_TABLE_ROW_FMT, S_Aoo, name_row, kind_row, detail_row));
 }
 
-Command::Command(vm::_Executor* shell_ex, state::Procs* funcs, Dict<BigStr*, BigStr*>* aliases, executor::SearchPath* search_path) {
+Command::Command(vm::_Executor* shell_ex, state::Procs* procs, Dict<BigStr*, BigStr*>* aliases, executor::SearchPath* search_path) {
   this->shell_ex = shell_ex;
-  this->funcs = funcs;
+  this->procs = procs;
   this->aliases = aliases;
   this->search_path = search_path;
 }
@@ -15688,7 +15837,8 @@ int Command::Run(cmd_value::Argv* cmd_val) {
   List<Tuple3<BigStr*, BigStr*, BigStr*>*>* r = nullptr;
   Tuple3<BigStr*, BigStr*, BigStr*>* row = nullptr;
   BigStr* name = nullptr;
-  BigStr* path = nullptr;
+  BigStr* kind = nullptr;
+  BigStr* detail = nullptr;
   cmd_value::Argv* cmd_val2 = nullptr;
   runtime_asdl::CommandStatus* cmd_st = nullptr;
   int run_flags;
@@ -15701,9 +15851,10 @@ int Command::Run(cmd_value::Argv* cmd_val) {
   StackRoot _root6(&r);
   StackRoot _root7(&row);
   StackRoot _root8(&name);
-  StackRoot _root9(&path);
-  StackRoot _root10(&cmd_val2);
-  StackRoot _root11(&cmd_st);
+  StackRoot _root9(&kind);
+  StackRoot _root10(&detail);
+  StackRoot _root11(&cmd_val2);
+  StackRoot _root12(&cmd_st);
 
   Tuple2<args::_Attributes*, args::Reader*> tup14 = flag_util::ParseCmdVal(S_zij, cmd_val, true);
   attrs = tup14.at0();
@@ -15717,15 +15868,16 @@ int Command::Run(cmd_value::Argv* cmd_val) {
     for (ListIter<BigStr*> it(argv); !it.Done(); it.Next()) {
       BigStr* argument = it.Value();
       StackRoot _for(&argument    );
-      r = _ResolveName(argument, this->funcs, this->aliases, this->search_path, false);
+      r = _ResolveName(argument, this->procs, this->aliases, this->search_path, false);
       if (len(r)) {
         row = r->at(0);
         if (arg->v) {
           Tuple3<BigStr*, BigStr*, BigStr*>* tup16 = row;
           name = tup16->at0();
-          path = tup16->at2();
-          if (path != nullptr) {
-            print(path);
+          kind = tup16->at1();
+          detail = tup16->at2();
+          if (str_equals(kind, S_xeh)) {
+            print(detail);
           }
           else {
             print(name);
@@ -15766,25 +15918,36 @@ Builtin::Builtin(vm::_Executor* shell_ex, ui::ErrorFormatter* errfmt) {
 }
 
 int Builtin::Run(cmd_value::Argv* cmd_val) {
+  args::_Attributes* attrs = nullptr;
+  args::Reader* arg_r = nullptr;
+  List<BigStr*>* argv = nullptr;
+  List<syntax_asdl::CompoundWord*>* locs = nullptr;
   BigStr* name = nullptr;
   int to_run;
   syntax_asdl::CompoundWord* location = nullptr;
   cmd_value::Argv* cmd_val2 = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&name);
-  StackRoot _root2(&location);
-  StackRoot _root3(&cmd_val2);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&argv);
+  StackRoot _root4(&locs);
+  StackRoot _root5(&name);
+  StackRoot _root6(&location);
+  StackRoot _root7(&cmd_val2);
 
-  if (len(cmd_val->argv) == 1) {
+  Tuple2<args::_Attributes*, args::Reader*> tup17 = flag_util::ParseCmdVal(S_utc, cmd_val, true);
+  attrs = tup17.at0();
+  arg_r = tup17.at1();
+  Tuple2<List<BigStr*>*, List<syntax_asdl::CompoundWord*>*> tup18 = arg_r->Rest2();
+  argv = tup18.at0();
+  locs = tup18.at1();
+  if (len(argv) == 0) {
     return 0;
   }
-  name = cmd_val->argv->at(1);
-  to_run = consts::LookupNormalBuiltin(name);
+  name = argv->at(0);
+  to_run = _LookupAnyBuiltin(name);
   if (to_run == consts::NO_INDEX) {
-    to_run = consts::LookupSpecialBuiltin(name);
-  }
-  if (to_run == consts::NO_INDEX) {
-    location = cmd_val->arg_locs->at(1);
+    location = locs->at(0);
     if (consts::LookupAssignBuiltin(name) != consts::NO_INDEX) {
       this->errfmt->Print_(S_yvf, location);
     }
@@ -15821,17 +15984,17 @@ int RunProc::Run(cmd_value::Argv* cmd_val) {
   StackRoot _root6(&cmd_val2);
   StackRoot _root7(&cmd_st);
 
-  Tuple2<args::_Attributes*, args::Reader*> tup17 = flag_util::ParseCmdVal(S_pkv, cmd_val, true);
-  arg_r = tup17.at1();
-  Tuple2<List<BigStr*>*, List<syntax_asdl::CompoundWord*>*> tup18 = arg_r->Rest2();
-  argv = tup18.at0();
-  locs = tup18.at1();
+  Tuple2<args::_Attributes*, args::Reader*> tup19 = flag_util::ParseCmdVal(S_pkv, cmd_val, true);
+  arg_r = tup19.at1();
+  Tuple2<List<BigStr*>*, List<syntax_asdl::CompoundWord*>*> tup20 = arg_r->Rest2();
+  argv = tup20.at0();
+  locs = tup20.at1();
   if (len(argv) == 0) {
     throw Alloc<error::Usage>(S_sFk, loc::Missing);
   }
   name = argv->at(0);
-  Tuple2<value_asdl::value_t*, value_asdl::Obj*> tup19 = this->procs->GetInvokable(name);
-  proc = tup19.at0();
+  Tuple2<value_asdl::value_t*, value_asdl::Obj*> tup21 = this->procs->GetInvokable(name);
+  proc = tup21.at0();
   if (!proc) {
     this->errfmt->PrintMessage(StrFormat("runproc: no invokable named %r", name));
     return 1;
@@ -15842,21 +16005,122 @@ int RunProc::Run(cmd_value::Argv* cmd_val) {
   return this->shell_ex->RunSimpleCommand(cmd_val2, cmd_st, run_flags);
 }
 
-Invoke::Invoke(vm::_Executor* shell_ex, state::Procs* procs, ui::ErrorFormatter* errfmt) {
+int _LookupAnyBuiltin(BigStr* name) {
+  int to_run;
+  StackRoot _root0(&name);
+
+  to_run = consts::LookupNormalBuiltin(name);
+  if (to_run == consts::NO_INDEX) {
+    to_run = consts::LookupSpecialBuiltin(name);
+  }
+  if (to_run == consts::NO_INDEX) {
+    to_run = consts::LookupPrivateBuiltin(name);
+  }
+  return to_run;
+}
+
+Invoke::Invoke(vm::_Executor* shell_ex, state::Procs* procs, Dict<BigStr*, BigStr*>* aliases, executor::SearchPath* search_path, ui::ErrorFormatter* errfmt) {
   this->shell_ex = shell_ex;
   this->procs = procs;
+  this->aliases = aliases;
+  this->search_path = search_path;
   this->errfmt = errfmt;
 }
 
 int Invoke::Run(cmd_value::Argv* cmd_val) {
+  args::_Attributes* attrs = nullptr;
   args::Reader* arg_r = nullptr;
+  arg_types::invoke* arg = nullptr;
+  List<BigStr*>* argv = nullptr;
+  List<syntax_asdl::CompoundWord*>* locs = nullptr;
+  List<Tuple3<BigStr*, BigStr*, BigStr*>*>* r = nullptr;
+  cmd_value::Argv* cmd_val2 = nullptr;
+  BigStr* name = nullptr;
+  syntax_asdl::CompoundWord* location = nullptr;
+  List<BigStr*>* tried = nullptr;
+  value_asdl::value_t* proc_val = nullptr;
+  value_asdl::Obj* self_obj = nullptr;
+  value::Proc* sh_func = nullptr;
+  int to_run;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&arg_r);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&argv);
+  StackRoot _root5(&locs);
+  StackRoot _root6(&r);
+  StackRoot _root7(&cmd_val2);
+  StackRoot _root8(&name);
+  StackRoot _root9(&location);
+  StackRoot _root10(&tried);
+  StackRoot _root11(&proc_val);
+  StackRoot _root12(&self_obj);
+  StackRoot _root13(&sh_func);
 
-  Tuple2<args::_Attributes*, args::Reader*> tup20 = flag_util::ParseCmdVal(S_wwk, cmd_val, true);
-  arg_r = tup20.at1();
-  print(S_ksm);
-  return 0;
+  Tuple2<args::_Attributes*, args::Reader*> tup22 = flag_util::ParseCmdVal(S_wwk, cmd_val, true);
+  attrs = tup22.at0();
+  arg_r = tup22.at1();
+  arg = Alloc<arg_types::invoke>(attrs->attrs);
+  Tuple2<List<BigStr*>*, List<syntax_asdl::CompoundWord*>*> tup23 = arg_r->Rest2();
+  argv = tup23.at0();
+  locs = tup23.at1();
+  if (len(argv) == 0) {
+    throw Alloc<error::Usage>(S_iix, cmd_val->arg_locs->at(0));
+  }
+  if (arg->show) {
+    print(StrFormat(_TABLE_ROW_FMT, S_gov, S_klA, S_oqC, S_xnE));
+    for (ListIter<BigStr*> it(argv); !it.Done(); it.Next()) {
+      BigStr* name = it.Value();
+      StackRoot _for(&name    );
+      r = _ResolveName(name, this->procs, this->aliases, this->search_path, true, true);
+      if (len(r)) {
+        for (ListIter<Tuple3<BigStr*, BigStr*, BigStr*>*> it(r); !it.Done(); it.Next()) {
+          Tuple3<BigStr*, BigStr*, BigStr*>* row = it.Value();
+          _PrintTableRow(row);
+        }
+      }
+      else {
+        _PrintTableRow((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_Bjq, S_Bjq)));
+      }
+    }
+    return 0;
+  }
+  cmd_val2 = Alloc<cmd_value::Argv>(argv, locs, cmd_val->is_last_cmd, cmd_val->self_obj, cmd_val->proc_args);
+  name = argv->at(0);
+  location = locs->at(0);
+  tried = Alloc<List<BigStr*>>();
+  if (arg->proc) {
+    tried->append(S_ybE);
+    Tuple2<value_asdl::value_t*, value_asdl::Obj*> tup24 = this->procs->GetProc(name);
+    proc_val = tup24.at0();
+    self_obj = tup24.at1();
+    if (proc_val != nullptr) {
+      return this->shell_ex->_RunInvokable(proc_val, self_obj, location, cmd_val2);
+    }
+  }
+  if (arg->sh_func) {
+    tried->append(S_ugu_1);
+    sh_func = this->procs->GetShellFunc(name);
+    if (sh_func) {
+      return this->shell_ex->_RunInvokable(sh_func, nullptr, location, cmd_val2);
+    }
+  }
+  if (arg->builtin) {
+    tried->append(S_ucl);
+    to_run = _LookupAnyBuiltin(name);
+    if (to_run != consts::NO_INDEX) {
+      return this->shell_ex->RunBuiltin(to_run, cmd_val2);
+    }
+  }
+  if (arg->extern_) {
+    tried->append(S_AEn);
+    return this->shell_ex->RunExternal(name, location, cmd_val2, nullptr, 0);
+  }
+  if (len(tried) == 0) {
+    throw Alloc<error::Usage>(S_tbC, cmd_val->arg_locs->at(0));
+  }
+  this->errfmt->Print_(StrFormat("'invoke' couldn't find command %r (tried %s)", name, S_yfw->join(tried)), location);
+  return 127;
 }
 
 Extern::Extern(vm::_Executor* shell_ex, state::Procs* procs, ui::ErrorFormatter* errfmt) {
@@ -15870,13 +16134,13 @@ int Extern::Run(cmd_value::Argv* cmd_val) {
   StackRoot _root0(&cmd_val);
   StackRoot _root1(&arg_r);
 
-  Tuple2<args::_Attributes*, args::Reader*> tup21 = flag_util::ParseCmdVal(S_Fvh, cmd_val, true);
-  arg_r = tup21.at1();
+  Tuple2<args::_Attributes*, args::Reader*> tup25 = flag_util::ParseCmdVal(S_Fvh, cmd_val, true);
+  arg_r = tup25.at1();
   print(S_vtm);
   return 0;
 }
 
-List<Tuple3<BigStr*, BigStr*, BigStr*>*>* _ResolveName(BigStr* name, state::Procs* procs, Dict<BigStr*, BigStr*>* aliases, executor::SearchPath* search_path, bool do_all) {
+List<Tuple3<BigStr*, BigStr*, BigStr*>*>* _ResolveName(BigStr* name, state::Procs* procs, Dict<BigStr*, BigStr*>* aliases, executor::SearchPath* search_path, bool do_all, bool do_private) {
   BigStr* no_str = nullptr;
   List<Tuple3<BigStr*, BigStr*, BigStr*>*>* results = nullptr;
   StackRoot _root0(&name);
@@ -15888,34 +16152,8 @@ List<Tuple3<BigStr*, BigStr*, BigStr*>*>* _ResolveName(BigStr* name, state::Proc
 
   no_str = nullptr;
   results = Alloc<List<Tuple3<BigStr*, BigStr*, BigStr*>*>>();
-  if (procs) {
-    if (procs->IsShellFunc(name)) {
-      results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_cgg, no_str)));
-    }
-    if (procs->IsProc(name)) {
-      results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_aFi, no_str)));
-    }
-    else {
-      if (procs->IsInvokableObj(name)) {
-        results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_jvb, no_str)));
-      }
-    }
-  }
   if (dict_contains(aliases, name)) {
     results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_nwn, aliases->at(name))));
-  }
-  if (consts::LookupNormalBuiltin(name) != 0) {
-    results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_utc, no_str)));
-  }
-  else {
-    if (consts::LookupSpecialBuiltin(name) != 0) {
-      results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_utc, S_anC)));
-    }
-    else {
-      if (consts::LookupAssignBuiltin(name) != 0) {
-        results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_utc, S_anC)));
-      }
-    }
   }
   if (consts::IsControlFlow(name)) {
     results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_evo, no_str)));
@@ -15925,6 +16163,30 @@ List<Tuple3<BigStr*, BigStr*, BigStr*>*>* _ResolveName(BigStr* name, state::Proc
       results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_evo, no_str)));
     }
   }
+  if (consts::LookupSpecialBuiltin(name) != 0) {
+    results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_utc, S_Avn)));
+  }
+  if (procs) {
+    if (procs->IsProc(name)) {
+      results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_aFi, no_str)));
+    }
+    else {
+      if (procs->IsInvokableObj(name)) {
+        results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_aFi, S_jvb)));
+      }
+    }
+    if (procs->IsShellFunc(name)) {
+      results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_cgg, no_str)));
+    }
+  }
+  if (consts::LookupNormalBuiltin(name) != 0) {
+    results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_utc, no_str)));
+  }
+  else {
+    if (consts::LookupAssignBuiltin(name) != 0) {
+      results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_utc, S_Avn)));
+    }
+  }
   for (ListIter<BigStr*> it(search_path->LookupReflect(name, do_all)); !it.Done(); it.Next()) {
     BigStr* path = it.Value();
     StackRoot _for(&path  );
@@ -15932,21 +16194,64 @@ List<Tuple3<BigStr*, BigStr*, BigStr*>*>* _ResolveName(BigStr* name, state::Proc
       results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_xeh, path)));
     }
   }
+  if ((do_private and consts::LookupPrivateBuiltin(name) != 0)) {
+    results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_utc, S_iFb)));
+  }
   return results;
 }
 
-Type::Type(state::Procs* funcs, Dict<BigStr*, BigStr*>* aliases, executor::SearchPath* search_path, ui::ErrorFormatter* errfmt) {
-  this->funcs = funcs;
+Type::Type(state::Procs* procs, Dict<BigStr*, BigStr*>* aliases, executor::SearchPath* search_path, ui::ErrorFormatter* errfmt) {
+  this->procs = procs;
   this->aliases = aliases;
   this->search_path = search_path;
   this->errfmt = errfmt;
+}
+
+void Type::_PrintEntry(arg_types::type* arg, Tuple3<BigStr*, BigStr*, BigStr*>* row) {
+  BigStr* name = nullptr;
+  BigStr* kind = nullptr;
+  BigStr* detail = nullptr;
+  value::Proc* sh_func = nullptr;
+  StackRoot _root0(&arg);
+  StackRoot _root1(&row);
+  StackRoot _root2(&name);
+  StackRoot _root3(&kind);
+  StackRoot _root4(&detail);
+  StackRoot _root5(&sh_func);
+
+  Tuple3<BigStr*, BigStr*, BigStr*>* tup26 = row;
+  name = tup26->at0();
+  kind = tup26->at1();
+  detail = tup26->at2();
+  if (arg->t) {
+    print(kind);
+  }
+  else {
+    if (arg->p) {
+      if (str_equals(kind, S_xeh)) {
+        print(detail);
+      }
+    }
+    else {
+      _PrintFreeForm(row);
+      if (str_equals(kind, S_cgg)) {
+        sh_func = this->procs->GetShellFunc(name);
+        switch (sh_func->body->tag()) {
+          case command_e::BraceGroup: {
+            ;  // pass
+          }
+            break;
+        }
+      }
+    }
+  }
 }
 
 int Type::Run(cmd_value::Argv* cmd_val) {
   args::_Attributes* attrs = nullptr;
   args::Reader* arg_r = nullptr;
   arg_types::type* arg = nullptr;
-  state::Procs* funcs = nullptr;
+  state::Procs* procs = nullptr;
   int status;
   List<BigStr*>* names = nullptr;
   List<BigStr*>* paths = nullptr;
@@ -15955,20 +16260,20 @@ int Type::Run(cmd_value::Argv* cmd_val) {
   StackRoot _root1(&attrs);
   StackRoot _root2(&arg_r);
   StackRoot _root3(&arg);
-  StackRoot _root4(&funcs);
+  StackRoot _root4(&procs);
   StackRoot _root5(&names);
   StackRoot _root6(&paths);
   StackRoot _root7(&r);
 
-  Tuple2<args::_Attributes*, args::Reader*> tup22 = flag_util::ParseCmdVal(S_qEi, cmd_val);
-  attrs = tup22.at0();
-  arg_r = tup22.at1();
+  Tuple2<args::_Attributes*, args::Reader*> tup27 = flag_util::ParseCmdVal(S_qEi, cmd_val);
+  attrs = tup27.at0();
+  arg_r = tup27.at1();
   arg = Alloc<arg_types::type>(attrs->attrs);
   if (arg->f) {
-    funcs = nullptr;
+    procs = nullptr;
   }
   else {
-    funcs = this->funcs;
+    procs = this->procs;
   }
   status = 0;
   names = arg_r->Rest();
@@ -15993,16 +16298,16 @@ int Type::Run(cmd_value::Argv* cmd_val) {
   for (ListIter<BigStr*> it(names); !it.Done(); it.Next()) {
     BigStr* argument = it.Value();
     StackRoot _for(&argument  );
-    r = _ResolveName(argument, funcs, this->aliases, this->search_path, arg->a);
+    r = _ResolveName(argument, procs, this->aliases, this->search_path, arg->a);
     if (arg->a) {
       for (ListIter<Tuple3<BigStr*, BigStr*, BigStr*>*> it(r); !it.Done(); it.Next()) {
         Tuple3<BigStr*, BigStr*, BigStr*>* row = it.Value();
-        _PrintEntry(arg, row);
+        this->_PrintEntry(arg, row);
       }
     }
     else {
       if (len(r)) {
-        _PrintEntry(arg, r->at(0));
+        this->_PrintEntry(arg, r->at(0));
       }
     }
     if (len(r) == 0) {
@@ -18604,6 +18909,7 @@ Wait::Wait(process::Waiter* waiter, process::JobList* job_list, state::Mem* mem,
   this->mem = mem;
   this->tracer = tracer;
   this->errfmt = errfmt;
+  this->exec_opts = waiter->exec_opts;
 }
 
 int Wait::Run(cmd_value::Argv* cmd_val) {
@@ -18718,7 +19024,9 @@ int Wait::_WaitNext() {
         pr = this->job_list->PopChildProcess(pid);
         this->job_list->CleanupWhenProcessExits(pid);
         if (pr == nullptr) {
-          print_stderr(StrFormat("oils: PID %d exited, but oils didn't start it", pid));
+          if (this->exec_opts->verbose_warn()) {
+            print_stderr(StrFormat("oils wait: PID %d exited, but oils didn't start it", pid));
+          }
         }
         else {
           status = pr->status;
@@ -20548,8 +20856,11 @@ int Read::_Read(arg_types::read* arg, List<BigStr*>* names) {
 namespace readline_osh {  // define
 
 using runtime_asdl::cmd_value;
+using runtime_asdl::scope_e;
 using syntax_asdl::loc;
+using value_asdl::value;
 using value_asdl::value_e;
+using value_asdl::value_str;
 using error::e_usage;
 
 ctx_Keymap::ctx_Keymap(py_readline::Readline* readline, BigStr* keymap_name) {
@@ -20567,29 +20878,81 @@ ctx_Keymap::~ctx_Keymap() {
   gHeap.PopRoot();
 }
 
-BindXCallback::BindXCallback(meta_oils::Eval* eval) {
-  this->eval = eval;
+ctx_EnvVars::ctx_EnvVars(state::Mem* mem, Dict<BigStr*, BigStr*>* env_vars) {
+  gHeap.PushRoot(reinterpret_cast<RawObject**>(&(this->env_vars)));
+  gHeap.PushRoot(reinterpret_cast<RawObject**>(&(this->mem)));
+  this->mem = mem;
+  this->env_vars = env_vars;
 }
 
-Tuple3<int, BigStr*, BigStr*> BindXCallback::__call__(BigStr* cmd, BigStr* line_buffer, int point) {
+ctx_EnvVars::~ctx_EnvVars() {
+  for (DictIter<BigStr*, BigStr*> it(this->env_vars); !it.Done(); it.Next()) {
+    BigStr* name = it.Key();
+    StackRoot _for(&name  );
+    this->mem->Unset(location::LName(name), scope_e::GlobalOnly);
+  }
+  gHeap.PopRoot();
+  gHeap.PopRoot();
+}
+
+BindXCallback::BindXCallback(meta_oils::Eval* eval, state::Mem* mem, ui::ErrorFormatter* errfmt) {
+  this->eval = eval;
+  this->mem = mem;
+  this->errfmt = errfmt;
+}
+
+Tuple3<int, BigStr*, int> BindXCallback::__call__(BigStr* cmd, BigStr* line_buffer, int point) {
   cmd_value::Argv* cmd_val = nullptr;
   int status;
+  BigStr* readline_line = nullptr;
+  BigStr* readline_point = nullptr;
+  BigStr* post_line_buffer = nullptr;
+  int post_point;
   StackRoot _root0(&cmd);
   StackRoot _root1(&line_buffer);
   StackRoot _root2(&cmd_val);
+  StackRoot _root3(&readline_line);
+  StackRoot _root4(&readline_point);
+  StackRoot _root5(&post_line_buffer);
 
-  print(StrFormat("Setting READLINE_LINE to: %s", line_buffer));
-  print(StrFormat("Setting READLINE_POINT to: %s", point));
-  print(StrFormat("Executing cmd: %s", cmd));
-  cmd_val = cmd_eval::MakeBuiltinArgv(NewList<BigStr*>(std::initializer_list<BigStr*>{cmd}));
-  status = this->eval->Run(cmd_val);
-  return Tuple3<int, BigStr*, BigStr*>(status, line_buffer, str(point));
+  {  // with
+    ctx_EnvVars ctx{this->mem, Alloc<Dict<BigStr*, BigStr*>>(std::initializer_list<BigStr*>{S_BkF, S_cbE}, std::initializer_list<BigStr*>{line_buffer, str(point)})};
+
+    cmd_val = cmd_eval::MakeBuiltinArgv(NewList<BigStr*>(std::initializer_list<BigStr*>{cmd}));
+    status = this->eval->Run(cmd_val);
+    readline_line = this->_get_rl_env_var(S_BkF);
+    readline_point = this->_get_rl_env_var(S_cbE);
+    post_line_buffer = readline_line != nullptr ? readline_line : line_buffer;
+    post_point = readline_point != nullptr ? to_int(readline_point) : point;
+    return Tuple3<int, BigStr*, int>(status, post_line_buffer, post_point);
+  }
 }
 
-Bind::Bind(py_readline::Readline* readline, ui::ErrorFormatter* errfmt, state::Mem* mem, readline_osh::BindXCallback* bindx_cb) {
+BigStr* BindXCallback::_get_rl_env_var(BigStr* envvar_name) {
+  value_asdl::value_t* envvar_val = nullptr;
+  StackRoot _root0(&envvar_name);
+  StackRoot _root1(&envvar_val);
+
+  envvar_val = this->mem->GetValue(envvar_name, scope_e::GlobalOnly);
+  switch (envvar_val->tag()) {
+    case value_e::Str: {
+      return static_cast<value::Str*>(envvar_val)->s;
+    }
+      break;
+    case value_e::Undef: {
+      return nullptr;
+    }
+      break;
+    default: {
+      this->errfmt->Print_(StrFormat("expected Str for %s, got %s", envvar_name, value_str(envvar_val->tag())), loc::Missing);
+      return nullptr;
+    }
+  }
+}
+
+Bind::Bind(py_readline::Readline* readline, ui::ErrorFormatter* errfmt, readline_osh::BindXCallback* bindx_cb) {
   this->readline = readline;
   this->errfmt = errfmt;
-  this->mem = mem;
   this->exclusive_flags = NewList<BigStr*>(std::initializer_list<BigStr*>{S_crA, S_rsz, S_nAr_1, S_rqD, S_ksc});
   this->bindx_cb = bindx_cb;
   if (this->readline) {
@@ -24022,7 +24385,7 @@ void CrashDumper::MaybeDump(int status) {
     return ;
   }
   my_pid = posix::getpid();
-  d = Alloc<Dict<BigStr*, value_asdl::value_t*>>(std::initializer_list<BigStr*>{S_szq, S_nrm, S_yzg, S_riE, S_iAi, S_epe}, std::initializer_list<value_asdl::value_t*>{Alloc<value::List>(this->var_stack), Alloc<value::List>(this->argv_stack), Alloc<value::List>(this->debug_stack), Alloc<value::Dict>(this->error), num::ToBig(status), num::ToBig(my_pid)});
+  d = Alloc<Dict<BigStr*, value_asdl::value_t*>>(std::initializer_list<BigStr*>{S_szq, S_nrm, S_yzg_1, S_riE, S_iAi, S_epe}, std::initializer_list<value_asdl::value_t*>{Alloc<value::List>(this->var_stack), Alloc<value::List>(this->argv_stack), Alloc<value::List>(this->debug_stack), Alloc<value::Dict>(this->error), num::ToBig(status), num::ToBig(my_pid)});
   path = os_path::join(this->crash_dump_dir, StrFormat("%d-osh-crash-dump.json", my_pid));
   buf = Alloc<mylib::BufWriter>();
   j8::PrintMessage(Alloc<value::Dict>(d), buf, 2, false);
@@ -25125,24 +25488,12 @@ int ShellExecutor::_RunSimpleCommand(BigStr* arg0, syntax_asdl::loc_t* arg0_loc,
   bool call_procs;
   value_asdl::value_t* proc_val = nullptr;
   value_asdl::Obj* self_obj = nullptr;
-  Dict<BigStr*, BigStr*>* environ = nullptr;
-  BigStr* argv0_path = nullptr;
-  bool do_fork;
-  process::ExternalThunk* thunk = nullptr;
-  process::Process* p = nullptr;
-  int pgid;
-  process::SetPgid* change = nullptr;
   StackRoot _root0(&arg0);
   StackRoot _root1(&arg0_loc);
   StackRoot _root2(&cmd_val);
   StackRoot _root3(&cmd_st);
   StackRoot _root4(&proc_val);
   StackRoot _root5(&self_obj);
-  StackRoot _root6(&environ);
-  StackRoot _root7(&argv0_path);
-  StackRoot _root8(&thunk);
-  StackRoot _root9(&p);
-  StackRoot _root10(&change);
 
   builtin_id = consts::LookupAssignBuiltin(arg0);
   if (builtin_id != consts::NO_INDEX) {
@@ -25180,6 +25531,28 @@ int ShellExecutor::_RunSimpleCommand(BigStr* arg0, syntax_asdl::loc_t* arg0_loc,
     cmd_st->show_code = true;
     return this->RunBuiltin(builtin_id, cmd_val);
   }
+  return this->RunExternal(arg0, arg0_loc, cmd_val, cmd_st, run_flags);
+}
+
+int ShellExecutor::RunExternal(BigStr* arg0, syntax_asdl::loc_t* arg0_loc, cmd_value::Argv* cmd_val, runtime_asdl::CommandStatus* cmd_st, int run_flags) {
+  Dict<BigStr*, BigStr*>* environ = nullptr;
+  BigStr* argv0_path = nullptr;
+  bool do_fork;
+  process::ExternalThunk* thunk = nullptr;
+  process::Process* p = nullptr;
+  int pgid;
+  process::SetPgid* change = nullptr;
+  int status;
+  StackRoot _root0(&arg0);
+  StackRoot _root1(&arg0_loc);
+  StackRoot _root2(&cmd_val);
+  StackRoot _root3(&cmd_st);
+  StackRoot _root4(&environ);
+  StackRoot _root5(&argv0_path);
+  StackRoot _root6(&thunk);
+  StackRoot _root7(&p);
+  StackRoot _root8(&change);
+
   environ = this->mem->GetEnv();
   if (cmd_val->proc_args) {
     e_die(StrFormat("%r appears to be external. External commands don't accept typed args (OILS-ERR-200)", arg0), cmd_val->proc_args->typed_args->left);
@@ -25215,7 +25588,9 @@ int ShellExecutor::_RunSimpleCommand(BigStr* arg0, syntax_asdl::loc_t* arg0_loc,
       p->AddStateChange(change);
     }
     status = p->RunProcess(this->waiter, Alloc<trace::External>(cmd_val->argv));
-    cmd_st->show_code = true;
+    if (cmd_st != nullptr) {
+      cmd_st->show_code = true;
+    }
     return status;
   }
   this->tracer->OnExec(cmd_val->argv);
@@ -27607,7 +27982,7 @@ Tuple2<int, int> Waiter::WaitForOne(int waitpid_options) {
     assert(0);  // AssertionError
   }
   proc = this->job_list->child_procs->get(pid);
-  if (proc == nullptr) {
+  if ((proc == nullptr and this->exec_opts->verbose_warn())) {
     print_stderr(StrFormat("oils: PID %d exited, but oils didn't start it", pid));
   }
   was_stopped = false;
@@ -30512,7 +30887,7 @@ List<BigStr*>* Procs::InvokableNames() {
   return names;
 }
 
-Tuple2<value_asdl::value_t*, value_asdl::Obj*> Procs::GetInvokable(BigStr* name) {
+Tuple2<value_asdl::value_t*, value_asdl::Obj*> Procs::GetProc(BigStr* name) {
   value_asdl::value_t* val = nullptr;
   value_asdl::value_t* proc = nullptr;
   value_asdl::Obj* self_val = nullptr;
@@ -30528,6 +30903,22 @@ Tuple2<value_asdl::value_t*, value_asdl::Obj*> Procs::GetInvokable(BigStr* name)
   Tuple2<value_asdl::value_t*, value_asdl::Obj*> tup24 = ValueIsInvokableObj(val);
   proc = tup24.at0();
   self_val = tup24.at1();
+  if (proc) {
+    return Tuple2<value_asdl::value_t*, value_asdl::Obj*>(proc, self_val);
+  }
+  return Tuple2<value_asdl::value_t*, value_asdl::Obj*>(nullptr, nullptr);
+}
+
+Tuple2<value_asdl::value_t*, value_asdl::Obj*> Procs::GetInvokable(BigStr* name) {
+  value_asdl::value_t* proc = nullptr;
+  value_asdl::Obj* self_val = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&proc);
+  StackRoot _root2(&self_val);
+
+  Tuple2<value_asdl::value_t*, value_asdl::Obj*> tup25 = this->GetProc(name);
+  proc = tup25.at0();
+  self_val = tup25.at1();
   if (proc) {
     return Tuple2<value_asdl::value_t*, value_asdl::Obj*>(proc, self_val);
   }
@@ -33608,6 +33999,11 @@ void _Attributes::Set(BigStr* name, value_asdl::value_t* val) {
   name = name->replace(S_Bjq, S_tci);
   if (str_equals(name, S_Fvh)) {
     name = S_xaw;
+  }
+  else {
+    if (str_equals(name, S_iFb)) {
+      name = S_pkd;
+    }
   }
   this->attrs->set(name, val);
 }
@@ -37962,12 +38358,13 @@ value_asdl::value_t* PlusEquals(value_asdl::value_t* old_val, value_asdl::value_
   return val;
 }
 
-bool _IsSpecialBuiltin(runtime_asdl::cmd_value_t* cmd_val, bool posix_mode) {
+bool _PrefixBindingsPersist(runtime_asdl::cmd_value_t* cmd_val) {
   runtime_asdl::cmd_value_t* UP_cmd_val = nullptr;
+  BigStr* arg0 = nullptr;
   StackRoot _root0(&cmd_val);
   StackRoot _root1(&UP_cmd_val);
+  StackRoot _root2(&arg0);
 
-  posix_mode = true;
   UP_cmd_val = cmd_val;
   switch (cmd_val->tag()) {
     case cmd_value_e::Assign: {
@@ -37976,7 +38373,11 @@ bool _IsSpecialBuiltin(runtime_asdl::cmd_value_t* cmd_val, bool posix_mode) {
       break;
     case cmd_value_e::Argv: {
       cmd_value::Argv* cmd_val = static_cast<cmd_value::Argv*>(UP_cmd_val);
-      if ((posix_mode and consts::LookupSpecialBuiltin(cmd_val->argv->at(0)) != consts::NO_INDEX)) {
+      arg0 = cmd_val->argv->at(0);
+      if (str_equals(arg0, S_Evy)) {
+        return false;
+      }
+      if (consts::LookupSpecialBuiltin(arg0) != consts::NO_INDEX) {
         return true;
       }
     }
@@ -38734,12 +39135,14 @@ int CommandEvaluator::_DoSimple(command::Simple* node, runtime_asdl::CommandStat
   int run_flags;
   Dict<BigStr*, value_asdl::value_t*>* bindings = nullptr;
   int status;
+  syntax_asdl::EnvPair* first_pair = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&cmd_st);
   StackRoot _root2(&words);
   StackRoot _root3(&cmd_val);
   StackRoot _root4(&UP_cmd_val);
   StackRoot _root5(&bindings);
+  StackRoot _root6(&first_pair);
 
   DTRACE_PROBE(cmd_eval, _DoSimple_enter);
   words = braces::BraceExpandWords(node->words);
@@ -38780,8 +39183,12 @@ int CommandEvaluator::_DoSimple(command::Simple* node, runtime_asdl::CommandStat
       }
     }
     else {
-      if (_IsSpecialBuiltin(cmd_val, this->exec_opts->posix())) {
-        this->_EvalTempEnv(node->more_env, state::SetExport);
+      if (_PrefixBindingsPersist(cmd_val)) {
+        if (this->exec_opts->strict_env_binding()) {
+          first_pair = node->more_env->at(0);
+          e_die(S_vte, first_pair->left);
+        }
+        this->_EvalTempEnv(node->more_env, 0);
         status = this->_RunSimpleCommand(cmd_val, cmd_st, run_flags);
       }
       else {
@@ -50273,8 +50680,44 @@ using syntax_asdl::Attribute;
 using syntax_asdl::arith_expr;
 using syntax_asdl::VarDecl;
 using syntax_asdl::Mutation;
+using syntax_asdl::word_part_e;
 using error::p_die;
 GLOBAL_LIST(KINDS_THAT_END_WORDS, id_kind_asdl::Kind_t, 4, {Kind::Eof COMMA Kind::WS COMMA Kind::Op COMMA Kind::Right});
+
+bool _IsValidYshWord(syntax_asdl::CompoundWord* w) {
+  List<syntax_asdl::word_part_t*>* parts = nullptr;
+  int n;
+  bool ok;
+  StackRoot _root0(&w);
+  StackRoot _root1(&parts);
+
+  parts = w->parts;
+  n = len(parts);
+  if ((n != 0 and word_::LiteralId(parts->at(0)) == Id::Lit_Tilde)) {
+    return true;
+  }
+  ok = true;
+  if (n >= 2) {
+    for (ListIter<syntax_asdl::word_part_t*> it(parts); !it.Done(); it.Next()) {
+      syntax_asdl::word_part_t* part = it.Value();
+      StackRoot _for(&part    );
+      if ((part->tag() == word_part_e::SingleQuoted || part->tag() == word_part_e::DoubleQuoted)) {
+        ok = false;
+      }
+    }
+  }
+  if (!ok) {
+    if ((n == 2 and word_::LiteralId(parts->at(0)) == Id::Lit_VarLike)) {
+      ok = true;
+    }
+    else {
+      if ((n == 3 and (word_::LiteralId(parts->at(0)) == Id::Lit_Chars and word_::LiteralId(parts->at(1)) == Id::Lit_Equals))) {
+        ok = true;
+      }
+    }
+  }
+  return ok;
+}
 
 WordEmitter::WordEmitter() {
   ;  // pass
@@ -51919,6 +52362,9 @@ syntax_asdl::CompoundWord* WordParser::_ReadCompoundWord3(types_asdl::lex_mode_t
   }
   if ((is_triple_quoted and (is_triple_quoted->b and num_parts > 1))) {
     p_die(S_imw, Alloc<loc::WordPart>(w->parts->at(-1)));
+  }
+  if ((!this->parse_opts->parse_word_join() and !_IsValidYshWord(w))) {
+    p_die(S_yzg, Alloc<loc::WordPart>(part));
   }
   return w;
 }
@@ -60468,6 +60914,7 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
   Dict<BigStr*, bool>* guards = nullptr;
   pure_osh::Boolean* true_ = nullptr;
   io_ysh::RunBlock* redir_builtin = nullptr;
+  io_osh::Cat* cat = nullptr;
   io_osh::MapFile* mapfile = nullptr;
   dirs_osh::DirStack* dir_stack = nullptr;
   readline_osh::BindXCallback* bindx_cb = nullptr;
@@ -60600,36 +61047,37 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
   StackRoot _root97(&guards);
   StackRoot _root98(&true_);
   StackRoot _root99(&redir_builtin);
-  StackRoot _root100(&mapfile);
-  StackRoot _root101(&dir_stack);
-  StackRoot _root102(&bindx_cb);
-  StackRoot _root103(&spec_builder);
-  StackRoot _root104(&complete_builtin);
-  StackRoot _root105(&comp_ev);
-  StackRoot _root106(&root_comp);
-  StackRoot _root107(&parse_hay);
-  StackRoot _root108(&eval_hay);
-  StackRoot _root109(&hay_func);
-  StackRoot _root110(&g);
-  StackRoot _root111(&ex);
-  StackRoot _root112(&hist_ev);
-  StackRoot _root113(&src);
-  StackRoot _root114(&line_reader);
-  StackRoot _root115(&stdin_);
-  StackRoot _root116(&f);
-  StackRoot _root117(&config_dir);
-  StackRoot _root118(&rc_paths);
-  StackRoot _root119(&rc_path);
-  StackRoot _root120(&rc_dir);
-  StackRoot _root121(&loop);
-  StackRoot _root122(&mut_status);
-  StackRoot _root123(&c_parser);
-  StackRoot _root124(&completion_display);
-  StackRoot _root125(&display);
-  StackRoot _root126(&prompt_plugin);
-  StackRoot _root127(&hist_file);
-  StackRoot _root128(&tool_name);
-  StackRoot _root129(&node);
+  StackRoot _root100(&cat);
+  StackRoot _root101(&mapfile);
+  StackRoot _root102(&dir_stack);
+  StackRoot _root103(&bindx_cb);
+  StackRoot _root104(&spec_builder);
+  StackRoot _root105(&complete_builtin);
+  StackRoot _root106(&comp_ev);
+  StackRoot _root107(&root_comp);
+  StackRoot _root108(&parse_hay);
+  StackRoot _root109(&eval_hay);
+  StackRoot _root110(&hay_func);
+  StackRoot _root111(&g);
+  StackRoot _root112(&ex);
+  StackRoot _root113(&hist_ev);
+  StackRoot _root114(&src);
+  StackRoot _root115(&line_reader);
+  StackRoot _root116(&stdin_);
+  StackRoot _root117(&f);
+  StackRoot _root118(&config_dir);
+  StackRoot _root119(&rc_paths);
+  StackRoot _root120(&rc_path);
+  StackRoot _root121(&rc_dir);
+  StackRoot _root122(&loop);
+  StackRoot _root123(&mut_status);
+  StackRoot _root124(&c_parser);
+  StackRoot _root125(&completion_display);
+  StackRoot _root126(&display);
+  StackRoot _root127(&prompt_plugin);
+  StackRoot _root128(&hist_file);
+  StackRoot _root129(&tool_name);
+  StackRoot _root130(&node);
 
   argv0 = arg_r->Peek();
   arg_r->Next();
@@ -60867,9 +61315,8 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
   b->set(builtin_i::type, Alloc<meta_oils::Type>(procs, aliases, search_path, errfmt));
   b->set(builtin_i::builtin, Alloc<meta_oils::Builtin>(shell_ex, errfmt));
   b->set(builtin_i::command, Alloc<meta_oils::Command>(shell_ex, procs, aliases, search_path));
+  b->set(builtin_i::invoke, Alloc<meta_oils::Invoke>(shell_ex, procs, aliases, search_path, errfmt));
   b->set(builtin_i::runproc, Alloc<meta_oils::RunProc>(shell_ex, procs, errfmt));
-  b->set(builtin_i::invoke, Alloc<meta_oils::Invoke>(shell_ex, procs, errfmt));
-  b->set(builtin_i::extern_, Alloc<meta_oils::Extern>(shell_ex, procs, errfmt));
   module_invoke = Alloc<module_ysh::ModuleInvoke>(cmd_ev, tracer, errfmt);
   b->set(builtin_i::use, Alloc<meta_oils::ShellFile>(parse_ctx, search_path, cmd_ev, fd_state, tracer, errfmt, loader, module_invoke));
   source_builtin = Alloc<meta_oils::ShellFile>(parse_ctx, search_path, cmd_ev, fd_state, tracer, errfmt, loader);
@@ -60904,8 +61351,10 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
   b->set(builtin_i::redir, redir_builtin);
   b->set(builtin_i::fopen, redir_builtin);
   b->set(builtin_i::pp, Alloc<io_ysh::Pp>(expr_ev, mem, errfmt, procs, arena));
-  b->set(builtin_i::cat, Alloc<io_osh::Cat>());
+  cat = Alloc<io_osh::Cat>();
+  b->set(builtin_i::cat, cat);
   b->set(builtin_i::read, Alloc<read_osh::Read>(splitter, mem, parse_ctx, cmd_ev, errfmt));
+  b->set(builtin_i::sleep, Alloc<io_osh::Sleep>(cmd_ev, signal_safe));
   mapfile = Alloc<io_osh::MapFile>(mem, errfmt, cmd_ev);
   b->set(builtin_i::mapfile, mapfile);
   b->set(builtin_i::readarray, mapfile);
@@ -60927,8 +61376,8 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
   b->set(builtin_i::bg, Alloc<process_osh::Bg>(job_list));
   b->set(builtin_i::fork, Alloc<process_osh::Fork>(shell_ex));
   b->set(builtin_i::forkwait, Alloc<process_osh::ForkWait>(shell_ex));
-  bindx_cb = Alloc<readline_osh::BindXCallback>(eval_builtin);
-  b->set(builtin_i::bind, Alloc<readline_osh::Bind>(readline, errfmt, mem, bindx_cb));
+  bindx_cb = Alloc<readline_osh::BindXCallback>(eval_builtin, mem, errfmt);
+  b->set(builtin_i::bind, Alloc<readline_osh::Bind>(readline, errfmt, bindx_cb));
   b->set(builtin_i::history, Alloc<readline_osh::History>(readline, sh_files, errfmt, mylib::Stdout()));
   spec_builder = Alloc<completion_osh::SpecBuilder>(cmd_ev, parse_ctx, word_ev, splitter, comp_lookup, help_data, errfmt);
   complete_builtin = Alloc<completion_osh::Complete>(spec_builder, comp_lookup);

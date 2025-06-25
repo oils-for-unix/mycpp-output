@@ -120,8 +120,6 @@ namespace hay_ysh {  // forward declare
 namespace io_osh {  // forward declare
   class Echo;
   class MapFile;
-  class Cat;
-  class Sleep;
 }
 
 namespace io_ysh {  // forward declare
@@ -180,6 +178,7 @@ namespace method_list {  // forward declare
 namespace method_other {  // forward declare
   class SetValue;
   class SourceCode;
+  class DocComment;
 }
 
 namespace method_str {  // forward declare
@@ -212,6 +211,12 @@ namespace printf_osh {  // forward declare
   class _FormatStringParser;
   class _PrintfState;
   class Printf;
+}
+
+namespace private_ysh {  // forward declare
+  class Cat;
+  class Rm;
+  class Sleep;
 }
 
 namespace process_osh {  // forward declare
@@ -1326,7 +1331,6 @@ GLOBAL_STR(S_aEE, "___ GC: after parsing");
 GLOBAL_STR(S_gfw, "___ GC: after printing");
 GLOBAL_STR(S_ypj, "__b__");
 GLOBAL_STR(S_mmF, "__builtins__");
-GLOBAL_STR(S_swp, "__cat");
 GLOBAL_STR(S_avA_2, "__defaults__");
 GLOBAL_STR(S_myz, "__dumpdoc");
 GLOBAL_STR(S_jaj, "__fallback");
@@ -1334,6 +1338,7 @@ GLOBAL_STR(S_lgv, "__first");
 GLOBAL_STR(S_opF, "__index__");
 GLOBAL_STR(S_fBo, "__invoke__");
 GLOBAL_STR(S_zcz, "__provide__");
+GLOBAL_STR(S_Ayd_1, "__readonly__");
 GLOBAL_STR(S_iii, "_end");
 GLOBAL_STR(S_zzh, "_error");
 GLOBAL_STR(S_dfx, "_group");
@@ -1385,6 +1390,7 @@ GLOBAL_STR(S_ltE_1, "cannot replace by eggex on a string with NUL bytes");
 GLOBAL_STR(S_pnd, "cannot split a string with a NUL byte");
 GLOBAL_STR(S_cbr, "captureAll");
 GLOBAL_STR(S_gDo, "captureStdout");
+GLOBAL_STR(S_Deg, "cat");
 GLOBAL_STR(S_jaz, "cat-em");
 GLOBAL_STR(S_dyr, "cd");
 GLOBAL_STR(S_wxv_1, "cd got no argument, and $HOME isn't set");
@@ -1426,6 +1432,7 @@ GLOBAL_STR(S_nmo, "directory");
 GLOBAL_STR(S_aml, "dirnames");
 GLOBAL_STR(S_nAr, "dirs");
 GLOBAL_STR(S_rrt, "do {");
+GLOBAL_STR(S_feA, "docComment");
 GLOBAL_STR(S_zDr_1, "doesn't accept -f because it's dangerous.  (The code can usually be restructured with 'source')");
 GLOBAL_STR(S_vbA, "doesn't accept RHS with -n");
 GLOBAL_STR(S_hDg, "doesn't accept resource flags with -a");
@@ -1474,6 +1481,7 @@ GLOBAL_STR(S_iix, "expected arguments");
 GLOBAL_STR(S_Bvq, "expected at least 1 arg, or a literal block { }");
 GLOBAL_STR(S_twC, "expected expr to eval to a Str");
 GLOBAL_STR(S_pDm, "expected flag like --pick after module path");
+GLOBAL_STR(S_xwB, "expected one or more files");
 GLOBAL_STR(S_tbC, "expected one or more flags like --proc --sh-func --builtin --extern");
 GLOBAL_STR(S_yBg, "expected pattern to be Eggex or Str");
 GLOBAL_STR(S_sdz, "expected separator to be Eggex or Str");
@@ -1614,13 +1622,13 @@ GLOBAL_STR(S_jlA, "oils-err");
 GLOBAL_STR(S_afu, "oils-for-unix");
 GLOBAL_STR(S_vqm, "oils-ref");
 GLOBAL_STR(S_Eur, "oils-usage");
+GLOBAL_STR(S_muc, "oils: Ignoring 'exit' in completion plugin");
 GLOBAL_STR(S_Ffb, "osh");
 GLOBAL_STR(S_aCB, "osh printf doesn't support floating point");
 GLOBAL_STR(S_syf, "osh printf doesn't support single characters (bytes)");
 GLOBAL_STR(S_lAu, "osh warning: GLOB_PERIOD wasn't found in libc, so 'shopt -s dotglob' won't work");
 GLOBAL_STR(S_gxD, "osh warning: complete -C not implemented");
 GLOBAL_STR(S_nAz, "osh warning: set -o verbose not implemented");
-GLOBAL_STR(S_EDi, "osh: Ignoring 'exit' in completion plugin");
 GLOBAL_STR(S_Eop, "ouxX");
 GLOBAL_STR(S_AdB, "parseCommand");
 GLOBAL_STR(S_cCs, "parseCommand()");
@@ -1681,6 +1689,7 @@ GLOBAL_STR(S_lgh, "requires the name of a variable to set");
 GLOBAL_STR(S_rCB, "reset");
 GLOBAL_STR(S_hjl, "rest");
 GLOBAL_STR(S_ddf, "return");
+GLOBAL_STR(S_CAv, "rm");
 GLOBAL_STR(S_ubi, "runes");
 GLOBAL_STR(S_pkv, "runproc");
 GLOBAL_STR(S_anC, "s");
@@ -1695,6 +1704,7 @@ GLOBAL_STR(S_riF, "setVar");
 GLOBAL_STR(S_uem, "setopt");
 GLOBAL_STR(S_scw, "setvar ");
 GLOBAL_STR(S_wiE, "sh");
+GLOBAL_STR(S_Aou, "sh arith expr");
 GLOBAL_STR(S_rrx, "sh-func");
 GLOBAL_STR(S_jvC, "shSplit");
 GLOBAL_STR(S_jlb, "shell functions can't be defined inside proc or func");
@@ -2099,7 +2109,7 @@ class Readonly : public ::vm::_AssignBuiltin {
 class NewVar : public ::vm::_AssignBuiltin {
  public:
   NewVar(state::Mem* mem, state::Procs* procs, optview::Exec* exec_opts, sh_expr_eval::ArithEvaluator* arith_ev, ui::ErrorFormatter* errfmt);
-  int _PrintFuncs(List<BigStr*>* names);
+  int _PrintFuncs(List<BigStr*>* names, bool print_source);
   virtual int Run(cmd_value::Assign* cmd_val);
 
   sh_expr_eval::ArithEvaluator* arith_ev{};
@@ -3363,43 +3373,6 @@ class MapFile : public ::vm::_Builtin {
   DISALLOW_COPY_AND_ASSIGN(MapFile)
 };
 
-class Cat : public ::vm::_Builtin {
- public:
-  Cat();
-  virtual int Run(cmd_value::Argv* cmd_val);
-  
-  static constexpr uint32_t field_mask() {
-    return ::vm::_Builtin::field_mask();
-  }
-
-  static constexpr ObjHeader obj_header() {
-    return ObjHeader::ClassFixed(field_mask(), sizeof(Cat));
-  }
-
-  DISALLOW_COPY_AND_ASSIGN(Cat)
-};
-
-class Sleep : public ::vm::_Builtin {
- public:
-  Sleep(cmd_eval::CommandEvaluator* cmd_ev, iolib::SignalSafe* signal_safe);
-  virtual int Run(cmd_value::Argv* cmd_val);
-
-  cmd_eval::CommandEvaluator* cmd_ev{};
-  iolib::SignalSafe* signal_safe{};
-  
-  static constexpr uint32_t field_mask() {
-    return ::vm::_Builtin::field_mask()
-         | maskbit(offsetof(Sleep, cmd_ev))
-         | maskbit(offsetof(Sleep, signal_safe));
-  }
-
-  static constexpr ObjHeader obj_header() {
-    return ObjHeader::ClassFixed(field_mask(), sizeof(Sleep));
-  }
-
-  DISALLOW_COPY_AND_ASSIGN(Sleep)
-};
-
 
 }  // declare namespace io_osh
 
@@ -4207,6 +4180,23 @@ class SourceCode : public ::vm::_Callable {
   DISALLOW_COPY_AND_ASSIGN(SourceCode)
 };
 
+BigStr* GetDocComment(syntax_asdl::command_t* body);
+class DocComment : public ::vm::_Callable {
+ public:
+  DocComment();
+  virtual value_asdl::value_t* Call(typed_args::Reader* rd);
+  
+  static constexpr uint32_t field_mask() {
+    return ::vm::_Callable::field_mask();
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(DocComment));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(DocComment)
+};
+
 
 }  // declare namespace method_other
 
@@ -4577,6 +4567,73 @@ class Printf : public ::vm::_Builtin {
 
 
 }  // declare namespace printf_osh
+
+namespace private_ysh {  // declare
+
+class Cat : public ::vm::_Builtin {
+ public:
+  Cat(ui::ErrorFormatter* errfmt);
+  int _CatFile(int fd);
+  virtual int Run(cmd_value::Argv* cmd_val);
+
+  ui::ErrorFormatter* errfmt{};
+  mylib::Writer* stdout_{};
+  
+  static constexpr uint32_t field_mask() {
+    return ::vm::_Builtin::field_mask()
+         | maskbit(offsetof(Cat, errfmt))
+         | maskbit(offsetof(Cat, stdout_));
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(Cat));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(Cat)
+};
+
+class Rm : public ::vm::_Builtin {
+ public:
+  Rm(ui::ErrorFormatter* errfmt);
+  virtual int Run(cmd_value::Argv* cmd_val);
+
+  ui::ErrorFormatter* errfmt{};
+  
+  static constexpr uint32_t field_mask() {
+    return ::vm::_Builtin::field_mask()
+         | maskbit(offsetof(Rm, errfmt));
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(Rm));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(Rm)
+};
+
+class Sleep : public ::vm::_Builtin {
+ public:
+  Sleep(cmd_eval::CommandEvaluator* cmd_ev, iolib::SignalSafe* signal_safe);
+  virtual int Run(cmd_value::Argv* cmd_val);
+
+  cmd_eval::CommandEvaluator* cmd_ev{};
+  iolib::SignalSafe* signal_safe{};
+  
+  static constexpr uint32_t field_mask() {
+    return ::vm::_Builtin::field_mask()
+         | maskbit(offsetof(Sleep, cmd_ev))
+         | maskbit(offsetof(Sleep, signal_safe));
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(Sleep));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(Sleep)
+};
+
+
+}  // declare namespace private_ysh
 
 namespace process_osh {  // declare
 
@@ -5273,7 +5330,6 @@ class Trap : public ::vm::_Builtin {
 
 namespace alloc {  // declare
 
-BigStr* SnipCodeBlock(syntax_asdl::Token* left, syntax_asdl::Token* right, List<syntax_asdl::SourceLine*>* lines);
 class ctx_SourceCode {
  public:
   ctx_SourceCode(alloc::Arena* arena, syntax_asdl::source_t* src);
@@ -5291,8 +5347,7 @@ class Arena {
   void PopSource();
   syntax_asdl::SourceLine* AddLine(BigStr* line, int line_num);
   void DiscardLines();
-  List<syntax_asdl::SourceLine*>* SaveLinesAndDiscard(syntax_asdl::Token* left, syntax_asdl::Token* right);
-  BigStr* SnipCodeString(syntax_asdl::Token* left, syntax_asdl::Token* right);
+  BigStr* SnipCodeString(syntax_asdl::Token* left, syntax_asdl::Token* right, bool inclusive = true);
   syntax_asdl::Token* NewToken(int id_, int col, int length, syntax_asdl::SourceLine* src_line);
   void UnreadOne();
   syntax_asdl::Token* GetToken(int span_id);
@@ -6363,6 +6418,7 @@ class Encode {
 namespace executor {  // declare
 
 BigStr* LookupExecutable(BigStr* name, List<BigStr*>* path_dirs, bool exec_required = true);
+int _RewriteExternToBuiltin(List<BigStr*>* argv);
 class SearchPath {
  public:
   SearchPath(state::Mem* mem, optview::Exec* exec_opts);
@@ -6451,6 +6507,7 @@ class ShellExecutor : public ::vm::_Executor {
   virtual void PushProcessSub();
   virtual void PopProcessSub(runtime_asdl::StatusArray* compound_st);
 
+  List<syntax_asdl::word_t*>* builtin_cat_words{};
   List<executor::_ProcessSubFrame*>* clean_frame_pool{};
   process::ExternalProgram* ext_prog{};
   process::FdState* fd_state{};
@@ -6465,6 +6522,7 @@ class ShellExecutor : public ::vm::_Executor {
   
   static constexpr uint32_t field_mask() {
     return ::vm::_Executor::field_mask()
+         | maskbit(offsetof(ShellExecutor, builtin_cat_words))
          | maskbit(offsetof(ShellExecutor, clean_frame_pool))
          | maskbit(offsetof(ShellExecutor, ext_prog))
          | maskbit(offsetof(ShellExecutor, fd_state))
@@ -7503,6 +7561,7 @@ class Mem {
   DISALLOW_COPY_AND_ASSIGN(Mem)
 };
 
+bool ObjIsReadOnly(value_asdl::Obj* obj);
 Tuple2<value_asdl::value_t*, value_asdl::Obj*> ValueIsInvokableObj(value_asdl::value_t* val);
 void _AddNames(Dict<BigStr*, bool>* unique, Dict<BigStr*, runtime_asdl::Cell*>* frame);
 class Procs {
@@ -7520,7 +7579,7 @@ class Procs {
   Tuple2<value_asdl::value_t*, value_asdl::Obj*> GetProc(BigStr* name);
   Tuple2<value_asdl::value_t*, value_asdl::Obj*> GetInvokable(BigStr* name);
   state::Mem* mem{};
-  Dict<BigStr*, value::Proc*>* sh_funcs{};
+  Dict<BigStr*, value_asdl::value_t*>* sh_funcs{};
 
   static constexpr ObjHeader obj_header() {
     return ObjHeader::ClassScanned(2, sizeof(Procs));
@@ -8010,6 +8069,7 @@ void PrintAst(syntax_asdl::command_t* node, arg_types::main* flag);
 bool TypeNotPrinted(value_asdl::value_t* val);
 int _GetMaxWidth();
 void PrettyPrintValue(BigStr* prefix, value_asdl::value_t* val, mylib::Writer* f, int max_width = -1);
+void PrintShFunction(value::Proc* proc_val);
 
 }  // declare namespace ui
 
@@ -8380,6 +8440,7 @@ namespace location {  // declare
 value_asdl::LeftName* LName(BigStr* name);
 syntax_asdl::Token* TokenFor(syntax_asdl::loc_t* loc_);
 syntax_asdl::Token* TokenForCommand(syntax_asdl::command_t* node);
+syntax_asdl::Token* RightTokenForCommand(syntax_asdl::command_t* node);
 syntax_asdl::Token* TokenForArith(syntax_asdl::arith_expr_t* node);
 syntax_asdl::Token* LeftTokenForWordPart(syntax_asdl::word_part_t* part);
 syntax_asdl::Token* _RightTokenForWordPart(syntax_asdl::word_part_t* part);
@@ -8457,7 +8518,7 @@ class ParseContext {
   cmd_parse::CommandParser* MakeConfigParser(reader::_Reader* line_reader);
   word_parse::WordParser* MakeWordParserForHereDoc(reader::_Reader* line_reader);
   word_parse::WordParser* MakeWordParser(lexer::Lexer* lx, reader::_Reader* line_reader);
-  tdop::TdopParser* MakeArithParser(BigStr* code_str);
+  tdop::TdopParser* MakeArithParser(BigStr* code_str, syntax_asdl::loc_t* blame_loc = loc::Missing);
   cmd_parse::CommandParser* MakeParserForCommandSub(reader::_Reader* line_reader, lexer::Lexer* lexer, int eof_id);
   word_parse::WordParser* MakeWordParserForPlugin(BigStr* code_str);
   expr_parse::ExprParser* _YshParser();
@@ -8658,6 +8719,7 @@ class Reader {
   syntax_asdl::debug_frame_t* _ToDebugFrame(value_asdl::value_t* val);
   syntax_asdl::command_t* _ToCommandFrag(value_asdl::value_t* val);
   value::Command* _ToCommand(value_asdl::value_t* val);
+  value::Proc* _ToProc(value_asdl::value_t* val);
   BigStr* PosStr();
   BigStr* OptionalStr(BigStr* default_ = nullptr);
   bool PosBool();
@@ -8676,6 +8738,7 @@ class Reader {
   syntax_asdl::debug_frame_t* PosDebugFrame();
   syntax_asdl::command_t* PosCommandFrag();
   value::Command* PosCommand();
+  value::Proc* PosProc();
   value::Expr* PosExpr();
   value::Command* OptionalCommand();
   syntax_asdl::command_t* RequiredBlockAsFrag();
@@ -8902,7 +8965,7 @@ class CommandEvaluator {
   int _DoWhileUntil(command::WhileUntil* node);
   int _DoForEach(command::ForEach* node);
   int _DoForExpr(command::ForExpr* node);
-  void _DoShFunction(command::ShFunction* node);
+  void _DoShFunction(syntax_asdl::ShFunction* node);
   void _DoProc(syntax_asdl::Proc* node);
   void _DoFunc(syntax_asdl::Func* node);
   int _DoIf(command::If* node);
@@ -8910,7 +8973,6 @@ class CommandEvaluator {
   int _DoTimeBlock(command::TimeBlock* node);
   int _DoRedirect(command::Redirect* node, runtime_asdl::CommandStatus* cmd_st);
   void _LeafTick();
-  int _DispatchFast(syntax_asdl::command_t* node, runtime_asdl::CommandStatus* cmd_st);
   int _Dispatch(syntax_asdl::command_t* node, runtime_asdl::CommandStatus* cmd_st);
   void RunPendingTraps();
   void RunPendingTrapsAndCatch();
@@ -9041,8 +9103,8 @@ class CommandParser {
   command::If* ParseIf();
   syntax_asdl::command_t* ParseTime();
   syntax_asdl::command_t* ParseCompoundCommand();
-  command::ShFunction* ParseFunctionDef();
-  command::ShFunction* ParseKshFunctionDef();
+  syntax_asdl::ShFunction* ParseFunctionDef();
+  syntax_asdl::ShFunction* ParseKshFunctionDef();
   syntax_asdl::Proc* ParseYshProc();
   syntax_asdl::Func* ParseYshFunc();
   syntax_asdl::command_t* ParseCoproc();
@@ -11713,9 +11775,10 @@ NewVar::NewVar(state::Mem* mem, state::Procs* procs, optview::Exec* exec_opts, s
   this->errfmt = errfmt;
 }
 
-int NewVar::_PrintFuncs(List<BigStr*>* names) {
+int NewVar::_PrintFuncs(List<BigStr*>* names, bool print_source) {
   int status;
   value::Proc* proc_val = nullptr;
+  bool was_printed;
   syntax_asdl::Token* tok = nullptr;
   BigStr* filename_str = nullptr;
   BigStr* line = nullptr;
@@ -11723,6 +11786,7 @@ int NewVar::_PrintFuncs(List<BigStr*>* names) {
   for (ListIter<BigStr*> it(names); !it.Done(); it.Next()) {
     BigStr* name = it.Value();
     proc_val = this->procs->GetShellFunc(name);
+    was_printed = false;
     if (proc_val) {
       if (this->exec_opts->extdebug()) {
         tok = proc_val->name_tok;
@@ -11731,7 +11795,12 @@ int NewVar::_PrintFuncs(List<BigStr*>* names) {
         print(line);
       }
       else {
-        print(name);
+        if (print_source) {
+          ui::PrintShFunction(proc_val);
+        }
+        else {
+          print(name);
+        }
       }
     }
     else {
@@ -11761,7 +11830,7 @@ int NewVar::Run(cmd_value::Assign* cmd_val) {
   if (arg->f) {
     names = arg_r->Rest();
     if (len(names)) {
-      status = this->_PrintFuncs(names);
+      status = this->_PrintFuncs(names, true);
     }
     else {
       e_usage(S_yzA, loc::Missing);
@@ -11771,7 +11840,7 @@ int NewVar::Run(cmd_value::Assign* cmd_val) {
   if (arg->F) {
     names = arg_r->Rest();
     if (len(names)) {
-      status = this->_PrintFuncs(names);
+      status = this->_PrintFuncs(names, false);
     }
     else {
       for (ListIter<BigStr*> it(this->procs->ShellFuncNames()); !it.Done(); it.Next()) {
@@ -13963,7 +14032,6 @@ int HayNode_::Run(cmd_value::Argv* cmd_val) {
   List<value_asdl::value_t*>* items = nullptr;
   syntax_asdl::BraceGroup* brace_group = nullptr;
   syntax_asdl::SourceLine* line = nullptr;
-  BigStr* code_str = nullptr;
   syntax_asdl::command_t* unbound_frag = nullptr;
   Dict<BigStr*, value_asdl::value_t*>* bindings = nullptr;
   int unused_status;
@@ -14024,8 +14092,7 @@ int HayNode_::Run(cmd_value::Argv* cmd_val) {
     line = brace_group->left->line;
     result->set(S_igc, Alloc<value::Str>(ui::GetLineSourceString(line)));
     result->set(S_btu, num::ToBig(line->line_num));
-    code_str = alloc::SnipCodeBlock(brace_group->left, brace_group->right, lit_block->lines);
-    result->set(S_bAo, Alloc<value::Str>(code_str));
+    result->set(S_bAo, Alloc<value::Str>(lit_block->code_str));
     this->hay_state->AppendResult(result);
   }
   else {
@@ -14056,7 +14123,6 @@ namespace io_osh {  // define
 using id_kind_asdl::Id;
 using value_asdl::value;
 using value_asdl::value_t;
-using error::e_die_status;
 
 Echo::Echo(optview::Exec* exec_opts) {
   this->exec_opts = exec_opts;
@@ -14194,108 +14260,11 @@ int MapFile::Run(cmd_value::Argv* cmd_val) {
   return 0;
 }
 
-Cat::Cat() : ::vm::_Builtin() {
-}
-
-int Cat::Run(cmd_value::Argv* cmd_val) {
-  List<BigStr*>* chunks = nullptr;
-  int n;
-  int err_num;
-  chunks = Alloc<List<BigStr*>>();
-  while (true) {
-    Tuple2<int, int> tup5 = pyos::Read(0, 4096, chunks);
-    n = tup5.at0();
-    err_num = tup5.at1();
-    if (n < 0) {
-      if (err_num == EINTR) {
-        ;  // pass
-      }
-      else {
-        e_die_status(2, StrFormat("osh I/O error: %s", posix::strerror(err_num)));
-      }
-    }
-    else {
-      if (n == 0) {
-        break;
-      }
-      else {
-        mylib::Stdout()->write(chunks->at(0));
-        chunks->pop();
-      }
-    }
-  }
-  return 0;
-}
-
-Sleep::Sleep(cmd_eval::CommandEvaluator* cmd_ev, iolib::SignalSafe* signal_safe) : ::vm::_Builtin() {
-  this->cmd_ev = cmd_ev;
-  this->signal_safe = signal_safe;
-}
-
-int Sleep::Run(cmd_value::Argv* cmd_val) {
-  args::Reader* arg_r = nullptr;
-  BigStr* duration = nullptr;
-  syntax_asdl::loc_t* duration_loc = nullptr;
-  BigStr* msg = nullptr;
-  double total_seconds;
-  double deadline;
-  double secs;
-  int err_num;
-  StackRoot _root0(&cmd_val);
-
-  Tuple2<args::_Attributes*, args::Reader*> tup6 = flag_util::ParseCmdVal(S_dws, cmd_val);
-  arg_r = tup6.at1();
-  Tuple2<BigStr*, syntax_asdl::loc_t*> tup7 = arg_r->Peek2();
-  duration = tup7.at0();
-  duration_loc = tup7.at1();
-  if (duration == nullptr) {
-    throw Alloc<error::Usage>(S_nrF, cmd_val->arg_locs->at(0));
-  }
-  arg_r->Next();
-  arg_r->Done();
-  msg = StrFormat("got invalid number of seconds %r", duration);
-  try {
-    total_seconds = to_float(duration);
-  }
-  catch (ValueError*) {
-    throw Alloc<error::Usage>(msg, duration_loc);
-  }
-  if (total_seconds < 0) {
-    throw Alloc<error::Usage>(msg, duration_loc);
-  }
-  deadline = (time_::time() + total_seconds);
-  secs = total_seconds;
-  while (true) {
-    err_num = libc::sleep_until_error(secs);
-    if (err_num == 0) {
-      break;
-    }
-    else {
-      if (err_num == EINTR) {
-        this->cmd_ev->RunPendingTraps();
-        if (this->signal_safe->PollUntrappedSigInt()) {
-          throw Alloc<KeyboardInterrupt>();
-        }
-      }
-      else {
-        break;
-      }
-    }
-    secs = (deadline - time_::time());
-    if (secs <= 0) {
-      break;
-    }
-  }
-  return 0;
-}
-
 }  // define namespace io_osh
 
 namespace io_ysh {  // define
 
 using runtime_asdl::cmd_value;
-using syntax_asdl::command_e;
-using syntax_asdl::BraceGroup;
 using value_asdl::value;
 using value_asdl::value_e;
 namespace fmt = format;
@@ -14352,10 +14321,7 @@ int Pp::Run(cmd_value::Argv* cmd_val) {
   value_asdl::value_t* node = nullptr;
   value_asdl::value_t* proc_val = nullptr;
   value::Proc* user_proc = nullptr;
-  syntax_asdl::command_t* body = nullptr;
   BigStr* doc = nullptr;
-  syntax_asdl::BraceGroup* bgroup = nullptr;
-  syntax_asdl::Token* token = nullptr;
   mylib::BufWriter* buf = nullptr;
   StackRoot _root0(&cmd_val);
   StackRoot _root1(&arg_r);
@@ -14467,14 +14433,9 @@ int Pp::Run(cmd_value::Argv* cmd_val) {
         continue;
       }
       user_proc = static_cast<value::Proc*>(proc_val);
-      body = user_proc->body;
-      doc = S_Aoo;
-      if (body->tag() == command_e::BraceGroup) {
-        bgroup = static_cast<BraceGroup*>(body);
-        if (bgroup->doc_token) {
-          token = bgroup->doc_token;
-          doc = token->line->content->slice((token->col + 1), (token->col + token->length));
-        }
+      doc = method_other::GetDocComment(user_proc->body);
+      if (doc == nullptr) {
+        doc = S_Aoo;
       }
       buf = Alloc<mylib::BufWriter>();
       j8::EncodeString(name, buf, true);
@@ -14679,7 +14640,6 @@ using syntax_asdl::source;
 using syntax_asdl::loc;
 using syntax_asdl::loc_t;
 using syntax_asdl::CompoundWord;
-using syntax_asdl::command_e;
 using value_asdl::Obj;
 using value_asdl::value;
 using value_asdl::value_t;
@@ -15155,7 +15115,12 @@ void _PrintFreeForm(Tuple3<BigStr*, BigStr*, BigStr*>* row) {
           what = StrFormat("a %sshell %s", prefix, kind);
         }
         else {
-          what = StrFormat("a shell %s", kind);
+          if ((str_equals(kind, S_evo) || str_equals(kind, S_cgg))) {
+            what = StrFormat("a shell %s", kind);
+          }
+          else {
+            assert(0);  // AssertionError
+          }
         }
       }
     }
@@ -15542,12 +15507,7 @@ void Type::_PrintEntry(arg_types::type* arg, Tuple3<BigStr*, BigStr*, BigStr*>* 
       _PrintFreeForm(row);
       if (str_equals(kind, S_cgg)) {
         sh_func = this->procs->GetShellFunc(name);
-        switch (sh_func->body->tag()) {
-          case command_e::BraceGroup: {
-            ;  // pass
-          }
-            break;
-        }
+        ui::PrintShFunction(sh_func);
       }
     }
   }
@@ -16170,6 +16130,9 @@ value_asdl::value_t* Insert::Call(typed_args::Reader* rd) {
 
 namespace method_other {  // define
 
+using syntax_asdl::command_e;
+using syntax_asdl::BraceGroup;
+using syntax_asdl::command_t;
 using value_asdl::value;
 using value_asdl::value_t;
 using value_asdl::LiteralBlock;
@@ -16202,7 +16165,6 @@ value_asdl::value_t* SourceCode::Call(typed_args::Reader* rd) {
   Dict<BigStr*, value_asdl::value_t*>* result = nullptr;
   syntax_asdl::BraceGroup* brace_group = nullptr;
   syntax_asdl::SourceLine* line = nullptr;
-  BigStr* code_str = nullptr;
   cmd = rd->PosCommand();
   rd->Done();
   lit_block = nullptr;
@@ -16226,9 +16188,41 @@ value_asdl::value_t* SourceCode::Call(typed_args::Reader* rd) {
   line = brace_group->left->line;
   result->set(S_igc, Alloc<value::Str>(ui::GetLineSourceString(line)));
   result->set(S_btu, num::ToBig(line->line_num));
-  code_str = alloc::SnipCodeBlock(brace_group->left, brace_group->right, lit_block->lines);
-  result->set(S_bAo, Alloc<value::Str>(code_str));
+  result->set(S_bAo, Alloc<value::Str>(lit_block->code_str));
   return Alloc<value::Dict>(result);
+}
+
+BigStr* GetDocComment(syntax_asdl::command_t* body) {
+  BigStr* doc = nullptr;
+  syntax_asdl::BraceGroup* bgroup = nullptr;
+  syntax_asdl::Token* token = nullptr;
+  doc = nullptr;
+  if (body->tag() == command_e::BraceGroup) {
+    bgroup = static_cast<BraceGroup*>(body);
+    if (bgroup->doc_token) {
+      token = bgroup->doc_token;
+      doc = token->line->content->slice((token->col + 1), (token->col + token->length));
+    }
+  }
+  return doc;
+}
+
+DocComment::DocComment() {
+  ;  // pass
+}
+
+value_asdl::value_t* DocComment::Call(typed_args::Reader* rd) {
+  value::Proc* proc_val = nullptr;
+  BigStr* doc = nullptr;
+  proc_val = rd->PosProc();
+  rd->Done();
+  doc = GetDocComment(proc_val->body);
+  if (doc != nullptr) {
+    return Alloc<value::Str>(doc);
+  }
+  else {
+    return value::Null;
+  }
 }
 
 }  // define namespace method_other
@@ -17699,6 +17693,196 @@ int Printf::Run(cmd_value::Argv* cmd_val) {
 }
 
 }  // define namespace printf_osh
+
+namespace private_ysh {  // define
+
+using error::e_die_status;
+
+Cat::Cat(ui::ErrorFormatter* errfmt) : ::vm::_Builtin() {
+  this->errfmt = errfmt;
+  this->stdout_ = mylib::Stdout();
+}
+
+int Cat::_CatFile(int fd) {
+  List<BigStr*>* chunks = nullptr;
+  int n;
+  int err_num;
+  chunks = Alloc<List<BigStr*>>();
+  while (true) {
+    Tuple2<int, int> tup0 = pyos::Read(fd, 4096, chunks);
+    n = tup0.at0();
+    err_num = tup0.at1();
+    if (n < 0) {
+      if (err_num == EINTR) {
+        ;  // pass
+      }
+      else {
+        e_die_status(2, StrFormat("oils I/O error: %s", posix::strerror(err_num)));
+      }
+    }
+    else {
+      if (n == 0) {
+        break;
+      }
+      else {
+        this->stdout_->write(chunks->at(0));
+        chunks->pop();
+      }
+    }
+  }
+  return 0;
+}
+
+int Cat::Run(cmd_value::Argv* cmd_val) {
+  args::Reader* arg_r = nullptr;
+  List<BigStr*>* argv = nullptr;
+  List<syntax_asdl::CompoundWord*>* locs = nullptr;
+  int status;
+  int i;
+  int st;
+  bool opened;
+  int my_fd;
+  Tuple2<args::_Attributes*, args::Reader*> tup1 = flag_util::ParseCmdVal(S_Deg, cmd_val);
+  arg_r = tup1.at1();
+  Tuple2<List<BigStr*>*, List<syntax_asdl::CompoundWord*>*> tup2 = arg_r->Rest2();
+  argv = tup2.at0();
+  locs = tup2.at1();
+  if (len(argv) == 0) {
+    return this->_CatFile(STDIN_FILENO);
+  }
+  status = 0;
+  i = 0;
+  for (ListIter<BigStr*> it(argv); !it.Done(); it.Next(), ++i) {
+    BigStr* path = it.Value();
+    if (str_equals(path, S_Bjq)) {
+      st = this->_CatFile(STDIN_FILENO);
+      if (st != 0) {
+        status = st;
+      }
+      continue;
+    }
+    opened = false;
+    try {
+      my_fd = posix::open(path, O_RDONLY, 0);
+      opened = true;
+    }
+    catch (IOError_OSError* e) {
+      this->errfmt->Print_(StrFormat("Can't open %r: %s", path, pyutil::strerror(e)), locs->at(i));
+      status = 1;
+    }
+    if (opened) {
+      st = this->_CatFile(my_fd);
+      posix::close(my_fd);
+      if (st != 0) {
+        status = st;
+      }
+    }
+  }
+  return status;
+}
+
+Rm::Rm(ui::ErrorFormatter* errfmt) : ::vm::_Builtin() {
+  this->errfmt = errfmt;
+}
+
+int Rm::Run(cmd_value::Argv* cmd_val) {
+  args::_Attributes* attrs = nullptr;
+  args::Reader* arg_r = nullptr;
+  arg_types::rm* arg = nullptr;
+  List<BigStr*>* argv = nullptr;
+  List<syntax_asdl::CompoundWord*>* locs = nullptr;
+  int status;
+  int i;
+  int err_num;
+  Tuple2<args::_Attributes*, args::Reader*> tup3 = flag_util::ParseCmdVal(S_CAv, cmd_val);
+  attrs = tup3.at0();
+  arg_r = tup3.at1();
+  arg = Alloc<arg_types::rm>(attrs->attrs);
+  Tuple2<List<BigStr*>*, List<syntax_asdl::CompoundWord*>*> tup4 = arg_r->Rest2();
+  argv = tup4.at0();
+  locs = tup4.at1();
+  if ((!arg->f and len(argv) == 0)) {
+    throw Alloc<error::Usage>(S_xwB, cmd_val->arg_locs->at(0));
+  }
+  status = 0;
+  i = 0;
+  for (ListIter<BigStr*> it(argv); !it.Done(); it.Next(), ++i) {
+    BigStr* path = it.Value();
+    err_num = pyos::Unlink(path);
+    if ((arg->f and err_num == ENOENT)) {
+      continue;
+    }
+    if (err_num != 0) {
+      this->errfmt->Print_(StrFormat("Can't remove %r: %s", path, posix::strerror(err_num)), locs->at(i));
+      status = 1;
+    }
+  }
+  return status;
+}
+
+Sleep::Sleep(cmd_eval::CommandEvaluator* cmd_ev, iolib::SignalSafe* signal_safe) : ::vm::_Builtin() {
+  this->cmd_ev = cmd_ev;
+  this->signal_safe = signal_safe;
+}
+
+int Sleep::Run(cmd_value::Argv* cmd_val) {
+  args::Reader* arg_r = nullptr;
+  BigStr* duration = nullptr;
+  syntax_asdl::loc_t* duration_loc = nullptr;
+  BigStr* msg = nullptr;
+  double total_seconds;
+  double deadline;
+  double secs;
+  int err_num;
+  StackRoot _root0(&cmd_val);
+
+  Tuple2<args::_Attributes*, args::Reader*> tup5 = flag_util::ParseCmdVal(S_dws, cmd_val);
+  arg_r = tup5.at1();
+  Tuple2<BigStr*, syntax_asdl::loc_t*> tup6 = arg_r->Peek2();
+  duration = tup6.at0();
+  duration_loc = tup6.at1();
+  if (duration == nullptr) {
+    throw Alloc<error::Usage>(S_nrF, cmd_val->arg_locs->at(0));
+  }
+  arg_r->Next();
+  arg_r->Done();
+  msg = StrFormat("got invalid number of seconds %r", duration);
+  try {
+    total_seconds = to_float(duration);
+  }
+  catch (ValueError*) {
+    throw Alloc<error::Usage>(msg, duration_loc);
+  }
+  if (total_seconds < 0) {
+    throw Alloc<error::Usage>(msg, duration_loc);
+  }
+  deadline = (time_::time() + total_seconds);
+  secs = total_seconds;
+  while (true) {
+    err_num = libc::sleep_until_error(secs);
+    if (err_num == 0) {
+      break;
+    }
+    else {
+      if (err_num == EINTR) {
+        this->cmd_ev->RunPendingTraps();
+        if (this->signal_safe->PollUntrappedSigInt()) {
+          throw Alloc<KeyboardInterrupt>();
+        }
+      }
+      else {
+        break;
+      }
+    }
+    secs = (deadline - time_::time());
+    if (secs <= 0) {
+      break;
+    }
+  }
+  return 0;
+}
+
+}  // define namespace private_ysh
 
 namespace process_osh {  // define
 
@@ -20247,50 +20431,6 @@ using syntax_asdl::Token;
 using syntax_asdl::SourceLine;
 using syntax_asdl::loc;
 
-BigStr* SnipCodeBlock(syntax_asdl::Token* left, syntax_asdl::Token* right, List<syntax_asdl::SourceLine*>* lines) {
-  List<BigStr*>* pieces = nullptr;
-  BigStr* piece = nullptr;
-  bool saving;
-  bool found_left;
-  bool found_right;
-  pieces = Alloc<List<BigStr*>>();
-  pieces->append(str_repeat(S_yfw, (left->col + 1)));
-  if (left->line == right->line) {
-    for (ListIter<syntax_asdl::SourceLine*> it(lines); !it.Done(); it.Next()) {
-      syntax_asdl::SourceLine* li = it.Value();
-      if (li == left->line) {
-        piece = li->content->slice((left->col + left->length), right->col);
-        pieces->append(piece);
-      }
-    }
-    return S_Aoo->join(pieces);
-  }
-  saving = false;
-  found_left = false;
-  found_right = false;
-  for (ListIter<syntax_asdl::SourceLine*> it(lines); !it.Done(); it.Next()) {
-    syntax_asdl::SourceLine* li = it.Value();
-    if (li == left->line) {
-      found_left = true;
-      saving = true;
-      piece = li->content->slice((left->col + left->length));
-      pieces->append(piece);
-      continue;
-    }
-    if (li == right->line) {
-      found_right = true;
-      piece = li->content->slice(0, right->col);
-      pieces->append(piece);
-      saving = false;
-      break;
-    }
-    if (saving) {
-      pieces->append(li->content);
-    }
-  }
-  return S_Aoo->join(pieces);
-}
-
 ctx_SourceCode::ctx_SourceCode(alloc::Arena* arena, syntax_asdl::source_t* src) {
   gHeap.PushRoot(reinterpret_cast<RawObject**>(&(this->arena)));
   arena->PushSource(src);
@@ -20334,44 +20474,35 @@ void Arena::DiscardLines() {
   this->lines_list->clear();
 }
 
-List<syntax_asdl::SourceLine*>* Arena::SaveLinesAndDiscard(syntax_asdl::Token* left, syntax_asdl::Token* right) {
-  List<syntax_asdl::SourceLine*>* saved = nullptr;
-  bool saving;
-  saved = Alloc<List<syntax_asdl::SourceLine*>>();
-  saving = false;
-  for (ListIter<syntax_asdl::SourceLine*> it(this->lines_list); !it.Done(); it.Next()) {
-    syntax_asdl::SourceLine* li = it.Value();
-    if (li == left->line) {
-      saving = true;
-    }
-    if (saving) {
-      saved->append(li);
-    }
-    if (li == right->line) {
-      saving = false;
-      break;
-    }
-  }
-  this->DiscardLines();
-  return saved;
-}
-
-BigStr* Arena::SnipCodeString(syntax_asdl::Token* left, syntax_asdl::Token* right) {
-  BigStr* piece = nullptr;
+BigStr* Arena::SnipCodeString(syntax_asdl::Token* left, syntax_asdl::Token* right, bool inclusive) {
+  int ileft;
+  int iright;
   List<BigStr*>* pieces = nullptr;
   bool saving;
   bool found_left;
   bool found_right;
+  BigStr* piece = nullptr;
+  if (inclusive) {
+    ileft = left->col;
+    iright = (right->col + right->length);
+  }
+  else {
+    ileft = (left->col + left->length);
+    iright = right->col;
+  }
+  pieces = Alloc<List<BigStr*>>();
+  if (!inclusive) {
+    pieces->append(str_repeat(S_yfw, ileft));
+  }
   if (left->line == right->line) {
     for (ListIter<syntax_asdl::SourceLine*> it(this->lines_list); !it.Done(); it.Next()) {
       syntax_asdl::SourceLine* li = it.Value();
       if (li == left->line) {
-        piece = li->content->slice(left->col, (right->col + right->length));
-        return piece;
+        pieces->append(li->content->slice(ileft, iright));
+        return S_Aoo->join(pieces);
       }
     }
   }
-  pieces = Alloc<List<BigStr*>>();
   saving = false;
   found_left = false;
   found_right = false;
@@ -20380,13 +20511,13 @@ BigStr* Arena::SnipCodeString(syntax_asdl::Token* left, syntax_asdl::Token* righ
     if (li == left->line) {
       found_left = true;
       saving = true;
-      piece = li->content->slice(left->col);
+      piece = li->content->slice(ileft);
       pieces->append(piece);
       continue;
     }
     if (li == right->line) {
       found_right = true;
-      piece = li->content->slice(0, (right->col + right->length));
+      piece = li->content->slice(0, iright);
       pieces->append(piece);
       saving = false;
       break;
@@ -22600,20 +22731,20 @@ BigStr* ReadlineCallback::__call__(BigStr* unused_word, int state) {
     return this->_GetNextCompletion(state);
   }
   catch (util::UserExit* e) {
-    print_stderr(S_EDi);
+    print_stderr(S_muc);
   }
   catch (error::FatalRuntime* e) {
-    print_stderr(StrFormat("osh: Runtime error while completing: %s", e->UserErrorString()));
+    print_stderr(StrFormat("oils: Runtime error while completing: %s", e->UserErrorString()));
     this->debug_f->writeln(StrFormat("Runtime error while completing: %s", e->UserErrorString()));
   }
   catch (IOError_OSError* e) {
-    print_stderr(StrFormat("osh: I/O error (completion): %s", posix::strerror(e->errno_)));
+    print_stderr(StrFormat("oils: I/O error (completion): %s", posix::strerror(e->errno_)));
   }
   catch (KeyboardInterrupt*) {
     print_stderr(S_qgA);
   }
   catch (Exception* e) {
-    print_stderr(StrFormat("osh: Unhandled exception while completing: %s", e));
+    print_stderr(StrFormat("oils: Unhandled exception while completing: %s", e));
     this->debug_f->writeln(StrFormat("Unhandled exception while completing: %s", e));
   }
   catch (SystemExit* e) {
@@ -23422,6 +23553,7 @@ namespace executor {  // define
 
 using id_kind_asdl::Id;
 using option_asdl::builtin_i;
+using option_asdl::builtin_t;
 using runtime_asdl::RedirValue;
 using runtime_asdl::trace;
 using syntax_asdl::command;
@@ -23430,6 +23562,7 @@ using syntax_asdl::CommandSub;
 using syntax_asdl::CompoundWord;
 using syntax_asdl::loc;
 using syntax_asdl::loc_t;
+using syntax_asdl::word_t;
 using error::e_die;
 using error::e_die_status;
 using mylib::print_stderr;
@@ -23457,6 +23590,65 @@ BigStr* LookupExecutable(BigStr* name, List<BigStr*>* path_dirs, bool exec_requi
     }
   }
   return nullptr;
+}
+
+int _RewriteExternToBuiltin(List<BigStr*>* argv) {
+  BigStr* arg0 = nullptr;
+  int i;
+  int n;
+  BigStr* arg = nullptr;
+  arg0 = argv->at(0);
+  i = 1;
+  n = len(argv);
+  switch (len(arg0)) {
+    case 2: {
+      if (str_equals_c(arg0, "rm", 2)) {
+        while (i < n) {
+          arg = argv->at(i);
+          if ((str_equals(arg, S_gpk) || str_equals(arg, S_kyo))) {
+            ;  // pass
+          }
+          else {
+            if (arg->startswith(S_Bjq)) {
+              return consts::NO_INDEX;
+            }
+          }
+          i += 1;
+        }
+        return builtin_i::rm;
+      }
+      else {
+        goto str_switch_default;
+      }
+    }
+      break;
+    case 3: {
+      if (str_equals_c(arg0, "cat", 3)) {
+        while (i < n) {
+          arg = argv->at(i);
+          if ((str_equals(arg, S_Bjq) || str_equals(arg, S_gpk))) {
+            ;  // pass
+          }
+          else {
+            if (arg->startswith(S_Bjq)) {
+              return consts::NO_INDEX;
+            }
+          }
+          i += 1;
+        }
+        return builtin_i::cat;
+      }
+      else {
+        goto str_switch_default;
+      }
+    }
+      break;
+
+    str_switch_default:
+    default: {
+      return consts::NO_INDEX;
+    }
+  }
 }
 
 SearchPath::SearchPath(state::Mem* mem, optview::Exec* exec_opts) {
@@ -23653,6 +23845,9 @@ ShellExecutor::ShellExecutor(state::Mem* mem, optview::Exec* exec_opts, state::M
   this->process_sub_stack = Alloc<List<executor::_ProcessSubFrame*>>();
   this->clean_frame_pool = Alloc<List<executor::_ProcessSubFrame*>>();
   this->fg_pipeline = nullptr;
+  syntax_asdl::Token* tok1 = lexer::DummyToken(Id::Lit_Chars, S_utc);
+  syntax_asdl::Token* tok2 = lexer::DummyToken(Id::Lit_Chars, S_Deg);
+  this->builtin_cat_words = NewList<syntax_asdl::word_t*>(std::initializer_list<syntax_asdl::word_t*>{Alloc<CompoundWord>(NewList<syntax_asdl::word_part_t*>(std::initializer_list<syntax_asdl::word_part_t*>{tok1})), Alloc<CompoundWord>(NewList<syntax_asdl::word_part_t*>(std::initializer_list<syntax_asdl::word_part_t*>{tok2}))});
 }
 
 process::Process* ShellExecutor::_MakeProcess(syntax_asdl::command_t* node, bool inherit_errexit, bool inherit_errtrace) {
@@ -23717,6 +23912,12 @@ int ShellExecutor::_RunSimpleCommand(BigStr* arg0, syntax_asdl::loc_t* arg0_loc,
   if (builtin_id != consts::NO_INDEX) {
     cmd_st->show_code = true;
     return this->RunBuiltin(builtin_id, cmd_val);
+  }
+  if ((this->exec_opts->rewrite_extern() and !this->exec_opts->interactive())) {
+    builtin_id = _RewriteExternToBuiltin(cmd_val->argv);
+    if (builtin_id != consts::NO_INDEX) {
+      return this->RunBuiltin(builtin_id, cmd_val);
+    }
   }
   return this->RunExternal(arg0, arg0_loc, cmd_val, cmd_st, run_flags);
 }
@@ -23998,8 +24199,6 @@ BigStr* ShellExecutor::RunCommandSub(syntax_asdl::CommandSub* cs_part) {
   BigStr* why = nullptr;
   syntax_asdl::command_t* node = nullptr;
   command::Redirect* redir_node = nullptr;
-  syntax_asdl::Token* tok = nullptr;
-  syntax_asdl::CompoundWord* cat_word = nullptr;
   syntax_asdl::Token* blame_tok = nullptr;
   command::Simple* simple = nullptr;
   int status;
@@ -24021,10 +24220,8 @@ BigStr* ShellExecutor::RunCommandSub(syntax_asdl::CommandSub* cs_part) {
   if (node->tag() == command_e::Redirect) {
     redir_node = static_cast<command::Redirect*>(node);
     if ((len(redir_node->redirects) == 1 and (redir_node->redirects->at(0)->op->id == Id::Redir_Less and redir_node->child->tag() == command_e::NoOp))) {
-      tok = lexer::DummyToken(Id::Lit_Chars, S_swp);
-      cat_word = Alloc<CompoundWord>(NewList<syntax_asdl::word_part_t*>(std::initializer_list<syntax_asdl::word_part_t*>{tok}));
       blame_tok = redir_node->redirects->at(0)->op;
-      simple = Alloc<command::Simple>(blame_tok, Alloc<List<syntax_asdl::EnvPair*>>(), NewList<syntax_asdl::word_t*>(std::initializer_list<syntax_asdl::word_t*>{cat_word}), nullptr, nullptr, false);
+      simple = Alloc<command::Simple>(blame_tok, Alloc<List<syntax_asdl::EnvPair*>>(), this->builtin_cat_words, nullptr, nullptr, false);
       redir_node->child = simple;
     }
   }
@@ -28472,6 +28669,13 @@ Dict<BigStr*, value_asdl::value_t*>* Mem::PopContextStack() {
   return this->ctx_stack->pop();
 }
 
+bool ObjIsReadOnly(value_asdl::Obj* obj) {
+  if (!obj->prototype) {
+    return false;
+  }
+  return dict_contains(obj->prototype->d, S_Ayd_1);
+}
+
 Tuple2<value_asdl::value_t*, value_asdl::Obj*> ValueIsInvokableObj(value_asdl::value_t* val) {
   value_asdl::Obj* obj = nullptr;
   value_asdl::value_t* invoke_val = nullptr;
@@ -28511,7 +28715,7 @@ void _AddNames(Dict<BigStr*, bool>* unique, Dict<BigStr*, runtime_asdl::Cell*>* 
 
 Procs::Procs(state::Mem* mem) {
   this->mem = mem;
-  this->sh_funcs = Alloc<Dict<BigStr*, value::Proc*>>();
+  this->sh_funcs = Alloc<Dict<BigStr*, value_asdl::value_t*>>();
 }
 
 void Procs::DefineShellFunc(BigStr* name, value::Proc* proc) {
@@ -28523,7 +28727,15 @@ bool Procs::IsShellFunc(BigStr* name) {
 }
 
 value::Proc* Procs::GetShellFunc(BigStr* name) {
-  return this->sh_funcs->get(name);
+  value_asdl::value_t* val = nullptr;
+  val = this->sh_funcs->get(name);
+  if (val == nullptr) {
+    return nullptr;
+  }
+  if (val->tag() != value_e::Proc) {
+    return nullptr;
+  }
+  return static_cast<value::Proc*>(val);
 }
 
 void Procs::EraseShellFunc(BigStr* to_del) {
@@ -28562,7 +28774,7 @@ List<BigStr*>* Procs::InvokableNames() {
   Dict<BigStr*, runtime_asdl::Cell*>* global_frame = nullptr;
   List<BigStr*>* names = nullptr;
   unique = Alloc<Dict<BigStr*, bool>>();
-  for (DictIter<BigStr*, value::Proc*> it(this->sh_funcs); !it.Done(); it.Next()) {
+  for (DictIter<BigStr*, value_asdl::value_t*> it(this->sh_funcs); !it.Done(); it.Next()) {
     BigStr* name = it.Key();
     unique->set(name, true);
   }
@@ -30757,6 +30969,7 @@ using syntax_asdl::command_t;
 using syntax_asdl::command_str;
 using syntax_asdl::source;
 using syntax_asdl::source_e;
+using value_asdl::value;
 using value_asdl::value_e;
 using value_asdl::value_t;
 namespace fmt = format;
@@ -31185,6 +31398,15 @@ void PrettyPrintValue(BigStr* prefix, value_asdl::value_t* val, mylib::Writer* f
   printer->PrintDoc(doc, buf);
   f->write(buf->getvalue());
   f->write(S_nfs);
+}
+
+void PrintShFunction(value::Proc* proc_val) {
+  if (proc_val->code_str != nullptr) {
+    print(proc_val->code_str);
+  }
+  else {
+    print(StrFormat("%s() { : \"function body not available\"; }", proc_val->name));
+  }
 }
 
 }  // define namespace ui
@@ -32275,6 +32497,24 @@ syntax_asdl::Token* TokenForCommand(syntax_asdl::command_t* node) {
   return nullptr;
 }
 
+syntax_asdl::Token* RightTokenForCommand(syntax_asdl::command_t* node) {
+  syntax_asdl::command_t* UP_node = nullptr;
+  UP_node = node;
+  switch (node->tag()) {
+    case command_e::BraceGroup: {
+      BraceGroup* node = static_cast<BraceGroup*>(UP_node);
+      return node->right;
+    }
+      break;
+    case command_e::Subshell: {
+      command::Subshell* node = static_cast<command::Subshell*>(UP_node);
+      return node->right;
+    }
+      break;
+  }
+  return nullptr;
+}
+
 syntax_asdl::Token* TokenForArith(syntax_asdl::arith_expr_t* node) {
   syntax_asdl::arith_expr_t* UP_node = nullptr;
   UP_node = node;
@@ -32747,6 +32987,9 @@ using syntax_asdl::Func;
 using syntax_asdl::pat_t;
 using syntax_asdl::VarDecl;
 using syntax_asdl::Mutation;
+using syntax_asdl::source;
+using syntax_asdl::loc;
+using syntax_asdl::loc_t;
 using types_asdl::lex_mode_e;
 namespace fmt = format;
 using expr_parse::ctx_PNodeAllocator;
@@ -32876,12 +33119,15 @@ word_parse::WordParser* ParseContext::MakeWordParser(lexer::Lexer* lx, reader::_
   return Alloc<word_parse::WordParser>(this, lx, line_reader);
 }
 
-tdop::TdopParser* ParseContext::MakeArithParser(BigStr* code_str) {
+tdop::TdopParser* ParseContext::MakeArithParser(BigStr* code_str, syntax_asdl::loc_t* blame_loc) {
+  alloc::Arena* arena = nullptr;
   reader::FileLineReader* line_reader = nullptr;
   lexer::Lexer* lx = nullptr;
   word_parse::WordParser* w_parser = nullptr;
   tdop::TdopParser* a_parser = nullptr;
-  line_reader = reader::StringLineReader(code_str, this->arena);
+  arena = Alloc<alloc::Arena>();
+  arena->PushSource(Alloc<source::Dynamic>(S_Aou, blame_loc));
+  line_reader = reader::StringLineReader(code_str, arena);
   lx = this->MakeLexer(line_reader);
   w_parser = Alloc<word_parse::WordParser>(this, lx, line_reader);
   w_parser->Init(lex_mode_e::Arith);
@@ -33652,6 +33898,13 @@ value::Command* Reader::_ToCommand(value_asdl::value_t* val) {
   throw Alloc<error::TypeErr>(val, StrFormat("Arg %d should be a Command", this->pos_consumed), this->BlamePos());
 }
 
+value::Proc* Reader::_ToProc(value_asdl::value_t* val) {
+  if (val->tag() == value_e::Proc) {
+    return static_cast<value::Proc*>(val);
+  }
+  throw Alloc<error::TypeErr>(val, StrFormat("Arg %d should be a Proc", this->pos_consumed), this->BlamePos());
+}
+
 BigStr* Reader::PosStr() {
   value_asdl::value_t* val = nullptr;
   val = this->PosValue();
@@ -33764,6 +34017,12 @@ value::Command* Reader::PosCommand() {
   value_asdl::value_t* val = nullptr;
   val = this->PosValue();
   return this->_ToCommand(val);
+}
+
+value::Proc* Reader::PosProc() {
+  value_asdl::value_t* val = nullptr;
+  val = this->PosValue();
+  return this->_ToProc(val);
 }
 
 value::Expr* Reader::PosExpr() {
@@ -34818,6 +35077,7 @@ using syntax_asdl::debug_frame;
 using syntax_asdl::VarDecl;
 using syntax_asdl::Mutation;
 using syntax_asdl::ExprCommand;
+using syntax_asdl::ShFunction;
 using runtime_asdl::cmd_value;
 using runtime_asdl::cmd_value_e;
 using runtime_asdl::CommandStatus;
@@ -36319,9 +36579,9 @@ int CommandEvaluator::_DoForExpr(command::ForExpr* node) {
   return status;
 }
 
-void CommandEvaluator::_DoShFunction(command::ShFunction* node) {
+void CommandEvaluator::_DoShFunction(syntax_asdl::ShFunction* node) {
   value::Proc* sh_func = nullptr;
-  sh_func = Alloc<value::Proc>(node->name, node->name_tok, proc_sig::Open, node->body, nullptr, true, nullptr, this->mem->GlobalFrame());
+  sh_func = Alloc<value::Proc>(node->name, node->name_tok, proc_sig::Open, node->body, nullptr, true, nullptr, this->mem->GlobalFrame(), node->code_str);
   this->procs->DefineShellFunc(node->name, sh_func);
 }
 
@@ -36342,7 +36602,7 @@ void CommandEvaluator::_DoProc(syntax_asdl::Proc* node) {
   else {
     proc_defaults = nullptr;
   }
-  proc = Alloc<value::Proc>(proc_name, node->name, node->sig, node->body, proc_defaults, false, this->mem->CurrentFrame(), this->mem->GlobalFrame());
+  proc = Alloc<value::Proc>(proc_name, node->name, node->sig, node->body, proc_defaults, false, this->mem->CurrentFrame(), this->mem->GlobalFrame(), nullptr);
   this->procs->DefineProc(proc_name, proc);
 }
 
@@ -36579,10 +36839,6 @@ void CommandEvaluator::_LeafTick() {
   mylib::MaybeCollect();
 }
 
-int CommandEvaluator::_DispatchFast(syntax_asdl::command_t* node, runtime_asdl::CommandStatus* cmd_st) {
-  ;  // pass
-}
-
 int CommandEvaluator::_Dispatch(syntax_asdl::command_t* node, runtime_asdl::CommandStatus* cmd_st) {
   syntax_asdl::command_t* UP_node = nullptr;
   int status;
@@ -36772,7 +37028,7 @@ int CommandEvaluator::_Dispatch(syntax_asdl::command_t* node, runtime_asdl::Comm
     }
       break;
     case command_e::ShFunction: {
-      command::ShFunction* node = static_cast<command::ShFunction*>(UP_node);
+      ShFunction* node = static_cast<ShFunction*>(UP_node);
       this->_DoShFunction(node);
       status = 0;
     }
@@ -37299,6 +37555,7 @@ using syntax_asdl::DoubleQuoted;
 using syntax_asdl::List_of_command;
 using syntax_asdl::VarDecl;
 using syntax_asdl::ExprCommand;
+using syntax_asdl::ShFunction;
 using value_asdl::LiteralBlock;
 using error::p_die;
 int TAB_CH = 9;
@@ -37483,7 +37740,7 @@ syntax_asdl::AssignPair* _MakeAssignPair(parse_lib::ParseContext* parse_ctx, syn
         else {
           FAIL(kNotImplemented);  // Python NotImplementedError
         }
-        a_parser = parse_ctx->MakeArithParser(code_str);
+        a_parser = parse_ctx->MakeArithParser(code_str, left_token);
         src = Alloc<source::Reparsed>(S_mqm, left_token, close_token);
         {  // with
           alloc::ctx_SourceCode ctx{arena, src};
@@ -37909,7 +38166,7 @@ Tuple4<List<syntax_asdl::Redir*>*, List<syntax_asdl::CompoundWord*>*, syntax_asd
   int prev_byte;
   int next_id;
   syntax_asdl::BraceGroup* brace_group = nullptr;
-  List<syntax_asdl::SourceLine*>* lines = nullptr;
+  BigStr* code_str = nullptr;
   StackRoot _root0(&redirects);
   StackRoot _root1(&words);
   StackRoot _root2(&typed_args);
@@ -37992,8 +38249,8 @@ Tuple4<List<syntax_asdl::Redir*>*, List<syntax_asdl::CompoundWord*>*, syntax_asd
   if ((this->parse_opts->parse_brace() and (this->c_id == Id::Lit_LBrace and this->allow_block))) {
     this->hay_attrs_stack->append(first_word_caps);
     brace_group = this->ParseBraceGroup();
-    lines = this->arena->SaveLinesAndDiscard(brace_group->left, brace_group->right);
-    block = Alloc<LiteralBlock>(brace_group, lines);
+    code_str = this->arena->SnipCodeString(brace_group->left, brace_group->right, false);
+    block = Alloc<LiteralBlock>(brace_group, code_str);
     this->hay_attrs_stack->pop();
   }
   this->_GetWord();
@@ -38070,7 +38327,7 @@ syntax_asdl::command_t* CommandParser::_MaybeExpandAliases(List<syntax_asdl::Com
     expanded->append(words_str);
   }
   code_str = S_Aoo->join(expanded);
-  arena = this->arena;
+  arena = Alloc<alloc::Arena>();
   line_reader = reader::StringLineReader(code_str, arena);
   cp = this->parse_ctx->MakeOshParser(line_reader);
   cp->Init_AliasesInFlight(aliases_in_flight);
@@ -39011,12 +39268,13 @@ syntax_asdl::command_t* CommandParser::ParseCompoundCommand() {
   p_die(StrFormat("Unexpected word while parsing compound command (%s)", Id_str(this->c_id)), Alloc<loc::Word>(this->cur_word));
 }
 
-command::ShFunction* CommandParser::ParseFunctionDef() {
+syntax_asdl::ShFunction* CommandParser::ParseFunctionDef() {
   syntax_asdl::CompoundWord* word0 = nullptr;
   BigStr* name = nullptr;
   syntax_asdl::word_part_t* part0 = nullptr;
   syntax_asdl::Token* blame_tok = nullptr;
-  command::ShFunction* func = nullptr;
+  syntax_asdl::ShFunction* func = nullptr;
+  syntax_asdl::Token* right_tok = nullptr;
   StackRoot _root0(&word0);
   StackRoot _root1(&name);
   StackRoot _root2(&blame_tok);
@@ -39037,7 +39295,7 @@ command::ShFunction* CommandParser::ParseFunctionDef() {
   if (this->c_id == Id::Right_ShFunction) {
     this->_SetNext();
     this->_NewlineOk();
-    func = command::ShFunction::CreateNull();
+    func = ShFunction::CreateNull();
     func->name = name;
     {  // with
       ctx_VarChecker ctx{this->var_checker, blame_tok};
@@ -39045,6 +39303,10 @@ command::ShFunction* CommandParser::ParseFunctionDef() {
       func->body = this->ParseCompoundCommand();
     }
     func->name_tok = location::LeftTokenForCompoundWord(word0);
+    right_tok = location::RightTokenForCommand(func->body);
+    if (right_tok) {
+      func->code_str = this->arena->SnipCodeString(func->name_tok, right_tok);
+    }
     return func;
   }
   else {
@@ -39053,12 +39315,13 @@ command::ShFunction* CommandParser::ParseFunctionDef() {
   }
 }
 
-command::ShFunction* CommandParser::ParseKshFunctionDef() {
+syntax_asdl::ShFunction* CommandParser::ParseKshFunctionDef() {
   syntax_asdl::Token* keyword_tok = nullptr;
   syntax_asdl::CompoundWord* cur_word = nullptr;
   BigStr* name = nullptr;
   syntax_asdl::word_t* name_word = nullptr;
-  command::ShFunction* func = nullptr;
+  syntax_asdl::ShFunction* func = nullptr;
+  syntax_asdl::Token* right_tok = nullptr;
   StackRoot _root0(&keyword_tok);
   StackRoot _root1(&name);
   StackRoot _root2(&name_word);
@@ -39081,7 +39344,7 @@ command::ShFunction* CommandParser::ParseKshFunctionDef() {
     this->_Eat(Id::Right_ShFunction);
   }
   this->_NewlineOk();
-  func = command::ShFunction::CreateNull();
+  func = ShFunction::CreateNull();
   func->name = name;
   {  // with
     ctx_VarChecker ctx{this->var_checker, keyword_tok};
@@ -39090,6 +39353,10 @@ command::ShFunction* CommandParser::ParseKshFunctionDef() {
   }
   func->keyword = keyword_tok;
   func->name_tok = location::LeftTokenForWord(name_word);
+  right_tok = location::RightTokenForCommand(func->body);
+  if (right_tok) {
+    func->code_str = this->arena->SnipCodeString(keyword_tok, right_tok);
+  }
   return func;
 }
 
@@ -47424,7 +47691,7 @@ syntax_asdl::CommandSub* WordParser::_ReadCommandSub(int left_id, bool d_quoted)
         }
         right_token = this->cur_token;
         code_str = S_Aoo->join(parts);
-        arena = this->parse_ctx->arena;
+        arena = Alloc<alloc::Arena>();
         line_reader = reader::StringLineReader(code_str, arena);
         c_parser = this->parse_ctx->MakeOshParser(line_reader);
         src = Alloc<source::Reparsed>(S_vlc, left_token, right_token);
@@ -48645,6 +48912,7 @@ using syntax_asdl::redir_param;
 using syntax_asdl::redir_param_e;
 using syntax_asdl::Redir;
 using syntax_asdl::List_of_command;
+using syntax_asdl::ShFunction;
 using error::p_die;
 using mylib::print_stderr;
 
@@ -48865,7 +49133,7 @@ void Finder::DoCommand(syntax_asdl::command_t* node) {
     }
       break;
     case command_e::ShFunction: {
-      command::ShFunction* node = static_cast<command::ShFunction*>(UP_node);
+      ShFunction* node = static_cast<ShFunction*>(UP_node);
       this->DoCommand(node->body);
     }
       break;
@@ -49290,7 +49558,7 @@ void YshPrinter::DoCommand(syntax_asdl::command_t* node, Dict<BigStr*, bool>* lo
     }
       break;
     case command_e::ShFunction: {
-      command::ShFunction* node = static_cast<command::ShFunction*>(UP_node);
+      ShFunction* node = static_cast<ShFunction*>(UP_node);
       new_local_symbols = Alloc<Dict<BigStr*, bool>>();
       if (node->keyword) {
         this->cursor->PrintUntil(node->keyword);
@@ -55812,7 +56080,7 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
   Dict<BigStr*, bool>* guards = nullptr;
   pure_osh::Boolean* true_ = nullptr;
   io_ysh::RunBlock* redir_builtin = nullptr;
-  io_osh::Cat* cat = nullptr;
+  private_ysh::Cat* cat = nullptr;
   io_osh::MapFile* mapfile = nullptr;
   dirs_osh::DirStack* dir_stack = nullptr;
   readline_osh::BindXCallback* bindx_cb = nullptr;
@@ -56154,10 +56422,11 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
   b->set(builtin_i::redir, redir_builtin);
   b->set(builtin_i::fopen, redir_builtin);
   b->set(builtin_i::pp, Alloc<io_ysh::Pp>(expr_ev, mem, errfmt, procs, arena));
-  cat = Alloc<io_osh::Cat>();
+  cat = Alloc<private_ysh::Cat>(errfmt);
   b->set(builtin_i::cat, cat);
   b->set(builtin_i::read, Alloc<read_osh::Read>(splitter, mem, parse_ctx, cmd_ev, errfmt));
-  b->set(builtin_i::sleep, Alloc<io_osh::Sleep>(cmd_ev, signal_safe));
+  b->set(builtin_i::sleep, Alloc<private_ysh::Sleep>(cmd_ev, signal_safe));
+  b->set(builtin_i::rm, Alloc<private_ysh::Rm>(errfmt));
   mapfile = Alloc<io_osh::MapFile>(mem, errfmt, cmd_ev);
   b->set(builtin_i::mapfile, mapfile);
   b->set(builtin_i::readarray, mapfile);
@@ -56201,6 +56470,7 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
   methods->set(value_e::Match, Alloc<Dict<BigStr*, vm::_Callable*>>(std::initializer_list<BigStr*>{S_elk, S_lra_1, S_Ate}, std::initializer_list<vm::_Callable*>{Alloc<func_eggex::MatchMethod>(func_eggex::G, expr_ev), Alloc<func_eggex::MatchMethod>(func_eggex::S, nullptr), Alloc<func_eggex::MatchMethod>(func_eggex::E, nullptr)}));
   methods->set(value_e::Place, Alloc<Dict<BigStr*, vm::_Callable*>>(std::initializer_list<BigStr*>{S_CEu}, std::initializer_list<vm::_Callable*>{Alloc<method_other::SetValue>(mem)}));
   methods->set(value_e::Command, Alloc<Dict<BigStr*, vm::_Callable*>>(std::initializer_list<BigStr*>{S_vcp}, std::initializer_list<vm::_Callable*>{Alloc<method_other::SourceCode>()}));
+  methods->set(value_e::Proc, Alloc<Dict<BigStr*, vm::_Callable*>>(std::initializer_list<BigStr*>{S_feA}, std::initializer_list<vm::_Callable*>{Alloc<method_other::DocComment>()}));
   methods->set(value_e::DebugFrame, Alloc<Dict<BigStr*, vm::_Callable*>>(std::initializer_list<BigStr*>{S_hnB}, std::initializer_list<vm::_Callable*>{Alloc<func_reflect::DebugFrameToString>()}));
   _AddBuiltinFunc(mem, S_cCk, Alloc<method_io::Eval>(mem, cmd_ev, pure_ex, method_io::EVAL_NULL));
   _AddBuiltinFunc(mem, S_pns, Alloc<method_io::EvalExpr>(expr_ev, pure_ex, cmd_ev));

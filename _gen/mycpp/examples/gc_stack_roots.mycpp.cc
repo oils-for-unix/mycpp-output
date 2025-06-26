@@ -54,11 +54,8 @@ namespace gc_stack_roots {  // define
 
 
 void print_list(List<BigStr*>* l) {
-  StackRoot _root0(&l);
-
   for (ListIter<BigStr*> it(l); !it.Done(); it.Next()) {
     BigStr* s = it.Value();
-    StackRoot _for(&s  );
     print(s);
   }
 }
@@ -99,8 +96,6 @@ ctx_Stasher::~ctx_Stasher() {
 
 void no_collect() {
   List<BigStr*>* l = nullptr;
-  StackRoot _root0(&l);
-
   l = NewList<BigStr*>(std::initializer_list<BigStr*>{S_Dxe, S_tfu});
   print_list(l);
 }
@@ -109,7 +104,6 @@ void simple_collect() {
   List<BigStr*>* l1 = nullptr;
   List<BigStr*>* l2 = nullptr;
   StackRoot _root0(&l1);
-  StackRoot _root1(&l2);
 
   l1 = NewList<BigStr*>(std::initializer_list<BigStr*>{S_lqB, S_clt});
   l2 = NewList<BigStr*>(std::initializer_list<BigStr*>{S_mos, S_qgB});
@@ -132,8 +126,7 @@ void indirect_collect() {
 void arg_roots() {
   List<BigStr*>* l1 = nullptr;
   List<BigStr*>* l2 = nullptr;
-  StackRoot _root0(&l1);
-  StackRoot _root1(&l2);
+  StackRoot _root0(&l2);
 
   l1 = NewList<BigStr*>(std::initializer_list<BigStr*>{S_CCy});
   ignore_and_collect(l1);
@@ -145,8 +138,7 @@ void arg_roots() {
 void alias() {
   List<BigStr*>* l1 = nullptr;
   List<BigStr*>* l2 = nullptr;
-  StackRoot _root0(&l1);
-  StackRoot _root1(&l2);
+  StackRoot _root0(&l2);
 
   l1 = NewList<BigStr*>(std::initializer_list<BigStr*>{S_lqB, S_clt});
   l2 = l1;
@@ -165,7 +157,6 @@ void collect_scoped_resource() {
 void collect_in_loop() {
   for (ListIter<BigStr*> it(NewList<BigStr*>(std::initializer_list<BigStr*>{S_jzk, S_uha})); !it.Done(); it.Next()) {
     BigStr* s = it.Value();
-    StackRoot _for(&s  );
     mylib::MaybeCollect();
     print(s);
   }
@@ -182,7 +173,6 @@ void collect_in_comprehension() {
   }
   for (ListIter<BigStr*> it(l); !it.Done(); it.Next()) {
     BigStr* s = it.Value();
-    StackRoot _for(&s  );
     print(s);
   }
 }

@@ -42,8 +42,6 @@ void f(int x, bool b) {
 }
 
 void g(int x, BigStr* s) {
-  StackRoot _root0(&s);
-
   mylib::print_stderr(StrFormat("x = %d", x));
   mylib::print_stderr(StrFormat("s = %r", s));
 }
@@ -62,10 +60,6 @@ void run_tests() {
   test_default_args::Foo* f1 = nullptr;
   test_default_args::Foo* f2 = nullptr;
   test_default_args::Foo* f3 = nullptr;
-  StackRoot _root0(&f1);
-  StackRoot _root1(&f2);
-  StackRoot _root2(&f3);
-
   f(5);
   f(6, true);
   f(7, true);

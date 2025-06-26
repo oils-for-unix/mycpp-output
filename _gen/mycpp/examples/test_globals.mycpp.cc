@@ -48,8 +48,6 @@ void run_tests() {
   test_globals::MyClass* new_obj = nullptr;
   int unused;
   (void)unused;
-  StackRoot _root0(&new_obj);
-
   for (int i = 0; i < 10; ++i) {
     mylib::MaybeCollect();
     new_obj = Alloc<MyClass>(42);

@@ -35,8 +35,6 @@ void run_tests() {
   mops::BigInt max_negative2;
   mops::BigInt big;
   int small;
-  StackRoot _root0(&s1);
-
   a = (3 + 2);
   print(StrFormat("a = %d", a));
   i1 = mops::LShift(mops::BigInt(1), mops::BigInt(31));

@@ -301,17 +301,9 @@ void run_tests() {
   test_classes_gc::WithDict* c = nullptr;
   BigStr* s = nullptr;
   test_classes_gc::Printf* p = nullptr;
-  StackRoot _root0(&o1);
-  StackRoot _root1(&o2);
-  StackRoot _root2(&o3);
-  StackRoot _root3(&p1);
-  StackRoot _root4(&p2);
-  StackRoot _root5(&p3);
-  StackRoot _root6(&m1);
-  StackRoot _root7(&m2);
-  StackRoot _root8(&c);
-  StackRoot _root9(&s);
-  StackRoot _root10(&p);
+  StackRoot _root0(&p1);
+  StackRoot _root1(&c);
+  StackRoot _root2(&p);
 
   o1 = Alloc<Opaque>();
   o2 = Alloc<OpaqueBase>();
@@ -347,14 +339,6 @@ void run_benchmarks() {
   StackRoot _root0(&op);
   StackRoot _root1(&p);
   StackRoot _root2(&m);
-  StackRoot _root3(&o1);
-  StackRoot _root4(&o2);
-  StackRoot _root5(&o3);
-  StackRoot _root6(&p1);
-  StackRoot _root7(&p2);
-  StackRoot _root8(&p3);
-  StackRoot _root9(&m1);
-  StackRoot _root10(&m2);
 
   op = Alloc<List<test_classes_gc::OpaqueBase*>>();
   p = Alloc<List<test_classes_gc::PointersBase*>>();

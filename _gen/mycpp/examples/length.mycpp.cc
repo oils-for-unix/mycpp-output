@@ -33,11 +33,6 @@ void TestMaybeStrEquals() {
   BigStr* b = nullptr;
   BigStr* y = nullptr;
   BigStr* n = nullptr;
-  StackRoot _root0(&a);
-  StackRoot _root1(&b);
-  StackRoot _root2(&y);
-  StackRoot _root3(&n);
-
   a = S_lqB;
   b = S_clt;
   y = S_lqB;
@@ -54,10 +49,6 @@ void run_tests() {
   BigStr* mystr = nullptr;
   List<BigStr*>* mylist = nullptr;
   BigStr* c2 = nullptr;
-  StackRoot _root0(&mystr);
-  StackRoot _root1(&mylist);
-  StackRoot _root2(&c2);
-
   mystr = S_buF;
   mylib::print_stderr(StrFormat("len(mystr) = %d", len(mystr)));
   mylib::print_stderr(StrFormat("mystr[1] = %s", mystr->at(1)));
@@ -66,7 +57,6 @@ void run_tests() {
   mylib::print_stderr(StrFormat("mystr[:-2] = %s", mystr->slice(0, -2)));
   for (StrIter it(mystr); !it.Done(); it.Next()) {
     BigStr* c = it.Value();
-    StackRoot _for(&c  );
     if (str_equals(c, S_jFv)) {
       continue;
     }
@@ -82,7 +72,6 @@ void run_tests() {
   mylib::print_stderr(StrFormat("len(mylist[1:]) = %d", len(mylist->slice(1))));
   for (ListIter<BigStr*> it(mylist); !it.Done(); it.Next()) {
     BigStr* c = it.Value();
-    StackRoot _for(&c  );
     if (str_equals(c, S_rqD)) {
       continue;
     }
@@ -94,7 +83,6 @@ void run_tests() {
   c2 = nullptr;
   for (StrIter it(mystr); !it.Done(); it.Next()) {
     BigStr* c2 = it.Value();
-    StackRoot _for(&c2  );
     if (!(str_equals(c2, S_gCD))) {
       mylib::print_stderr(StrFormat("%s != a", c2));
     }

@@ -36,8 +36,6 @@ namespace test_switch {  // define
 
 
 void TestString(BigStr* s) {
-  StackRoot _root0(&s);
-
   switch (len(s)) {
     case 3: {
       if (str_equals_c(s, "foo", 3)) {

@@ -79,10 +79,6 @@ void run_tests() {
   int i;
   BigStr* s = nullptr;
   List<int>* l = nullptr;
-  StackRoot _root0(&foo);
-  StackRoot _root1(&s);
-  StackRoot _root2(&l);
-
   mylib::print_stderr(S_Fpa);
   List<int> YIELD_for_1;
   f(3, &YIELD_for_1);
@@ -104,7 +100,6 @@ void run_tests() {
     Tuple2<int, BigStr*>* tup4 = it.Value();
     int i = tup4->at0();
     BigStr* s = tup4->at1();
-    StackRoot _unpack_1(&s);
     mylib::print_stderr(StrFormat("g() gave (%d, %r)", i, s));
   }
   List<Tuple2<int, BigStr*>*> YIELD_for_5;
@@ -113,7 +108,6 @@ void run_tests() {
     Tuple2<int, BigStr*>* tup6 = it.Value();
     int i = tup6->at0();
     BigStr* s = tup6->at1();
-    StackRoot _unpack_1(&s);
     mylib::print_stderr(StrFormat("Foo.baz() gave (%d, %r)", i, s));
   }
   List<int> YIELD_for_7;

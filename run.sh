@@ -23,7 +23,7 @@ update-all() {
   # This builds the files we'll release
   devtools/release-native.sh make-tar
 
-  find _gen -name '*.mycpp.cc' -o -name '*.mycpp-souffle.cc' |
+  find _gen -name '*.mycpp.cc' -o -name '*.mycpp-nosouffle.cc' |
     xargs tar --create --file $tmp_tar
 
   popd
@@ -34,7 +34,7 @@ update-all() {
 diff-souffle() {
   local diff=${1:-diff -u}
 
-  $diff _gen/bin/oils_for_unix.{mycpp,mycpp-souffle}.cc
+  $diff _gen/bin/oils_for_unix.{mycpp,mycpp-nosouffle}.cc
 }
 
 task-five "$@"

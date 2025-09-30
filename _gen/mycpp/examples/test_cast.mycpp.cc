@@ -106,6 +106,9 @@ ColorOutput::ColorOutput(mylib::Writer* f) {
 void ColorOutput::WriteRaw(Tuple2<BigStr*, int>* raw) {
   BigStr* s = nullptr;
   int num_chars;
+  StackRoot _root0(&raw);
+  StackRoot _root1(&s);
+
   Tuple2<BigStr*, int>* tup0 = raw;
   s = tup0->at0();
   num_chars = tup0->at1();
@@ -115,6 +118,8 @@ void ColorOutput::WriteRaw(Tuple2<BigStr*, int>* raw) {
 
 Tuple2<BigStr*, int> ColorOutput::GetRaw() {
   mylib::BufWriter* f = nullptr;
+  StackRoot _root0(&f);
+
   f = static_cast<mylib::BufWriter*>(this->f);
   return Tuple2<BigStr*, int>(f->getvalue(), this->num_chars);
 }
@@ -124,6 +129,10 @@ void TestCastBufWriter() {
   test_cast::ColorOutput* out = nullptr;
   BigStr* s = nullptr;
   int num_chars;
+  StackRoot _root0(&f);
+  StackRoot _root1(&out);
+  StackRoot _root2(&s);
+
   f = Alloc<mylib::BufWriter>();
   out = Alloc<ColorOutput>(f);
   out->WriteRaw((Alloc<Tuple2<BigStr*, int>>(S_eog, 2)));
@@ -159,6 +168,9 @@ int value__Eggex::tag() {
 
 void TestSwitchDowncast(test_cast::value_t* val) {
   test_cast::value_t* UP_val = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&UP_val);
+
   UP_val = val;
   switch (val->tag()) {
     case 1: {
@@ -178,6 +190,8 @@ void TestSwitchDowncast(test_cast::value_t* val) {
 }
 
 void TestSwitchDowncastBad(test_cast::value_t* val) {
+  StackRoot _root0(&val);
+
   switch (val->tag()) {
     case 1: {
       val = static_cast<value__Int*>(val);
@@ -200,6 +214,10 @@ void TestCastInSwitch() {
   test_cast::value_t* pattern_val = nullptr;
   test_cast::value__Eggex* pattern_eggex = nullptr;
   int i;
+  StackRoot _root0(&e);
+  StackRoot _root1(&pattern_val);
+  StackRoot _root2(&pattern_eggex);
+
   e = Alloc<value__Eggex>(S_gpF);
   pattern_val = e;
   pattern_eggex = nullptr;

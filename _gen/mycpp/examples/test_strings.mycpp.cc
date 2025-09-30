@@ -88,6 +88,8 @@ namespace test_strings {  // define
 GLOBAL_LIST(MYLIST, BigStr*, 1, {S_yfv});
 
 void banner(BigStr* s) {
+  StackRoot _root0(&s);
+
   print(S_Aoo);
   print(StrFormat("=== %s ===", s));
   print(S_Aoo);
@@ -101,6 +103,9 @@ void TestMethods() {
   BigStr* s = nullptr;
   List<BigStr*>* substrs = nullptr;
   int pos;
+  StackRoot _root0(&s);
+  StackRoot _root1(&substrs);
+
   s = S_dab;
   if (s->startswith(S_Aoo)) {
     print(S_kdC);
@@ -127,6 +132,7 @@ void TestMethods() {
   substrs = NewList<BigStr*>(std::initializer_list<BigStr*>{S_aps, S_jFv, S_zjx, S_qds, S_Aoo});
   for (ListIter<BigStr*> it(substrs); !it.Done(); it.Next()) {
     BigStr* substr = it.Value();
+    StackRoot _for(&substr  );
     for (int start = 0; start < len(s); ++start) {
       pos = s->find(substr, start);
       print(StrFormat("%s find %s start:%d => %d", s, substr, start, pos));
@@ -135,6 +141,7 @@ void TestMethods() {
   print(S_ysn);
   for (ListIter<BigStr*> it(substrs); !it.Done(); it.Next()) {
     BigStr* substr = it.Value();
+    StackRoot _for(&substr  );
     for (int end = 0; end < len(s); ++end) {
       pos = s->find(substr, 0, end);
       print(StrFormat("%s find %s end:%d => %d", s, substr, end, pos));
@@ -155,6 +162,12 @@ void TestFormat() {
   BigStr* x = nullptr;
   BigStr* fmt = nullptr;
   List<BigStr*>* fmts = nullptr;
+  StackRoot _root0(&obj);
+  StackRoot _root1(&s);
+  StackRoot _root2(&x);
+  StackRoot _root3(&fmt);
+  StackRoot _root4(&fmts);
+
   banner(S_ldx);
   print(str_concat(S_lqB, S_clt));
   print(str_repeat(S_lqB, 3));
@@ -199,6 +212,8 @@ void TestByteOperations() {
   int total2;
   int byte;
   int byte2;
+  StackRoot _root0(&s);
+
   banner(S_jwf);
   s = str_repeat(S_lqB, 10);
   i = 0;
@@ -228,6 +243,11 @@ void TestBytes2() {
   int n;
   int i;
   int byte;
+  StackRoot _root0(&b);
+  StackRoot _root1(&ch);
+  StackRoot _root2(&all_bytes);
+  StackRoot _root3(&b2);
+
   banner(S_myw);
   b = Alloc<List<int>>();
   ch = Alloc<List<BigStr*>>();

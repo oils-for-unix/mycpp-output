@@ -154,6 +154,8 @@ void DirStack::Reset() {
 }
 
 void DirStack::Push(BigStr* entry) {
+  StackRoot _root0(&entry);
+
   this->stack->append(entry);
 }
 
@@ -167,6 +169,8 @@ BigStr* DirStack::Pop() {
 
 List<BigStr*>* DirStack::Iter() {
   List<BigStr*>* ret = nullptr;
+  StackRoot _root0(&ret);
+
   ret = Alloc<List<BigStr*>>();
   ret->extend(this->stack);
   ret->reverse();
@@ -174,6 +178,8 @@ List<BigStr*>* DirStack::Iter() {
 }
 
 void DoWork(scoped_resource::DirStack* d, bool do_raise) {
+  StackRoot _root0(&d);
+
   {  // with
     ctx_DirStack ctx{d, S_lqB};
 
@@ -186,6 +192,8 @@ void DoWork(scoped_resource::DirStack* d, bool do_raise) {
 
 void TestGoodRaise() {
   scoped_resource::DirStack* d = nullptr;
+  StackRoot _root0(&d);
+
   d = Alloc<DirStack>();
   for (ListIter<bool> it(NewList<bool>(std::initializer_list<bool>{false, true})); !it.Done(); it.Next()) {
     bool do_raise = it.Value();

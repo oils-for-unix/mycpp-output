@@ -295,10 +295,14 @@ using hnode_asdl::color_e;
 int NO_SPID = -1;
 
 hnode::Record* NewRecord(BigStr* node_type) {
+  StackRoot _root0(&node_type);
+
   return Alloc<hnode::Record>(node_type, S_ijB, S_hxb, Alloc<List<hnode_asdl::Field*>>(), nullptr);
 }
 
 hnode::Leaf* NewLeaf(BigStr* s, hnode_asdl::color_t e_color) {
+  StackRoot _root0(&s);
+
   if (s == nullptr) {
     return Alloc<hnode::Leaf>(S_tci, color_e::OtherConst);
   }
@@ -330,6 +334,9 @@ using pretty_asdl::List_Measured;
 int _HNodeCount(hnode_asdl::hnode_t* h) {
   hnode_asdl::hnode_t* UP_h = nullptr;
   int n;
+  StackRoot _root0(&h);
+  StackRoot _root1(&UP_h);
+
   UP_h = h;
   switch (h->tag()) {
     case hnode_e::AlreadySeen: {
@@ -345,6 +352,7 @@ int _HNodeCount(hnode_asdl::hnode_t* h) {
       n = 1;
       for (ListIter<hnode_asdl::hnode_t*> it(h->children); !it.Done(); it.Next()) {
         hnode_asdl::hnode_t* child = it.Value();
+        StackRoot _for(&child      );
         n += _HNodeCount(child);
       }
       return n;
@@ -355,11 +363,13 @@ int _HNodeCount(hnode_asdl::hnode_t* h) {
       n = 1;
       for (ListIter<hnode_asdl::Field*> it(h->fields); !it.Done(); it.Next()) {
         hnode_asdl::Field* field = it.Value();
+        StackRoot _for(&field      );
         n += _HNodeCount(field->val);
       }
       if (h->unnamed_fields != nullptr) {
         for (ListIter<hnode_asdl::hnode_t*> it(h->unnamed_fields); !it.Done(); it.Next()) {
           hnode_asdl::hnode_t* child = it.Value();
+          StackRoot _for(&child        );
           n += _HNodeCount(child);
         }
       }
@@ -375,6 +385,9 @@ int _HNodeCount(hnode_asdl::hnode_t* h) {
 int _DocCount(pretty_asdl::doc_t* d) {
   pretty_asdl::doc_t* UP_d = nullptr;
   int n;
+  StackRoot _root0(&d);
+  StackRoot _root1(&UP_d);
+
   UP_d = d;
   switch (d->tag()) {
     case doc_e::Break: {
@@ -410,6 +423,7 @@ int _DocCount(pretty_asdl::doc_t* d) {
       n = 1;
       for (ListIter<pretty_asdl::MeasuredDoc*> it(d); !it.Done(); it.Next()) {
         pretty_asdl::MeasuredDoc* mdoc = it.Value();
+        StackRoot _for(&mdoc      );
         n += _DocCount(mdoc->doc);
       }
       return n;
@@ -429,7 +443,11 @@ void _HNodePrettyPrint(bool perf_stats, bool doc_debug, hnode_asdl::hnode_t* nod
   mylib::BufWriter* buf = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&f);
-  StackRoot _root2(&d);
+  StackRoot _root2(&enc);
+  StackRoot _root3(&d);
+  StackRoot _root4(&p);
+  StackRoot _root5(&printer);
+  StackRoot _root6(&buf);
 
   mylib::MaybeCollect();
   if (perf_stats) {
@@ -475,6 +493,8 @@ namespace j8_lite {  // define
 
 
 BigStr* EncodeString(BigStr* s, bool unquoted_ok) {
+  StackRoot _root0(&s);
+
   if ((unquoted_ok and fastfunc::CanOmitQuotes(s))) {
     return s;
   }
@@ -482,10 +502,14 @@ BigStr* EncodeString(BigStr* s, bool unquoted_ok) {
 }
 
 BigStr* YshEncodeString(BigStr* s) {
+  StackRoot _root0(&s);
+
   return fastfunc::ShellEncodeString(s, 1);
 }
 
 BigStr* MaybeShellEncode(BigStr* s) {
+  StackRoot _root0(&s);
+
   if (fastfunc::CanOmitQuotes(s)) {
     return s;
   }
@@ -493,10 +517,14 @@ BigStr* MaybeShellEncode(BigStr* s) {
 }
 
 BigStr* ShellEncode(BigStr* s) {
+  StackRoot _root0(&s);
+
   return fastfunc::ShellEncodeString(s, 0);
 }
 
 BigStr* YshEncode(BigStr* s, bool unquoted_ok) {
+  StackRoot _root0(&s);
+
   if ((unquoted_ok and fastfunc::CanOmitQuotes(s))) {
     return s;
   }
@@ -560,6 +588,9 @@ void BaseEncoder::SetMaxTabularWidth(int max_tabular_width) {
 }
 
 pretty_asdl::MeasuredDoc* BaseEncoder::_Styled(BigStr* style, pretty_asdl::MeasuredDoc* mdoc) {
+  StackRoot _root0(&style);
+  StackRoot _root1(&mdoc);
+
   if (this->use_styles) {
     return _Concat(NewList<pretty_asdl::MeasuredDoc*>(std::initializer_list<pretty_asdl::MeasuredDoc*>{Alloc<MeasuredDoc>(Alloc<doc::Text>(style), _EmptyMeasure()), mdoc, Alloc<MeasuredDoc>(Alloc<doc::Text>(ansi::RESET), _EmptyMeasure())}));
   }
@@ -570,6 +601,10 @@ pretty_asdl::MeasuredDoc* BaseEncoder::_Styled(BigStr* style, pretty_asdl::Measu
 
 pretty_asdl::MeasuredDoc* BaseEncoder::_StyledAscii(BigStr* style, BigStr* s) {
   pretty_asdl::Measure* measure = nullptr;
+  StackRoot _root0(&style);
+  StackRoot _root1(&s);
+  StackRoot _root2(&measure);
+
   measure = Alloc<Measure>(len(s), -1);
   if (this->use_styles) {
     s = StrFormat("%s%s%s", style, s, ansi::RESET);
@@ -578,20 +613,36 @@ pretty_asdl::MeasuredDoc* BaseEncoder::_StyledAscii(BigStr* style, BigStr* s) {
 }
 
 pretty_asdl::MeasuredDoc* BaseEncoder::_Surrounded(BigStr* left, pretty_asdl::MeasuredDoc* mdoc, BigStr* right) {
+  StackRoot _root0(&left);
+  StackRoot _root1(&mdoc);
+  StackRoot _root2(&right);
+
   return _Group(_Concat(NewList<pretty_asdl::MeasuredDoc*>(std::initializer_list<pretty_asdl::MeasuredDoc*>{AsciiText(left), _Indent(this->indent, _Concat(NewList<pretty_asdl::MeasuredDoc*>(std::initializer_list<pretty_asdl::MeasuredDoc*>{_Break(S_Aoo), mdoc}))), _Break(S_Aoo), AsciiText(right)})));
 }
 
 pretty_asdl::MeasuredDoc* BaseEncoder::_SurroundedAndPrefixed(BigStr* left, pretty_asdl::MeasuredDoc* prefix, BigStr* sep, pretty_asdl::MeasuredDoc* mdoc, BigStr* right) {
+  StackRoot _root0(&left);
+  StackRoot _root1(&prefix);
+  StackRoot _root2(&sep);
+  StackRoot _root3(&mdoc);
+  StackRoot _root4(&right);
+
   return _Group(_Concat(NewList<pretty_asdl::MeasuredDoc*>(std::initializer_list<pretty_asdl::MeasuredDoc*>{AsciiText(left), prefix, _Indent(this->indent, _Concat(NewList<pretty_asdl::MeasuredDoc*>(std::initializer_list<pretty_asdl::MeasuredDoc*>{_Break(sep), mdoc}))), _Break(S_Aoo), AsciiText(right)})));
 }
 
 pretty_asdl::MeasuredDoc* BaseEncoder::_Join(List<pretty_asdl::MeasuredDoc*>* items, BigStr* sep, BigStr* space) {
   List<pretty_asdl::MeasuredDoc*>* seq = nullptr;
   int i;
+  StackRoot _root0(&items);
+  StackRoot _root1(&sep);
+  StackRoot _root2(&space);
+  StackRoot _root3(&seq);
+
   seq = Alloc<List<pretty_asdl::MeasuredDoc*>>();
   i = 0;
   for (ListIter<pretty_asdl::MeasuredDoc*> it(items); !it.Done(); it.Next(), ++i) {
     pretty_asdl::MeasuredDoc* item = it.Value();
+    StackRoot _for(&item  );
     if (i != 0) {
       seq->append(AsciiText(sep));
       seq->append(_Break(space));
@@ -610,6 +661,13 @@ pretty_asdl::MeasuredDoc* BaseEncoder::_Tabular(List<pretty_asdl::MeasuredDoc*>*
   List<pretty_asdl::MeasuredDoc*>* tabular_seq = nullptr;
   int padding;
   pretty_asdl::MeasuredDoc* tabular = nullptr;
+  StackRoot _root0(&items);
+  StackRoot _root1(&sep);
+  StackRoot _root2(&seq);
+  StackRoot _root3(&non_tabular);
+  StackRoot _root4(&tabular_seq);
+  StackRoot _root5(&tabular);
+
   if (len(items) == 0) {
     return AsciiText(S_Aoo);
   }
@@ -618,6 +676,7 @@ pretty_asdl::MeasuredDoc* BaseEncoder::_Tabular(List<pretty_asdl::MeasuredDoc*>*
   i = 0;
   for (ListIter<pretty_asdl::MeasuredDoc*> it(items); !it.Done(); it.Next(), ++i) {
     pretty_asdl::MeasuredDoc* item = it.Value();
+    StackRoot _for(&item  );
     if (i != 0) {
       seq->append(AsciiText(sep));
       seq->append(_Break(S_yfw));
@@ -632,6 +691,7 @@ pretty_asdl::MeasuredDoc* BaseEncoder::_Tabular(List<pretty_asdl::MeasuredDoc*>*
     i = 0;
     for (ListIter<pretty_asdl::MeasuredDoc*> it(items); !it.Done(); it.Next(), ++i) {
       pretty_asdl::MeasuredDoc* item = it.Value();
+      StackRoot _for(&item    );
       tabular_seq->append(_Flat(item));
       if (i != (len(items) - 1)) {
         padding = ((max_flat_len - item->measure->flat) + 1);
@@ -662,6 +722,7 @@ pretty_asdl::MeasuredDoc* HNodeEncoder::HNode(hnode_asdl::hnode_t* h) {
 pretty_asdl::MeasuredDoc* HNodeEncoder::_Field(hnode_asdl::Field* field) {
   pretty_asdl::MeasuredDoc* name = nullptr;
   StackRoot _root0(&field);
+  StackRoot _root1(&name);
 
   name = AsciiText(str_concat(field->name, S_fyj));
   return _Concat(NewList<pretty_asdl::MeasuredDoc*>(std::initializer_list<pretty_asdl::MeasuredDoc*>{name, this->_HNode(field->val)}));
@@ -677,9 +738,14 @@ pretty_asdl::MeasuredDoc* HNodeEncoder::_HNode(hnode_asdl::hnode_t* h) {
   List<pretty_asdl::MeasuredDoc*>* m = nullptr;
   pretty_asdl::MeasuredDoc* child = nullptr;
   StackRoot _root0(&h);
-  StackRoot _root1(&children);
-  StackRoot _root2(&type_name);
-  StackRoot _root3(&mdocs);
+  StackRoot _root1(&UP_h);
+  StackRoot _root2(&color);
+  StackRoot _root3(&s);
+  StackRoot _root4(&children);
+  StackRoot _root5(&type_name);
+  StackRoot _root6(&mdocs);
+  StackRoot _root7(&m);
+  StackRoot _root8(&child);
 
   UP_h = h;
   switch (h->tag()) {
@@ -796,10 +862,15 @@ pretty_asdl::Measure* _EmptyMeasure() {
 }
 
 pretty_asdl::Measure* _FlattenMeasure(pretty_asdl::Measure* measure) {
+  StackRoot _root0(&measure);
+
   return Alloc<Measure>(measure->flat, -1);
 }
 
 pretty_asdl::Measure* _ConcatMeasure(pretty_asdl::Measure* m1, pretty_asdl::Measure* m2) {
+  StackRoot _root0(&m1);
+  StackRoot _root1(&m2);
+
   if (m1->nonflat != -1) {
     return Alloc<Measure>((m1->flat + m2->flat), m1->nonflat);
   }
@@ -814,6 +885,8 @@ pretty_asdl::Measure* _ConcatMeasure(pretty_asdl::Measure* m1, pretty_asdl::Meas
 }
 
 int _SuffixLen(pretty_asdl::Measure* measure) {
+  StackRoot _root0(&measure);
+
   if (measure->nonflat != -1) {
     return measure->nonflat;
   }
@@ -823,23 +896,35 @@ int _SuffixLen(pretty_asdl::Measure* measure) {
 }
 
 pretty_asdl::MeasuredDoc* AsciiText(BigStr* string) {
+  StackRoot _root0(&string);
+
   return Alloc<MeasuredDoc>(Alloc<doc::Text>(string), Alloc<Measure>(len(string), -1));
 }
 
 pretty_asdl::MeasuredDoc* _Break(BigStr* string) {
+  StackRoot _root0(&string);
+
   return Alloc<MeasuredDoc>(Alloc<doc::Break>(string), Alloc<Measure>(len(string), 0));
 }
 
 pretty_asdl::MeasuredDoc* _Indent(int indent, pretty_asdl::MeasuredDoc* mdoc) {
+  StackRoot _root0(&mdoc);
+
   return Alloc<MeasuredDoc>(Alloc<doc::Indent>(indent, mdoc), mdoc->measure);
 }
 
 pretty_asdl::Measure* _Splice(List<pretty_asdl::MeasuredDoc*>* out, List<pretty_asdl::MeasuredDoc*>* mdocs) {
   pretty_asdl::Measure* measure = nullptr;
   pretty_asdl::List_Measured* child = nullptr;
+  StackRoot _root0(&out);
+  StackRoot _root1(&mdocs);
+  StackRoot _root2(&measure);
+  StackRoot _root3(&child);
+
   measure = _EmptyMeasure();
   for (ListIter<pretty_asdl::MeasuredDoc*> it(mdocs); !it.Done(); it.Next()) {
     pretty_asdl::MeasuredDoc* mdoc = it.Value();
+    StackRoot _for(&mdoc  );
     switch (mdoc->doc->tag()) {
       case doc_e::Concat: {
         child = static_cast<List_Measured*>(mdoc->doc);
@@ -858,20 +943,31 @@ pretty_asdl::Measure* _Splice(List<pretty_asdl::MeasuredDoc*>* out, List<pretty_
 pretty_asdl::MeasuredDoc* _Concat(List<pretty_asdl::MeasuredDoc*>* mdocs) {
   pretty_asdl::List_Measured* flattened = nullptr;
   pretty_asdl::Measure* measure = nullptr;
+  StackRoot _root0(&mdocs);
+  StackRoot _root1(&flattened);
+  StackRoot _root2(&measure);
+
   flattened = List_Measured::New();
   measure = _Splice(flattened, mdocs);
   return Alloc<MeasuredDoc>(flattened, measure);
 }
 
 pretty_asdl::MeasuredDoc* _Group(pretty_asdl::MeasuredDoc* mdoc) {
+  StackRoot _root0(&mdoc);
+
   return Alloc<MeasuredDoc>(mdoc, mdoc->measure);
 }
 
 pretty_asdl::MeasuredDoc* _IfFlat(pretty_asdl::MeasuredDoc* flat_mdoc, pretty_asdl::MeasuredDoc* nonflat_mdoc) {
+  StackRoot _root0(&flat_mdoc);
+  StackRoot _root1(&nonflat_mdoc);
+
   return Alloc<MeasuredDoc>(Alloc<doc::IfFlat>(flat_mdoc, nonflat_mdoc), Alloc<Measure>(flat_mdoc->measure->flat, nonflat_mdoc->measure->nonflat));
 }
 
 pretty_asdl::MeasuredDoc* _Flat(pretty_asdl::MeasuredDoc* mdoc) {
+  StackRoot _root0(&mdoc);
+
   return Alloc<MeasuredDoc>(Alloc<doc::Flat>(mdoc), _FlattenMeasure(mdoc->measure));
 }
 
@@ -881,6 +977,10 @@ PrettyPrinter::PrettyPrinter(int max_width) {
 
 bool PrettyPrinter::_Fits(int prefix_len, pretty_asdl::MeasuredDoc* group, pretty_asdl::Measure* suffix_measure) {
   pretty_asdl::Measure* measure = nullptr;
+  StackRoot _root0(&group);
+  StackRoot _root1(&suffix_measure);
+  StackRoot _root2(&measure);
+
   measure = _ConcatMeasure(_FlattenMeasure(group->measure), suffix_measure);
   return (prefix_len + _SuffixLen(measure)) <= this->max_width;
 }
@@ -894,6 +994,14 @@ void PrettyPrinter::PrintDoc(pretty_asdl::MeasuredDoc* document, mylib::BufWrite
   pretty_asdl::Measure* measure = nullptr;
   bool is_flat;
   pretty_asdl::MeasuredDoc* subdoc = nullptr;
+  StackRoot _root0(&document);
+  StackRoot _root1(&buf);
+  StackRoot _root2(&fragments);
+  StackRoot _root3(&frag);
+  StackRoot _root4(&UP_doc);
+  StackRoot _root5(&measure);
+  StackRoot _root6(&subdoc);
+
   prefix_len = 0;
   fragments = NewList<pretty_asdl::DocFragment*>(std::initializer_list<pretty_asdl::DocFragment*>{Alloc<DocFragment>(_Group(document), 0, false, _EmptyMeasure())});
   max_stack = len(fragments);
@@ -931,6 +1039,7 @@ void PrettyPrinter::PrintDoc(pretty_asdl::MeasuredDoc* document, mylib::BufWrite
         measure = frag->measure;
         for (ReverseListIter<pretty_asdl::MeasuredDoc*> it(concat); !it.Done(); it.Next()) {
           pretty_asdl::MeasuredDoc* mdoc = it.Value();
+          StackRoot _for(&mdoc        );
           fragments->append(Alloc<DocFragment>(mdoc, frag->indent, frag->is_flat, measure));
           measure = _ConcatMeasure(mdoc->measure, measure);
         }
@@ -984,6 +1093,8 @@ Lexer::Lexer(BigStr* s) {
 
 Tuple2<expr_asdl::tok_t, BigStr*> Lexer::Read() {
   BigStr* tok = nullptr;
+  StackRoot _root0(&tok);
+
   if (this->i >= this->n) {
     return Tuple2<expr_asdl::tok_t, BigStr*>(tok_e::Eof, S_Aoo);
   }
@@ -1028,6 +1139,8 @@ void Parser::Next() {
 }
 
 void Parser::Eat(BigStr* tok_val) {
+  StackRoot _root0(&tok_val);
+
   if (!(str_equals(this->tok_val, tok_val))) {
     throw Alloc<ParseError>(str_concat(S_rFn, tok_val));
   }
@@ -1038,6 +1151,10 @@ expr_asdl::expr_t* Parser::ParseFactor() {
   expr::Var* n1 = nullptr;
   expr::Const* n2 = nullptr;
   expr_asdl::expr_t* n3 = nullptr;
+  StackRoot _root0(&n1);
+  StackRoot _root1(&n2);
+  StackRoot _root2(&n3);
+
   if (this->tok_type == tok_e::Var) {
     n1 = Alloc<expr::Var>(this->tok_val);
     this->Next();
@@ -1061,6 +1178,10 @@ expr_asdl::expr_t* Parser::ParseTerm() {
   expr_asdl::expr_t* node = nullptr;
   BigStr* op = nullptr;
   expr_asdl::expr_t* n2 = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&op);
+  StackRoot _root2(&n2);
+
   node = this->ParseFactor();
   while (this->tok_type == tok_e::Op2) {
     op = this->tok_val;
@@ -1075,6 +1196,10 @@ expr_asdl::expr_t* Parser::ParseExpr() {
   expr_asdl::expr_t* node = nullptr;
   BigStr* op = nullptr;
   expr_asdl::expr_t* n2 = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&op);
+  StackRoot _root2(&n2);
+
   node = this->ParseTerm();
   while (this->tok_type == tok_e::Op1) {
     op = this->tok_val;
@@ -1100,8 +1225,14 @@ void TestParse() {
   hnode_asdl::hnode_t* htree = nullptr;
   mylib::Writer* f = nullptr;
   expr_asdl::expr_t* UP_node = nullptr;
-  StackRoot _root0(&CASES);
-  StackRoot _root1(&node);
+  StackRoot _root0(&lex);
+  StackRoot _root1(&tok_val);
+  StackRoot _root2(&CASES);
+  StackRoot _root3(&p);
+  StackRoot _root4(&node);
+  StackRoot _root5(&htree);
+  StackRoot _root6(&f);
+  StackRoot _root7(&UP_node);
 
   lex = Alloc<Lexer>(S_jng);
   while (true) {
@@ -1116,6 +1247,7 @@ void TestParse() {
   CASES = NewList<BigStr*>(std::initializer_list<BigStr*>{S_nmE, S_eei, S_sdy, S_anb, S_Bth, S_fhr, S_vrA, S_gCD, S_ijB, S_hxb, S_qey, S_yfw, S_utu});
   for (ListIter<BigStr*> it(CASES); !it.Done(); it.Next()) {
     BigStr* expr_ = it.Value();
+    StackRoot _for(&expr_  );
     lex = Alloc<Lexer>(expr_);
     p = Alloc<Parser>(lex);
     mylib::print_stderr(S_Aoo);
@@ -1157,6 +1289,12 @@ void TestCreateNull() {
   expr::Binary* b = nullptr;
   hnode_asdl::hnode_t* htree = nullptr;
   mylib::Writer* f = nullptr;
+  StackRoot _root0(&c);
+  StackRoot _root1(&v);
+  StackRoot _root2(&b);
+  StackRoot _root3(&htree);
+  StackRoot _root4(&f);
+
   c = expr::Const::CreateNull(true);
   mylib::print_stderr(StrFormat("c.i %d", c->i));
   v = expr::Var::CreateNull(true);
@@ -1177,6 +1315,12 @@ void TestSubtype() {
   List<BigStr*>* strs = nullptr;
   expr_asdl::CompoundWord* c3 = nullptr;
   expr_asdl::CompoundWord* c4 = nullptr;
+  StackRoot _root0(&c);
+  StackRoot _root1(&s1);
+  StackRoot _root2(&strs);
+  StackRoot _root3(&c3);
+  StackRoot _root4(&c4);
+
   c = CompoundWord::New();
   c->append(S_lqB);
   c->append(S_clt);
@@ -1187,6 +1331,7 @@ void TestSubtype() {
   mylib::print_stderr(StrFormat("c[1] = %r", c->at(1)));
   for (ListIter<BigStr*> it(c); !it.Done(); it.Next()) {
     BigStr* s = it.Value();
+    StackRoot _for(&s  );
     mylib::print_stderr(StrFormat("s = %r", s));
   }
   strs = NewList<BigStr*>(std::initializer_list<BigStr*>{S_gCD, S_jFv, S_emj, S_Crn});
@@ -1206,6 +1351,7 @@ void TestSubtype() {
   mylib::print_stderr(StrFormat("len(strs) = %d", len(strs)));
   for (ListIter<BigStr*> it(c4); !it.Done(); it.Next()) {
     BigStr* s = it.Value();
+    StackRoot _for(&s  );
     print(StrFormat("s = %r", s));
   }
 }
@@ -1216,6 +1362,11 @@ void TestLeafValue() {
   expr_asdl::Measure_v* m = nullptr;
   expr_asdl::MeasuredDoc* d = nullptr;
   hnode_asdl::hnode_t* tree = nullptr;
+  StackRoot _root0(&f);
+  StackRoot _root1(&m);
+  StackRoot _root2(&d);
+  StackRoot _root3(&tree);
+
   f = mylib::Stdout();
   n = 10;
   for (int i = 0; i < n; ++i) {
@@ -1240,6 +1391,10 @@ void run_benchmarks() {
   parse::Lexer* lex = nullptr;
   parse::Parser* p = nullptr;
   expr_asdl::expr_t* tree = nullptr;
+  StackRoot _root0(&lex);
+  StackRoot _root1(&p);
+  StackRoot _root2(&tree);
+
   n = 100000;
   result = 0;
   i = 0;

@@ -261,6 +261,7 @@ namespace readline_osh {  // forward declare
   class BindXCallback;
   class Bind;
   class History;
+  class Fc;
 }
 
 namespace trap_osh {  // forward declare
@@ -555,6 +556,7 @@ namespace split {  // forward declare
   class SplitContext;
   class _BaseSplitter;
   class IfsSplitter;
+  class IfsSplitterState;
 }
 
 namespace string_ops {  // forward declare
@@ -683,6 +685,7 @@ GLOBAL_STR(S_ubu, " \t\n\"'><=;|&(:");
 GLOBAL_STR(S_Dqk, " \n\r\t");
 GLOBAL_STR(S_jqf, "  ");
 GLOBAL_STR(S_ftl, "    ");
+GLOBAL_STR(S_DnB, "              OILS_LOCALE_OK=1 removes this message");
 GLOBAL_STR(S_dxy, "  (");
 GLOBAL_STR(S_Fev, "  actions: ");
 GLOBAL_STR(S_lCD, "  else: ");
@@ -813,6 +816,7 @@ GLOBAL_STR(S_Apn, "14");
 GLOBAL_STR(S_rFk, "15");
 GLOBAL_STR(S_AEs, "2");
 GLOBAL_STR(S_xtx, "3");
+GLOBAL_STR(S_hhe, "5.3");
 GLOBAL_STR(S_bEx, "6");
 GLOBAL_STR(S_kqx, "9");
 GLOBAL_STR(S_fyj, ":");
@@ -847,11 +851,14 @@ GLOBAL_STR(S_aEF, "BASHPID");
 GLOBAL_STR(S_Dyf, "BASH_LINENO");
 GLOBAL_STR(S_Erl, "BASH_REMATCH");
 GLOBAL_STR(S_lqk, "BASH_SOURCE");
+GLOBAL_STR(S_eAF, "BASH_VERSION");
 GLOBAL_STR(S_oog, "Background jobs aren't allowed in pure mode (OILS-ERR-204)");
+GLOBAL_STR(S_ruF, "Backtick should be $(cmd) or \\` (OILS-ERR-18)");
+GLOBAL_STR(S_jee, "Backtick should be $(cmd) or \\` (no_parse_backticks, OILS-ERR-18)");
 GLOBAL_STR(S_Fkp, "Backtracking with !! isn't implemented (requires Python/PCRE)");
-GLOBAL_STR(S_ulC, "Bash (( not allowed in YSH (parse_dparen, see OILS-ERR-14 for wart)");
-GLOBAL_STR(S_mEk, "Bash [[ not allowed in YSH (parse_dbracket)");
-GLOBAL_STR(S_laa, "Bash for loops aren't allowed (parse_dparen)");
+GLOBAL_STR(S_DxF, "Bash (( not allowed in YSH (no_parse_dparen, see OILS-ERR-14 for wart)");
+GLOBAL_STR(S_Dov, "Bash [[ not allowed in YSH (no_parse_dbracket)");
+GLOBAL_STR(S_eyp, "Bash for loops aren't allowed (no_parse_dparen)");
 GLOBAL_STR(S_tDu, "BashArray");
 GLOBAL_STR(S_Agv, "BashAssoc");
 GLOBAL_STR(S_jgc, "BashAssoc cannot be list-initialzied by (KEY VALUE ...) (strict_array)");
@@ -1021,15 +1028,14 @@ GLOBAL_STR(S_nie, "IFS");
 GLOBAL_STR(S_dyC, "IFS shouldn't be an array");
 GLOBAL_STR(S_BvB, "INFINITY");
 GLOBAL_STR(S_qul_1, "Illegal array word part (strict_array)");
-GLOBAL_STR(S_Aam, "Index %d is out of bounds for array of length 0");
 GLOBAL_STR(S_Fxn, "Index op expected BashArray or BashAssoc");
+GLOBAL_STR(S_die, "Instead of $'', use J8 strings like b'' (no_parse_osh)");
 GLOBAL_STR(S_hsF, "IntControlFlow in func");
 GLOBAL_STR(S_zDl, "Integer is too big");
 GLOBAL_STR(S_Fcv, "InternalStringArray");
 GLOBAL_STR(S_rdm, "Invalid KSH-style function name");
 GLOBAL_STR(S_deg, "Invalid LHS to modify");
 GLOBAL_STR(S_scC, "Invalid argument to unary operator");
-GLOBAL_STR(S_bio, "Invalid backtick: use $(cmd) or \\` in YSH strings");
 GLOBAL_STR(S_gba, "Invalid blank line in multiline mode");
 GLOBAL_STR(S_ago, "Invalid block expression argument");
 GLOBAL_STR(S_vla, "Invalid char escape in C-style string literal (OILS-ERR-11)");
@@ -1072,6 +1078,7 @@ GLOBAL_STR(S_jFB, "List index expected Int, Str, or Slice");
 GLOBAL_STR(S_cfe, "List index should be Int");
 GLOBAL_STR(S_hFl, "List iteration expects at most 2 loop variables");
 GLOBAL_STR(S_oex, "Literal $ should be quoted like \\$");
+GLOBAL_STR(S_ola, "Literal $ should be quoted like \\$ (no_parse_dollar)");
 GLOBAL_STR(S_oFq, "Literal @ starting a word must be quoted (parse_at_all)");
 GLOBAL_STR(S_Fnf, "Loop and control flow can't be in different processes");
 GLOBAL_STR(S_dwa, "Loop variables look like x, y (fix spaces)");
@@ -1107,6 +1114,7 @@ GLOBAL_STR(S_vEj, "OILS_COMP_UI");
 GLOBAL_STR(S_kyd, "OILS_CRASH_DUMP_DIR");
 GLOBAL_STR(S_aBF, "OILS_DEBUG_DIR");
 GLOBAL_STR(S_dDv, "OILS_HIJACK_SHEBANG");
+GLOBAL_STR(S_qcc, "OILS_LOCALE_OK");
 GLOBAL_STR(S_jam, "OILS_TRACE_DIR");
 GLOBAL_STR(S_flz, "OILS_TRACE_DUMPS");
 GLOBAL_STR(S_ayE, "OILS_TRACE_STREAMS");
@@ -1130,7 +1138,7 @@ GLOBAL_STR(S_jip, "PATH");
 GLOBAL_STR(S_evu, "PIPESTATUS");
 GLOBAL_STR(S_gik, "POSIX EREs don't have groups without capture, so this node needs () around it.");
 GLOBAL_STR(S_xil, "POSIX classes can't be negated in ERE");
-GLOBAL_STR(S_tFx, "POSIX shell arithmetic isn't allowed (parse_sh_arith)");
+GLOBAL_STR(S_jmt, "POSIX shell arithmetic isn't allowed (no_parse_sh_arith)");
 GLOBAL_STR(S_gnu, "PPID");
 GLOBAL_STR(S_agy, "PROMPT_COMMAND");
 GLOBAL_STR(S_Eni, "PS1");
@@ -1164,7 +1172,7 @@ GLOBAL_STR(S_ioh, "Ref");
 GLOBAL_STR(S_cEx, "Reserved syntax");
 GLOBAL_STR(S_Cab, "Rest param isn't allowed for blocks");
 GLOBAL_STR(S_Epo, "Right operand should be Int");
-GLOBAL_STR(S_qsm, "Running Oil in ---caper mode");
+GLOBAL_STR(S_gbx, "Running Oils in ---caper mode");
 GLOBAL_STR(S_xFB, "SECONDS");
 GLOBAL_STR(S_hhx, "SETENV");
 GLOBAL_STR(S_cvm, "SHELLOPTS");
@@ -1199,8 +1207,9 @@ GLOBAL_STR(S_sAl, "Str index expected Int or Slice");
 GLOBAL_STR(S_mrm, "Strings with backslashes should look like r'\\n' or u'\\n' or b'\\n'");
 GLOBAL_STR(S_lct, "Subscript expected one of (Str List Dict, indexable Obj)");
 GLOBAL_STR(S_juC, "Subscript/Attribute not allowed on this LHS expression");
+GLOBAL_STR(S_kAf, "Subshell syntax ( ) isn't allowed in YSH (OILS-ERR-19)");
 GLOBAL_STR(S_tuc, "Subshells aren't allowed in pure mode (OILS-ERR-204)");
-GLOBAL_STR(S_BpF, "Surround this word with either parens or quotes (parse_bare_word)");
+GLOBAL_STR(S_nae, "Surround this word with either parens or quotes (no_parse_bare_word)");
 GLOBAL_STR(S_wmA, "Syntax error in parseCommand()");
 GLOBAL_STR(S_cor, "T");
 GLOBAL_STR(S_wfg, "TODO");
@@ -1216,7 +1225,7 @@ GLOBAL_STR(S_wqm, "TSV8 format not implemented");
 GLOBAL_STR(S_nhf, "TZ");
 GLOBAL_STR(S_mAD, "TestAction ");
 GLOBAL_STR(S_fAu, "The [ operator doesn't apply to this expression");
-GLOBAL_STR(S_tjF, "This is a constant string.  You may want a variable like $x (parse_bare_word)");
+GLOBAL_STR(S_EFo, "This is a constant string.  You may want a variable like $x (no_parse_bare_word)");
 GLOBAL_STR(S_dlq, "This kind of class literal term isn't implemented");
 GLOBAL_STR(S_Emv, "This word should yield a string, but it contains an array");
 GLOBAL_STR(S_vvB, "Token can't be used in infix position");
@@ -1264,12 +1273,13 @@ GLOBAL_STR(S_rBg, "Units suffix not implemented");
 GLOBAL_STR(S_aei, "Unknown redirect op");
 GLOBAL_STR(S_lut, "Unknown redirect type");
 GLOBAL_STR(S_tce, "Unterminated here doc began here");
-GLOBAL_STR(S_Aeo, "Use $(cmd) instead of backticks (parse_backticks)");
 GLOBAL_STR(S_hkt, "Use 'and' in expression mode (OILS-ERR-15)");
+GLOBAL_STR(S_Awe_1, "Use 'cd' instead of 'chdir' in YSH (no_osh_builtins)");
 GLOBAL_STR(S_yww, "Use 'or' in expression mode (OILS-ERR-15)");
 GLOBAL_STR(S_bkb, "Use ..< for half-open range, or ..= for closed range (OILS-ERR-16)");
 GLOBAL_STR(S_qbb, "Use === to be exact, or ~== to convert types");
 GLOBAL_STR(S_jmF, "Use \\xhh or \\u{...} instead of octal escapes in YSH strings");
+GLOBAL_STR(S_aby, "Use the 'fork' builtin instead of &");
 GLOBAL_STR(S_xih, "Use var/setvar to assign in YSH");
 GLOBAL_STR(S_oEg, "UserAction ");
 GLOBAL_STR(S_jwB, "V");
@@ -1310,6 +1320,7 @@ GLOBAL_STR(S_xEe, "\\$");
 GLOBAL_STR(S_hpd, "\\*?[]-:!()|");
 GLOBAL_STR(S_iCa, "\\-");
 GLOBAL_STR(S_ivk, "\\?*+{}^$.()|[]");
+GLOBAL_STR(S_ehs, "\\@");
 GLOBAL_STR(S_uDe, "\\D{} not in promptVal()");
 GLOBAL_STR(S_uDk, "\\[");
 GLOBAL_STR(S_Eef, "\\\\");
@@ -1370,6 +1381,7 @@ GLOBAL_STR(S_jFv, "b");
 GLOBAL_STR(S_vlc, "backticks");
 GLOBAL_STR(S_trA, "bad input");
 GLOBAL_STR(S_sdC, "bar.py");
+GLOBAL_STR(S_ioi, "bash");
 GLOBAL_STR(S_llx, "bind");
 GLOBAL_STR(S_ksw, "bindFrame");
 GLOBAL_STR(S_kAh, "binding");
@@ -1400,6 +1412,7 @@ GLOBAL_STR(S_mij, "cntrl");
 GLOBAL_STR(S_gFE, "code");
 GLOBAL_STR(S_bAo, "code_str");
 GLOBAL_STR(S_zij, "command");
+GLOBAL_STR(S_Dwv, "command editing isn't yet implemented");
 GLOBAL_STR(S_cgB, "command node requires a literal block argument");
 GLOBAL_STR(S_qxt, "compadjust");
 GLOBAL_STR(S_jgm, "compexport");
@@ -1498,6 +1511,7 @@ GLOBAL_STR(S_FAx, "failed");
 GLOBAL_STR(S_xho, "failglob: ");
 GLOBAL_STR(S_Ctn, "false");
 GLOBAL_STR(S_Ect, "fatal: ");
+GLOBAL_STR(S_kAs, "fc");
 GLOBAL_STR(S_cfh, "fg: No job to put in the foreground");
 GLOBAL_STR(S_xeh, "file");
 GLOBAL_STR(S_zwg, "file descriptors");
@@ -1595,6 +1609,7 @@ GLOBAL_STR(S_urB, "lower");
 GLOBAL_STR(S_sDc_1, "main");
 GLOBAL_STR(S_fhy, "mapfile");
 GLOBAL_STR(S_cAk, "may only be used at the top level");
+GLOBAL_STR(S_rBr, "may only have 2 or 3 arguments (simple_test_builtin)");
 GLOBAL_STR(S_rpn, "maybe");
 GLOBAL_STR(S_pBg, "message");
 GLOBAL_STR(S_tug, "metric_argv0");
@@ -1623,9 +1638,10 @@ GLOBAL_STR(S_afu, "oils-for-unix");
 GLOBAL_STR(S_vqm, "oils-ref");
 GLOBAL_STR(S_Eur, "oils-usage");
 GLOBAL_STR(S_muc, "oils: Ignoring 'exit' in completion plugin");
+GLOBAL_STR(S_tws, "oils: setlocale(LC_COLLATE) failed");
+GLOBAL_STR(S_mwk, "oils: setlocale(LC_CTYPE) failed");
 GLOBAL_STR(S_Ffb, "osh");
 GLOBAL_STR(S_aCB, "osh printf doesn't support floating point");
-GLOBAL_STR(S_syf, "osh printf doesn't support single characters (bytes)");
 GLOBAL_STR(S_lAu, "osh warning: GLOB_PERIOD wasn't found in libc, so 'shopt -s dotglob' won't work");
 GLOBAL_STR(S_gxD, "osh warning: complete -C not implemented");
 GLOBAL_STR(S_nAz, "osh warning: set -o verbose not implemented");
@@ -1712,7 +1728,6 @@ GLOBAL_STR(S_ozu, "shell {");
 GLOBAL_STR(S_ulj, "shell-flags");
 GLOBAL_STR(S_ene, "shopt");
 GLOBAL_STR(S_Ayw, "should be invoked as 'test' (simple_test_builtin)");
-GLOBAL_STR(S_Ajx, "should only have 3 arguments or fewer (simple_test_builtin)");
 GLOBAL_STR(S_bBe, "shvar");
 GLOBAL_STR(S_Cko, "shvarGet");
 GLOBAL_STR(S_wzk, "signal");
@@ -2047,6 +2062,7 @@ void HNodePrettyPrint(hnode_asdl::hnode_t* node, mylib::Writer* f, int max_width
 namespace oils_for_unix {  // declare
 
 int CaperDispatch();
+void InitLocale(Dict<BigStr*, BigStr*>* environ, BigStr* lang);
 int AppBundleMain(List<BigStr*>* argv);
 int main(List<BigStr*>* argv);
 
@@ -2054,10 +2070,7 @@ int main(List<BigStr*>* argv);
 
 namespace assign_osh {  // declare
 
-extern int _OTHER;
-extern int _READONLY;
-extern int _EXPORT;
-int _PrintVariables(state::Mem* mem, ui::ErrorFormatter* errfmt, cmd_value::Assign* cmd_val, args::_Attributes* attrs, bool print_flags, int builtin = _OTHER);
+int PrintVariables(state::Mem* mem, ui::ErrorFormatter* errfmt, cmd_value::Assign* cmd_val, Dict<BigStr*, value_asdl::value_t*>* flag, bool print_flags, int builtin = consts::NO_INDEX);
 void _AssignVarForBuiltin(state::Mem* mem, value_asdl::value_t* rval, runtime_asdl::AssignArg* pair, runtime_asdl::scope_t which_scopes, int flags, sh_expr_eval::ArithEvaluator* arith_ev, bool flag_a, bool flag_A);
 class Export : public ::vm::_AssignBuiltin {
  public:
@@ -5129,7 +5142,7 @@ namespace read_osh {  // declare
 
 Tuple2<bool, bool> _AppendParts(BigStr* s, List<Tuple2<runtime_asdl::span_t, int>*>* spans, int max_results, bool join_next, List<mylib::BufWriter*>* parts);
 BigStr* _ReadN(int num_bytes, cmd_eval::CommandEvaluator* cmd_ev);
-Tuple2<BigStr*, bool> _ReadPortion(int delim_byte, int max_chars, cmd_eval::CommandEvaluator* cmd_ev);
+Tuple2<BigStr*, bool> _ReadPortion(int delim_byte, int max_chars, bool allow_escape, cmd_eval::CommandEvaluator* cmd_ev);
 Tuple2<BigStr*, bool> ReadLineSlowly(cmd_eval::CommandEvaluator* cmd_ev, bool with_eol = true);
 BigStr* ReadAll();
 class ctx_TermAttrs {
@@ -5265,6 +5278,27 @@ class History : public ::vm::_Builtin {
   }
 
   DISALLOW_COPY_AND_ASSIGN(History)
+};
+
+class Fc : public ::vm::_Builtin {
+ public:
+  Fc(py_readline::Readline* readline, mylib::Writer* f);
+  virtual int Run(cmd_value::Argv* cmd_val);
+
+  mylib::Writer* f{};
+  py_readline::Readline* readline{};
+  
+  static constexpr uint32_t field_mask() {
+    return ::vm::_Builtin::field_mask()
+         | maskbit(offsetof(Fc, f))
+         | maskbit(offsetof(Fc, readline));
+  }
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassFixed(field_mask(), sizeof(Fc));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(Fc)
 };
 
 
@@ -7266,6 +7300,7 @@ class MutableOpts {
   void set_redefine_const();
   void set_redefine_source();
   void set_emacs();
+  void DoSingleDash();
   void _SetArrayByNum(int opt_num, bool b);
   void SetDeferredErrExit(bool b);
   void DisableErrExit();
@@ -7515,7 +7550,6 @@ class Mem {
   Dict<BigStr*, BigStr*>* GetEnv();
   List<BigStr*>* VarNames();
   List<BigStr*>* VarNamesStartingWith(BigStr* prefix);
-  Dict<BigStr*, BigStr*>* GetAllVars();
   Dict<BigStr*, runtime_asdl::Cell*>* GetAllCells(runtime_asdl::scope_t which_scopes);
   void SetRegexMatch(value_asdl::regex_match_t* match);
   value_asdl::regex_match_t* GetRegexMatch();
@@ -8091,6 +8125,7 @@ class _Attributes {
   List<BigStr*>* actions{};
   bool show_options{};
   bool saw_double_dash{};
+  bool saw_single_dash{};
 
   static constexpr ObjHeader obj_header() {
     return ObjHeader::ClassScanned(5, sizeof(_Attributes));
@@ -8971,6 +9006,7 @@ class CommandEvaluator {
   int _DoIf(command::If* node);
   int _DoCase(command::Case* node);
   int _DoTimeBlock(command::TimeBlock* node);
+  int _EvalAndPushRedirects(List<syntax_asdl::Redir*>* redirects);
   int _DoRedirect(command::Redirect* node, runtime_asdl::CommandStatus* cmd_st);
   void _LeafTick();
   int _Dispatch(syntax_asdl::command_t* node, runtime_asdl::CommandStatus* cmd_st);
@@ -9023,13 +9059,14 @@ namespace cmd_parse {  // declare
 
 extern int TAB_CH;
 extern int SPACE_CH;
+extern BigStr* _AMPERSAND_ERROR;
 Tuple2<List<Tuple2<syntax_asdl::SourceLine*, int>*>*, Tuple2<syntax_asdl::SourceLine*, int>*> _ReadHereLines(reader::_Reader* line_reader, syntax_asdl::Redir* h, BigStr* delimiter);
 List<syntax_asdl::word_part_t*>* _MakeLiteralHereLines(List<Tuple2<syntax_asdl::SourceLine*, int>*>* here_lines, alloc::Arena* arena, bool do_lossless);
 void _ParseHereDocBody(parse_lib::ParseContext* parse_ctx, syntax_asdl::Redir* r, reader::_Reader* line_reader, alloc::Arena* arena);
 syntax_asdl::AssignPair* _MakeAssignPair(parse_lib::ParseContext* parse_ctx, syntax_asdl::ParsedAssignment* preparsed, alloc::Arena* arena);
 void _AppendMoreEnv(List<syntax_asdl::ParsedAssignment*>* preparsed_list, List<syntax_asdl::EnvPair*>* more_env);
 Tuple2<List<syntax_asdl::ParsedAssignment*>*, List<syntax_asdl::CompoundWord*>*> _SplitSimpleCommandPrefix(List<syntax_asdl::CompoundWord*>* words);
-command::Simple* _MakeSimpleCommand(List<syntax_asdl::ParsedAssignment*>* preparsed_list, List<syntax_asdl::CompoundWord*>* suffix_words, syntax_asdl::ArgList* typed_args, value_asdl::LiteralBlock* block);
+command::Simple* _MakeSimpleCommand(List<syntax_asdl::ParsedAssignment*>* preparsed_list, List<syntax_asdl::CompoundWord*>* suffix_words, syntax_asdl::ArgList* typed_args, value_asdl::LiteralBlock* block, List<syntax_asdl::Redir*>* redirects);
 class VarChecker {
  public:
   VarChecker();
@@ -9157,9 +9194,11 @@ bool LooksLikeGlob(BigStr* s);
 bool LooksLikeStaticGlob(syntax_asdl::CompoundWord* w);
 extern BigStr* GLOB_META_CHARS;
 BigStr* GlobEscape(BigStr* s);
+BigStr* GlobEscapeBackslash(BigStr* s);
 extern BigStr* ERE_META_CHARS;
 BigStr* ExtendedRegexEscape(BigStr* s);
 BigStr* GlobUnescape(BigStr* s);
+BigStr* GlobUnescapeBackslash(BigStr* s);
 class _GlobParser {
  public:
   _GlobParser(match::SimpleLexer* lexer);
@@ -9185,7 +9224,7 @@ class Globber {
  public:
   Globber(optview::Exec* exec_opts);
   int _Glob(BigStr* arg, List<BigStr*>* out);
-  int Expand(BigStr* arg, List<BigStr*>* out);
+  int Expand(BigStr* arg, List<BigStr*>* out, syntax_asdl::loc_t* blame_loc);
   int ExpandExtended(BigStr* glob_pat, BigStr* fnmatch_pat, List<BigStr*>* out);
   optview::Exec* exec_opts{};
 
@@ -9386,8 +9425,9 @@ class SplitContext {
   split::IfsSplitter* _GetSplitter(BigStr* ifs = nullptr);
   BigStr* GetJoinChar();
   BigStr* Escape(BigStr* s);
+  split::IfsSplitterState* CreateSplitterState(BigStr* ifs = nullptr);
   List<BigStr*>* SplitForWordEval(BigStr* s, BigStr* ifs = nullptr);
-  List<Tuple2<runtime_asdl::span_t, int>*>* SplitForRead(BigStr* line, bool allow_escape, bool do_split);
+  List<BigStr*>* SplitForRead(BigStr* line, bool allow_escape, bool do_split, int max_parts);
   state::Mem* mem{};
   Dict<BigStr*, split::IfsSplitter*>* splitters{};
 
@@ -9434,6 +9474,35 @@ class IfsSplitter : public ::split::_BaseSplitter {
   }
 
   DISALLOW_COPY_AND_ASSIGN(IfsSplitter)
+};
+
+class IfsSplitterState {
+ public:
+  IfsSplitterState(BigStr* ifs_space, BigStr* ifs_other);
+  void SetGlobEscape(bool glob_escape);
+  void SetAllowEscape(bool allow_escape);
+  void SetMaxSplit(int max_split);
+  void _FlushCharBuff();
+  void _GenerateWord();
+  void PushLiteral(BigStr* s);
+  void PushFragment(BigStr* s);
+  List<BigStr*>* PushTerminator();
+  BigStr* ifs_space{};
+  BigStr* ifs_other{};
+  List<BigStr*>* args{};
+  List<BigStr*>* frags{};
+  List<int>* char_buff{};
+  List<int>* white_buff{};
+  bool glob_escape{};
+  bool allow_escape{};
+  int max_split{};
+  int state{};
+
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::ClassScanned(6, sizeof(IfsSplitterState));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(IfsSplitterState)
 };
 
 
@@ -9518,6 +9587,9 @@ class TdopParser {
 
 namespace word_ {  // declare
 
+runtime_asdl::Piece* MakePiece(BigStr* s, bool quoted);
+runtime_asdl::Piece* PieceQuoted(BigStr* s);
+runtime_asdl::Piece* PieceOperator(BigStr* s);
 int LiteralId(syntax_asdl::word_part_t* part);
 syntax_asdl::Token* CheckLiteralId(syntax_asdl::word_part_t* part, int tok_id);
 syntax_asdl::Token* LiteralToken(syntax_asdl::word_t* UP_w);
@@ -10634,7 +10706,7 @@ class ShellOptHook : public ::state::OptHook {
 
 void _AddBuiltinFunc(state::Mem* mem, BigStr* name, vm::_Callable* func);
 Dict<int, vm::_AssignBuiltin*>* InitAssignmentBuiltins(state::Mem* mem, state::Procs* procs, optview::Exec* exec_opts, sh_expr_eval::ArithEvaluator* arith_ev, ui::ErrorFormatter* errfmt);
-int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, bool login_shell, pyutil::_ResourceLoader* loader, py_readline::Readline* readline);
+int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, bool login_shell, pyutil::_ResourceLoader* loader, py_readline::Readline* readline, bool bash_compat = true);
 
 }  // declare namespace shell
 
@@ -10646,10 +10718,14 @@ using hnode_asdl::color_e;
 int NO_SPID = -1;
 
 hnode::Record* NewRecord(BigStr* node_type) {
+  StackRoot _root0(&node_type);
+
   return Alloc<hnode::Record>(node_type, S_ijB, S_hxb, Alloc<List<hnode_asdl::Field*>>(), nullptr);
 }
 
 hnode::Leaf* NewLeaf(BigStr* s, hnode_asdl::color_t e_color) {
+  StackRoot _root0(&s);
+
   if (s == nullptr) {
     return Alloc<hnode::Leaf>(S_tci, color_e::OtherConst);
   }
@@ -10672,6 +10748,7 @@ namespace vm {  // define
 using id_kind_asdl::Id;
 using id_kind_asdl::Id_t;
 using id_kind_asdl::Id_str;
+using option_asdl::builtin_i;
 using runtime_asdl::CommandStatus;
 using runtime_asdl::StatusArray;
 using runtime_asdl::flow_e;
@@ -10740,11 +10817,26 @@ ValueControlFlow::ValueControlFlow(syntax_asdl::Token* token, value_asdl::value_
 }
 
 void InitUnsafeArith(state::Mem* mem, word_eval::NormalWordEvaluator* word_ev, sh_expr_eval::UnsafeArith* unsafe_arith) {
+  StackRoot _root0(&mem);
+  StackRoot _root1(&word_ev);
+  StackRoot _root2(&unsafe_arith);
+
   mem->unsafe_arith = unsafe_arith;
   word_ev->unsafe_arith = unsafe_arith;
 }
 
 void InitCircularDeps(sh_expr_eval::ArithEvaluator* arith_ev, sh_expr_eval::BoolEvaluator* bool_ev, expr_eval::ExprEvaluator* expr_ev, word_eval::NormalWordEvaluator* word_ev, cmd_eval::CommandEvaluator* cmd_ev, vm::_Executor* shell_ex, vm::_Executor* pure_ex, prompt::Evaluator* prompt_ev, value_asdl::Obj* global_io, dev::Tracer* tracer) {
+  StackRoot _root0(&arith_ev);
+  StackRoot _root1(&bool_ev);
+  StackRoot _root2(&expr_ev);
+  StackRoot _root3(&word_ev);
+  StackRoot _root4(&cmd_ev);
+  StackRoot _root5(&shell_ex);
+  StackRoot _root6(&pure_ex);
+  StackRoot _root7(&prompt_ev);
+  StackRoot _root8(&global_io);
+  StackRoot _root9(&tracer);
+
   arith_ev->word_ev = word_ev;
   bool_ev->word_ev = word_ev;
   if (expr_ev) {
@@ -10801,6 +10893,8 @@ int _Executor::RunSimpleCommand(cmd_value::Argv* cmd_val, runtime_asdl::CommandS
   List<BigStr*>* argv = nullptr;
   StackRoot _root0(&cmd_val);
   StackRoot _root1(&cmd_st);
+  StackRoot _root2(&arg0_loc);
+  StackRoot _root3(&argv);
 
   if (len(cmd_val->arg_locs)) {
     arg0_loc = cmd_val->arg_locs->at(0);
@@ -10821,17 +10915,39 @@ int _Executor::RunSimpleCommand(cmd_value::Argv* cmd_val, runtime_asdl::CommandS
 }
 
 int _Executor::_RunSimpleCommand(BigStr* arg0, syntax_asdl::loc_t* arg0_loc, cmd_value::Argv* cmd_val, runtime_asdl::CommandStatus* cmd_st, int run_flags) {
+  StackRoot _root0(&arg0);
+  StackRoot _root1(&arg0_loc);
+  StackRoot _root2(&cmd_val);
+  StackRoot _root3(&cmd_st);
+
   FAIL(kNotImplemented);  // Python NotImplementedError
 }
 
 int _Executor::RunExternal(BigStr* arg0, syntax_asdl::loc_t* arg0_loc, cmd_value::Argv* cmd_val, runtime_asdl::CommandStatus* cmd_st, int run_flags) {
+  StackRoot _root0(&arg0);
+  StackRoot _root1(&arg0_loc);
+  StackRoot _root2(&cmd_val);
+  StackRoot _root3(&cmd_st);
+
   FAIL(kNotImplemented);  // Python NotImplementedError
 }
 
 int _Executor::RunBuiltin(int builtin_id, cmd_value::Argv* cmd_val) {
+  BigStr* msg = nullptr;
   vm::_Builtin* builtin_proc = nullptr;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&msg);
+  StackRoot _root2(&builtin_proc);
 
+  if ((this->exec_opts->no_osh_builtins() and (builtin_id == builtin_i::alias || builtin_id == builtin_i::unalias || builtin_id == builtin_i::chdir || builtin_id == builtin_i::colon))) {
+    if (builtin_id == builtin_i::chdir) {
+      msg = S_Awe_1;
+    }
+    else {
+      msg = StrFormat("The %r builtin isn't part of YSH (no_osh_builtins)", cmd_val->argv->at(0));
+    }
+    e_die(msg, cmd_val->arg_locs->at(0));
+  }
   this->tracer->OnBuiltin(builtin_id, cmd_val->argv);
   builtin_proc = this->builtins->at(builtin_id);
   return this->_RunBuiltinProc(builtin_proc, cmd_val);
@@ -10844,6 +10960,7 @@ int _Executor::_RunBuiltinProc(vm::_Builtin* builtin_proc, cmd_value::Argv* cmd_
   StackRoot _root0(&builtin_proc);
   StackRoot _root1(&cmd_val);
   StackRoot _root2(&io_errors);
+  StackRoot _root3(&arg0);
 
   io_errors = Alloc<List<IOError_OSError*>>();
   {  // with
@@ -10883,6 +11000,10 @@ int _Executor::_RunInvokable(value_asdl::value_t* proc_val, value_asdl::Obj* sel
   StackRoot _root1(&self_obj);
   StackRoot _root2(&arg0_loc);
   StackRoot _root3(&cmd_val);
+  StackRoot _root4(&disabled_tok);
+  StackRoot _root5(&builtin_proc);
+  StackRoot _root6(&b);
+  StackRoot _root7(&proc);
 
   cmd_val->self_obj = self_obj;
   if (this->exec_opts->strict_errexit()) {
@@ -10917,38 +11038,58 @@ int _Executor::_RunInvokable(value_asdl::value_t* proc_val, value_asdl::Obj* sel
 }
 
 int _Executor::RunBackgroundJob(syntax_asdl::command_t* node) {
+  StackRoot _root0(&node);
+
   return 0;
 }
 
 void _Executor::RunPipeline(command::Pipeline* node, runtime_asdl::CommandStatus* status_out) {
+  StackRoot _root0(&node);
+  StackRoot _root1(&status_out);
+
   ;  // pass
 }
 
 int _Executor::RunSubshell(syntax_asdl::command_t* node) {
+  StackRoot _root0(&node);
+
   return 0;
 }
 
 Tuple2<int, BigStr*> _Executor::CaptureStdout(syntax_asdl::command_t* node) {
+  StackRoot _root0(&node);
+
   return Tuple2<int, BigStr*>(0, S_Aoo);
 }
 
 Tuple3<int, BigStr*, BigStr*> _Executor::Capture3(syntax_asdl::command_t* node) {
+  StackRoot _root0(&node);
+
   return Tuple3<int, BigStr*, BigStr*>(0, S_Aoo, S_Aoo);
 }
 
 BigStr* _Executor::RunCommandSub(syntax_asdl::CommandSub* cs_part) {
+  StackRoot _root0(&cs_part);
+
   return S_Aoo;
 }
 
 BigStr* _Executor::RunProcessSub(syntax_asdl::CommandSub* cs_part) {
+  StackRoot _root0(&cs_part);
+
   return S_Aoo;
 }
 
 void _Executor::PushRedirects(List<runtime_asdl::RedirValue*>* redirects, List<IOError_OSError*>* err_out) {
+  StackRoot _root0(&redirects);
+  StackRoot _root1(&err_out);
+
   ;  // pass
 }
 
 void _Executor::PopRedirects(int num_redirects, List<IOError_OSError*>* err_out) {
+  StackRoot _root0(&err_out);
+
   ;  // pass
 }
 
@@ -10957,6 +11098,8 @@ void _Executor::PushProcessSub() {
 }
 
 void _Executor::PopProcessSub(runtime_asdl::StatusArray* compound_st) {
+  StackRoot _root0(&compound_st);
+
   ;  // pass
 }
 
@@ -10965,6 +11108,8 @@ _AssignBuiltin::_AssignBuiltin() {
 }
 
 int _AssignBuiltin::Run(cmd_value::Assign* cmd_val) {
+  StackRoot _root0(&cmd_val);
+
   FAIL(kNotImplemented);  // Python NotImplementedError
 }
 
@@ -10973,6 +11118,8 @@ _Builtin::_Builtin() {
 }
 
 int _Builtin::Run(cmd_value::Argv* cmd_val) {
+  StackRoot _root0(&cmd_val);
+
   FAIL(kNotImplemented);  // Python NotImplementedError
 }
 
@@ -10981,6 +11128,8 @@ _Callable::_Callable() {
 }
 
 value_asdl::value_t* _Callable::Call(typed_args::Reader* args) {
+  StackRoot _root0(&args);
+
   FAIL(kNotImplemented);  // Python NotImplementedError
 }
 
@@ -11074,6 +11223,9 @@ using pretty_asdl::List_Measured;
 int _HNodeCount(hnode_asdl::hnode_t* h) {
   hnode_asdl::hnode_t* UP_h = nullptr;
   int n;
+  StackRoot _root0(&h);
+  StackRoot _root1(&UP_h);
+
   UP_h = h;
   switch (h->tag()) {
     case hnode_e::AlreadySeen: {
@@ -11089,6 +11241,7 @@ int _HNodeCount(hnode_asdl::hnode_t* h) {
       n = 1;
       for (ListIter<hnode_asdl::hnode_t*> it(h->children); !it.Done(); it.Next()) {
         hnode_asdl::hnode_t* child = it.Value();
+        StackRoot _for(&child      );
         n += _HNodeCount(child);
       }
       return n;
@@ -11099,11 +11252,13 @@ int _HNodeCount(hnode_asdl::hnode_t* h) {
       n = 1;
       for (ListIter<hnode_asdl::Field*> it(h->fields); !it.Done(); it.Next()) {
         hnode_asdl::Field* field = it.Value();
+        StackRoot _for(&field      );
         n += _HNodeCount(field->val);
       }
       if (h->unnamed_fields != nullptr) {
         for (ListIter<hnode_asdl::hnode_t*> it(h->unnamed_fields); !it.Done(); it.Next()) {
           hnode_asdl::hnode_t* child = it.Value();
+          StackRoot _for(&child        );
           n += _HNodeCount(child);
         }
       }
@@ -11119,6 +11274,9 @@ int _HNodeCount(hnode_asdl::hnode_t* h) {
 int _DocCount(pretty_asdl::doc_t* d) {
   pretty_asdl::doc_t* UP_d = nullptr;
   int n;
+  StackRoot _root0(&d);
+  StackRoot _root1(&UP_d);
+
   UP_d = d;
   switch (d->tag()) {
     case doc_e::Break: {
@@ -11154,6 +11312,7 @@ int _DocCount(pretty_asdl::doc_t* d) {
       n = 1;
       for (ListIter<pretty_asdl::MeasuredDoc*> it(d); !it.Done(); it.Next()) {
         pretty_asdl::MeasuredDoc* mdoc = it.Value();
+        StackRoot _for(&mdoc      );
         n += _DocCount(mdoc->doc);
       }
       return n;
@@ -11173,7 +11332,11 @@ void _HNodePrettyPrint(bool perf_stats, bool doc_debug, hnode_asdl::hnode_t* nod
   mylib::BufWriter* buf = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&f);
-  StackRoot _root2(&d);
+  StackRoot _root2(&enc);
+  StackRoot _root3(&d);
+  StackRoot _root4(&p);
+  StackRoot _root5(&printer);
+  StackRoot _root6(&buf);
 
   mylib::MaybeCollect();
   if (perf_stats) {
@@ -11226,7 +11389,12 @@ int CaperDispatch() {
   BigStr* msg = nullptr;
   BigStr* command = nullptr;
   BigStr* arg = nullptr;
-  mylib::print_stderr(S_qsm);
+  StackRoot _root0(&fd_out);
+  StackRoot _root1(&msg);
+  StackRoot _root2(&command);
+  StackRoot _root3(&arg);
+
+  mylib::print_stderr(S_gbx);
   fd_out = Alloc<List<int>>();
   while (true) {
     try {
@@ -11263,6 +11431,41 @@ int CaperDispatch() {
   return 0;
 }
 
+void InitLocale(Dict<BigStr*, BigStr*>* environ, BigStr* lang) {
+  BigStr* locale_name = nullptr;
+  BigStr* codeset = nullptr;
+  StackRoot _root0(&environ);
+  StackRoot _root1(&lang);
+  StackRoot _root2(&locale_name);
+  StackRoot _root3(&codeset);
+
+  try {
+    locale_name = pylocale::setlocale(pylocale::LC_CTYPE, S_Aoo);
+  }
+  catch (pylocale::Error*) {
+    print_stderr(S_mwk);
+    locale_name = S_Aoo;
+  }
+  if ((!str_equals(locale_name, S_Aoo) && !str_equals(locale_name, S_sjc))) {
+    if (str_equals(environ->get(S_qcc), S_vrA)) {
+      return ;
+    }
+    codeset = pylocale::nl_langinfo(pylocale::CODESET);
+    if (!match::IsUtf8Codeset(codeset)) {
+      print_stderr(StrFormat("oils warning: codeset %r doesn't look like UTF-8", codeset));
+      print_stderr(S_DnB);
+    }
+  }
+  if (str_equals(lang, S_Ffb)) {
+    try {
+      pylocale::setlocale(pylocale::LC_COLLATE, S_Aoo);
+    }
+    catch (pylocale::Error*) {
+      print_stderr(S_tws);
+    }
+  }
+}
+
 int AppBundleMain(List<BigStr*>* argv) {
   pyutil::_ResourceLoader* loader = nullptr;
   BigStr* b = nullptr;
@@ -11276,7 +11479,20 @@ int AppBundleMain(List<BigStr*>* argv) {
   BigStr* applet = nullptr;
   py_readline::Readline* readline = nullptr;
   Dict<BigStr*, BigStr*>* environ = nullptr;
+  BigStr* lang = nullptr;
   StackRoot _root0(&argv);
+  StackRoot _root1(&loader);
+  StackRoot _root2(&b);
+  StackRoot _root3(&main_name);
+  StackRoot _root4(&ext);
+  StackRoot _root5(&missing);
+  StackRoot _root6(&arg_r);
+  StackRoot _root7(&bundle);
+  StackRoot _root8(&first_arg);
+  StackRoot _root9(&applet);
+  StackRoot _root10(&readline);
+  StackRoot _root11(&environ);
+  StackRoot _root12(&lang);
 
   loader = pyutil::GetResourceLoader();
   b = os_path::basename(argv->at(0));
@@ -11291,7 +11507,7 @@ int AppBundleMain(List<BigStr*>* argv) {
     bundle = S_afu;
   }
   // endif MYCPP
-  if ((str_equals(main_name, bundle) or (str_equals(main_name, S_vqm) and len(ext)))) {
+  if ((main_name->startswith(bundle) or (str_equals(main_name, S_vqm) and len(ext)))) {
     arg_r->Next();
     first_arg = arg_r->Peek();
     if (first_arg == nullptr) {
@@ -11320,11 +11536,15 @@ int AppBundleMain(List<BigStr*>* argv) {
   readline = py_readline::MaybeGetReadline();
   environ = pyos::Environ();
   if (applet->startswith(S_Awp)) {
-    return shell::Main(S_Awp, arg_r, environ, login_shell, loader, readline);
+    lang = S_Awp;
+    InitLocale(environ, lang);
+    return shell::Main(lang, arg_r, environ, login_shell, loader, readline);
   }
   else {
     if ((applet->startswith(S_Ffb) or applet->endswith(S_wiE))) {
-      return shell::Main(S_Ffb, arg_r, environ, login_shell, loader, readline);
+      lang = S_Ffb;
+      InitLocale(environ, lang);
+      return shell::Main(lang, arg_r, environ, login_shell, loader, readline, str_equals(applet, S_ioi));
     }
     else {
       if (str_equals(applet, S_FsF)) {
@@ -11389,12 +11609,8 @@ using syntax_asdl::loc;
 using syntax_asdl::loc_t;
 using error::e_usage;
 using error::e_die;
-int _OTHER = 0;
-int _READONLY = 1;
-int _EXPORT = 2;
 
-int _PrintVariables(state::Mem* mem, ui::ErrorFormatter* errfmt, cmd_value::Assign* cmd_val, args::_Attributes* attrs, bool print_flags, int builtin) {
-  Dict<BigStr*, value_asdl::value_t*>* flag = nullptr;
+int PrintVariables(state::Mem* mem, ui::ErrorFormatter* errfmt, cmd_value::Assign* cmd_val, Dict<BigStr*, value_asdl::value_t*>* flag, bool print_flags, int builtin) {
   value_asdl::value_t* tmp_g = nullptr;
   value_asdl::value_t* tmp_a = nullptr;
   value_asdl::value_t* tmp_A = nullptr;
@@ -11423,7 +11639,33 @@ int _PrintVariables(state::Mem* mem, ui::ErrorFormatter* errfmt, cmd_value::Assi
   value::InternalStringArray* array_val = nullptr;
   value::BashAssoc* assoc_val = nullptr;
   value::BashArray* sparse_val = nullptr;
-  flag = attrs->attrs;
+  StackRoot _root0(&mem);
+  StackRoot _root1(&errfmt);
+  StackRoot _root2(&cmd_val);
+  StackRoot _root3(&flag);
+  StackRoot _root4(&tmp_g);
+  StackRoot _root5(&tmp_a);
+  StackRoot _root6(&tmp_A);
+  StackRoot _root7(&tmp_n);
+  StackRoot _root8(&tmp_r);
+  StackRoot _root9(&tmp_x);
+  StackRoot _root10(&flag_n);
+  StackRoot _root11(&flag_r);
+  StackRoot _root12(&flag_x);
+  StackRoot _root13(&cells);
+  StackRoot _root14(&names);
+  StackRoot _root15(&name);
+  StackRoot _root16(&s);
+  StackRoot _root17(&invalid);
+  StackRoot _root18(&cell);
+  StackRoot _root19(&val);
+  StackRoot _root20(&decl);
+  StackRoot _root21(&flags);
+  StackRoot _root22(&str_val);
+  StackRoot _root23(&array_val);
+  StackRoot _root24(&assoc_val);
+  StackRoot _root25(&sparse_val);
+
   tmp_g = flag->get(S_ukF);
   tmp_a = flag->get(S_gCD);
   tmp_A = flag->get(S_nlt);
@@ -11436,7 +11678,7 @@ int _PrintVariables(state::Mem* mem, ui::ErrorFormatter* errfmt, cmd_value::Assi
   flag_n = (tmp_n and tmp_n->tag() == value_e::Str) ? static_cast<value::Str*>(tmp_n)->s : nullptr;
   flag_r = (tmp_r and tmp_r->tag() == value_e::Str) ? static_cast<value::Str*>(tmp_r)->s : nullptr;
   flag_x = (tmp_x and tmp_x->tag() == value_e::Str) ? static_cast<value::Str*>(tmp_x)->s : nullptr;
-  if (cmd_val->builtin_id == builtin_i::local) {
+  if (builtin == builtin_i::local) {
     if ((flag_g and !mem->IsGlobalScope())) {
       return 1;
     }
@@ -11450,7 +11692,7 @@ int _PrintVariables(state::Mem* mem, ui::ErrorFormatter* errfmt, cmd_value::Assi
       which_scopes = mem->ScopesForReading();
     }
   }
-  if (len(cmd_val->pairs) == 0) {
+  if ((cmd_val == nullptr or len(cmd_val->pairs) == 0)) {
     print_all = true;
     cells = mem->GetAllCells(which_scopes);
     names = sorted(cells);
@@ -11461,6 +11703,7 @@ int _PrintVariables(state::Mem* mem, ui::ErrorFormatter* errfmt, cmd_value::Assi
     cells = Alloc<Dict<BigStr*, runtime_asdl::Cell*>>();
     for (ListIter<runtime_asdl::AssignArg*> it(cmd_val->pairs); !it.Done(); it.Next()) {
       runtime_asdl::AssignArg* pair = it.Value();
+      StackRoot _for(&pair    );
       name = pair->var_name;
       if ((pair->rval and pair->rval->tag() == value_e::Str)) {
         s = static_cast<value::Str*>(pair->rval)->s;
@@ -11477,6 +11720,7 @@ int _PrintVariables(state::Mem* mem, ui::ErrorFormatter* errfmt, cmd_value::Assi
   count = 0;
   for (ListIter<BigStr*> it(names); !it.Done(); it.Next()) {
     BigStr* name = it.Value();
+    StackRoot _for(&name  );
     cell = cells->at(name);
     if (cell == nullptr) {
       errfmt->PrintMessage(StrFormat("osh: %s: %r is not defined", cmd_val->argv->at(0), name), cmd_val->arg_locs->at(0));
@@ -11486,10 +11730,10 @@ int _PrintVariables(state::Mem* mem, ui::ErrorFormatter* errfmt, cmd_value::Assi
     if (val->tag() == value_e::Undef) {
       continue;
     }
-    if ((builtin == _READONLY and !cell->readonly)) {
+    if ((builtin == builtin_i::readonly and !cell->readonly)) {
       continue;
     }
-    if ((builtin == _EXPORT and !cell->exported)) {
+    if ((builtin == builtin_i::export_ and !cell->exported)) {
       continue;
     }
     if ((maybe_str_equals(flag_n, S_Bjq) and !cell->nameref)) {
@@ -11564,7 +11808,7 @@ int _PrintVariables(state::Mem* mem, ui::ErrorFormatter* errfmt, cmd_value::Assi
             decl->extend(NewList<BigStr*>(std::initializer_list<BigStr*>{S_bby, bash_impl::BashArray_ToStrForShellPrint(sparse_val)}));
           }
           else {
-            ;  // pass
+            continue;
           }
         }
       }
@@ -11590,6 +11834,11 @@ void _AssignVarForBuiltin(state::Mem* mem, value_asdl::value_t* rval, runtime_as
   StackRoot _root1(&rval);
   StackRoot _root2(&pair);
   StackRoot _root3(&arith_ev);
+  StackRoot _root4(&lval);
+  StackRoot _root5(&initializer);
+  StackRoot _root6(&val);
+  StackRoot _root7(&old_val);
+  StackRoot _root8(&assoc_val);
 
   lval = Alloc<LeftName>(pair->var_name, pair->blame_word);
   initializer = nullptr;
@@ -11667,6 +11916,9 @@ int Export::Run(cmd_value::Assign* cmd_val) {
   arg_types::export_* arg = nullptr;
   runtime_asdl::scope_t which_scopes;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&attrs);
+  StackRoot _root3(&arg);
 
   if (this->mem->exec_opts->no_exported()) {
     this->errfmt->Print_(S_Cvd, cmd_val->arg_locs->at(0));
@@ -11680,11 +11932,12 @@ int Export::Run(cmd_value::Assign* cmd_val) {
     e_usage(S_zDr_1, loc::Missing);
   }
   if ((arg->p or len(cmd_val->pairs) == 0)) {
-    return _PrintVariables(this->mem, this->errfmt, cmd_val, attrs, true, _EXPORT);
+    return PrintVariables(this->mem, this->errfmt, cmd_val, attrs->attrs, true, cmd_val->builtin_id);
   }
   if (arg->n) {
     for (ListIter<runtime_asdl::AssignArg*> it(cmd_val->pairs); !it.Done(); it.Next()) {
       runtime_asdl::AssignArg* pair = it.Value();
+      StackRoot _for(&pair    );
       if (pair->rval != nullptr) {
         e_usage(S_vbA, Alloc<loc::Word>(pair->blame_word));
       }
@@ -11695,6 +11948,7 @@ int Export::Run(cmd_value::Assign* cmd_val) {
     which_scopes = this->mem->ScopesForWriting();
     for (ListIter<runtime_asdl::AssignArg*> it(cmd_val->pairs); !it.Done(); it.Next()) {
       runtime_asdl::AssignArg* pair = it.Value();
+      StackRoot _for(&pair    );
       _AssignVarForBuiltin(this->mem, pair->rval, pair, which_scopes, state::SetExport, this->arith_ev, false, false);
     }
   }
@@ -11703,6 +11957,11 @@ int Export::Run(cmd_value::Assign* cmd_val) {
 
 value_asdl::value_t* _ReconcileTypes(value_asdl::value_t* rval, bool flag_a, bool flag_A, runtime_asdl::AssignArg* pair, state::Mem* mem) {
   value_asdl::value_t* old_val = nullptr;
+  StackRoot _root0(&rval);
+  StackRoot _root1(&pair);
+  StackRoot _root2(&mem);
+  StackRoot _root3(&old_val);
+
   if (rval == nullptr) {
     if (flag_a) {
       old_val = mem->GetValue(pair->var_name);
@@ -11749,18 +12008,22 @@ int Readonly::Run(cmd_value::Assign* cmd_val) {
   runtime_asdl::scope_t which_scopes;
   value_asdl::value_t* rval = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&arg);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&attrs);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&rval);
 
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
   attrs = flag_util::Parse(S_ACj, arg_r);
   arg = Alloc<arg_types::readonly>(attrs->attrs);
   if ((arg->p or len(cmd_val->pairs) == 0)) {
-    return _PrintVariables(this->mem, this->errfmt, cmd_val, attrs, true, _READONLY);
+    return PrintVariables(this->mem, this->errfmt, cmd_val, attrs->attrs, true, cmd_val->builtin_id);
   }
   which_scopes = this->mem->ScopesForWriting();
   for (ListIter<runtime_asdl::AssignArg*> it(cmd_val->pairs); !it.Done(); it.Next()) {
     runtime_asdl::AssignArg* pair = it.Value();
+    StackRoot _for(&pair  );
     rval = _ReconcileTypes(pair->rval, arg->a, arg->A, pair, this->mem);
     _AssignVarForBuiltin(this->mem, rval, pair, which_scopes, state::SetReadOnly, this->arith_ev, arg->a, arg->A);
   }
@@ -11782,9 +12045,16 @@ int NewVar::_PrintFuncs(List<BigStr*>* names, bool print_source) {
   syntax_asdl::Token* tok = nullptr;
   BigStr* filename_str = nullptr;
   BigStr* line = nullptr;
+  StackRoot _root0(&names);
+  StackRoot _root1(&proc_val);
+  StackRoot _root2(&tok);
+  StackRoot _root3(&filename_str);
+  StackRoot _root4(&line);
+
   status = 0;
   for (ListIter<BigStr*> it(names); !it.Done(); it.Next()) {
     BigStr* name = it.Value();
+    StackRoot _for(&name  );
     proc_val = this->procs->GetShellFunc(name);
     was_printed = false;
     if (proc_val) {
@@ -11820,7 +12090,11 @@ int NewVar::Run(cmd_value::Assign* cmd_val) {
   int flags;
   value_asdl::value_t* rval = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&arg);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&attrs);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&names);
+  StackRoot _root5(&rval);
 
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
@@ -11845,17 +12119,18 @@ int NewVar::Run(cmd_value::Assign* cmd_val) {
     else {
       for (ListIter<BigStr*> it(this->procs->ShellFuncNames()); !it.Done(); it.Next()) {
         BigStr* func_name = it.Value();
+        StackRoot _for(&func_name      );
         print(StrFormat("declare -f %s", func_name));
       }
     }
     return status;
   }
   if (arg->p) {
-    return _PrintVariables(this->mem, this->errfmt, cmd_val, attrs, true);
+    return PrintVariables(this->mem, this->errfmt, cmd_val, attrs->attrs, true, cmd_val->builtin_id);
   }
   else {
     if (len(cmd_val->pairs) == 0) {
-      return _PrintVariables(this->mem, this->errfmt, cmd_val, attrs, false);
+      return PrintVariables(this->mem, this->errfmt, cmd_val, attrs->attrs, false, cmd_val->builtin_id);
     }
   }
   if (!this->exec_opts->ignore_flags_not_impl()) {
@@ -11898,6 +12173,7 @@ int NewVar::Run(cmd_value::Assign* cmd_val) {
   }
   for (ListIter<runtime_asdl::AssignArg*> it(cmd_val->pairs); !it.Done(); it.Next()) {
     runtime_asdl::AssignArg* pair = it.Value();
+    StackRoot _for(&pair  );
     rval = _ReconcileTypes(pair->rval, arg->a, arg->A, pair, this->mem);
     _AssignVarForBuiltin(this->mem, rval, pair, which_scopes, flags, this->arith_ev, arg->a, arg->A);
   }
@@ -11918,6 +12194,7 @@ bool Unset::_UnsetVar(BigStr* arg, syntax_asdl::loc_t* location, bool proc_fallb
   StackRoot _root0(&arg);
   StackRoot _root1(&location);
   StackRoot _root2(&lval);
+  StackRoot _root3(&msg);
 
   lval = this->unsafe_arith->ParseLValue(arg, location);
   found = false;
@@ -11944,9 +12221,12 @@ int Unset::Run(cmd_value::Argv* cmd_val) {
   int i;
   syntax_asdl::CompoundWord* location = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&arg);
-  StackRoot _root2(&argv);
-  StackRoot _root3(&arg_locs);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&argv);
+  StackRoot _root5(&arg_locs);
+  StackRoot _root6(&location);
 
   Tuple2<args::_Attributes*, args::Reader*> tup0 = flag_util::ParseCmdVal(S_FxC, cmd_val);
   attrs = tup0.at0();
@@ -11958,6 +12238,7 @@ int Unset::Run(cmd_value::Argv* cmd_val) {
   i = 0;
   for (ListIter<BigStr*> it(argv); !it.Done(); it.Next(), ++i) {
     BigStr* name = it.Value();
+    StackRoot _for(&name  );
     location = arg_locs->at(i);
     if (arg->f) {
       this->procs->EraseShellFunc(name);
@@ -11986,6 +12267,9 @@ int Shift::Run(cmd_value::Argv* cmd_val) {
   int num_args;
   int n;
   BigStr* arg = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg);
+
   num_args = (len(cmd_val->argv) - 1);
   if (num_args == 0) {
     n = 1;
@@ -12030,7 +12314,12 @@ int CompExport::Run(cmd_value::Argv* cmd_val) {
   List<BigStr*>* comp_matches = nullptr;
   mylib::BufWriter* buf = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&arg);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&attrs);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&comp);
+  StackRoot _root5(&comp_matches);
+  StackRoot _root6(&buf);
 
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
@@ -12053,6 +12342,7 @@ int CompExport::Run(cmd_value::Argv* cmd_val) {
     buf = Alloc<mylib::BufWriter>();
     for (ListIter<BigStr*> it(comp_matches); !it.Done(); it.Next()) {
       BigStr* m = it.Value();
+      StackRoot _for(&m    );
       j8::EncodeString(m, buf);
       print(buf->getvalue());
       buf->clear();
@@ -12087,10 +12377,14 @@ void DirStack::Reset() {
 }
 
 void DirStack::Replace(BigStr* d) {
+  StackRoot _root0(&d);
+
   this->stack->set(-1, d);
 }
 
 void DirStack::Push(BigStr* entry) {
+  StackRoot _root0(&entry);
+
   this->stack->append(entry);
 }
 
@@ -12104,6 +12398,8 @@ BigStr* DirStack::Pop() {
 
 List<BigStr*>* DirStack::Iter() {
   List<BigStr*>* ret = nullptr;
+  StackRoot _root0(&ret);
+
   ret = Alloc<List<BigStr*>>();
   ret->extend(this->stack);
   ret->reverse();
@@ -12154,7 +12450,18 @@ int Cd::Run(cmd_value::Argv* cmd_val) {
   int unused;
   (void)unused;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&out_errs);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&cmd_frag);
+  StackRoot _root5(&dest_dir);
+  StackRoot _root6(&arg_loc);
+  StackRoot _root7(&extra);
+  StackRoot _root8(&extra_loc);
+  StackRoot _root9(&old_pwd);
+  StackRoot _root10(&abspath);
+  StackRoot _root11(&real_dest_dir);
+  StackRoot _root12(&out_errs);
 
   Tuple2<args::_Attributes*, args::Reader*> tup0 = flag_util::ParseCmdVal(S_dyr, cmd_val, true);
   attrs = tup0.at0();
@@ -12233,10 +12540,16 @@ void _PrintDirStack(dirs_osh::DirStack* dir_stack, int style, BigStr* home_dir) 
   int i;
   List<BigStr*>* parts = nullptr;
   BigStr* s = nullptr;
+  StackRoot _root0(&dir_stack);
+  StackRoot _root1(&home_dir);
+  StackRoot _root2(&parts);
+  StackRoot _root3(&s);
+
   if (style == WITH_LINE_NUMBERS) {
     i = 0;
     for (ListIter<BigStr*> it(dir_stack->Iter()); !it.Done(); it.Next(), ++i) {
       BigStr* entry = it.Value();
+      StackRoot _for(&entry    );
       print(StrFormat("%2d  %s", i, ui::PrettyDir(entry, home_dir)));
     }
   }
@@ -12244,6 +12557,7 @@ void _PrintDirStack(dirs_osh::DirStack* dir_stack, int style, BigStr* home_dir) 
     if (style == WITHOUT_LINE_NUMBERS) {
       for (ListIter<BigStr*> it(dir_stack->Iter()); !it.Done(); it.Next()) {
         BigStr* entry = it.Value();
+        StackRoot _for(&entry      );
         print(ui::PrettyDir(entry, home_dir));
       }
     }
@@ -12275,6 +12589,14 @@ int Pushd::Run(cmd_value::Argv* cmd_val) {
   syntax_asdl::loc_t* extra_loc = nullptr;
   BigStr* dest_dir = nullptr;
   int err_num;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&dir_arg);
+  StackRoot _root3(&dir_arg_loc);
+  StackRoot _root4(&extra);
+  StackRoot _root5(&extra_loc);
+  StackRoot _root6(&dest_dir);
+
   Tuple2<args::_Attributes*, args::Reader*> tup3 = flag_util::ParseCmdVal(S_kog, cmd_val);
   arg_r = tup3.at1();
   Tuple2<BigStr*, syntax_asdl::loc_t*> tup4 = arg_r->Peek2();
@@ -12307,6 +12629,13 @@ int Pushd::Run(cmd_value::Argv* cmd_val) {
 bool _PopDirStack(BigStr* label, state::Mem* mem, dirs_osh::DirStack* dir_stack, ui::ErrorFormatter* errfmt, List<bool>* out_errs) {
   BigStr* dest_dir = nullptr;
   int err_num;
+  StackRoot _root0(&label);
+  StackRoot _root1(&mem);
+  StackRoot _root2(&dir_stack);
+  StackRoot _root3(&errfmt);
+  StackRoot _root4(&out_errs);
+  StackRoot _root5(&dest_dir);
+
   dest_dir = dir_stack->Pop();
   if (dest_dir == nullptr) {
     errfmt->Print_(StrFormat("%s: directory stack is empty", label));
@@ -12335,6 +12664,12 @@ int Popd::Run(cmd_value::Argv* cmd_val) {
   BigStr* extra = nullptr;
   syntax_asdl::loc_t* extra_loc = nullptr;
   List<bool>* out_errs = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&extra);
+  StackRoot _root3(&extra_loc);
+  StackRoot _root4(&out_errs);
+
   Tuple2<args::_Attributes*, args::Reader*> tup6 = flag_util::ParseCmdVal(S_kog, cmd_val);
   arg_r = tup6.at1();
   Tuple2<BigStr*, syntax_asdl::loc_t*> tup7 = arg_r->Peek2();
@@ -12364,6 +12699,12 @@ int Dirs::Run(cmd_value::Argv* cmd_val) {
   arg_types::dirs* arg = nullptr;
   BigStr* home_dir = nullptr;
   int style;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&home_dir);
+
   Tuple2<args::_Attributes*, args::Reader*> tup8 = flag_util::ParseCmdVal(S_nAr, cmd_val);
   attrs = tup8.at0();
   arg_r = tup8.at1();
@@ -12401,6 +12742,12 @@ int Pwd::Run(cmd_value::Argv* cmd_val) {
   args::Reader* arg_r = nullptr;
   arg_types::pwd* arg = nullptr;
   BigStr* pwd = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&pwd);
+
   Tuple2<args::_Attributes*, args::Reader*> tup9 = flag_util::ParseCmdVal(S_xrE, cmd_val);
   attrs = tup9.at0();
   arg_r = tup9.at1();
@@ -12458,7 +12805,10 @@ int Try::Run(cmd_value::Argv* cmd_val) {
   int unused;
   (void)unused;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&error_dict);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&rd);
+  StackRoot _root3(&cmd);
+  StackRoot _root4(&error_dict);
 
   Tuple2<args::_Attributes*, args::Reader*> tup0 = flag_util::ParseCmdVal(S_zfb_1, cmd_val, true);
   arg_r = tup0.at1();
@@ -12501,6 +12851,12 @@ int Failed::Run(cmd_value::Argv* cmd_val) {
   value::Dict* err = nullptr;
   value_asdl::value_t* code = nullptr;
   value_asdl::value_t* UP_code = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&err);
+  StackRoot _root3(&code);
+  StackRoot _root4(&UP_code);
+
   Tuple2<args::_Attributes*, args::Reader*> tup1 = flag_util::ParseCmdVal(S_FAx, cmd_val);
   arg_r = tup1.at1();
   arg_r->Done();
@@ -12532,6 +12888,12 @@ int Error::Run(cmd_value::Argv* cmd_val) {
   typed_args::Reader* rd = nullptr;
   int status;
   Dict<BigStr*, value_asdl::value_t*>* properties = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&message);
+  StackRoot _root3(&rd);
+  StackRoot _root4(&properties);
+
   Tuple2<args::_Attributes*, args::Reader*> tup2 = flag_util::ParseCmdVal(S_riE, cmd_val, true);
   arg_r = tup2.at1();
   message = arg_r->Peek();
@@ -12562,7 +12924,11 @@ int BoolStatus::Run(cmd_value::Argv* cmd_val) {
   int run_flags;
   int status;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&locs);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&argv);
+  StackRoot _root3(&locs);
+  StackRoot _root4(&cmd_val2);
+  StackRoot _root5(&cmd_st);
 
   Tuple2<args::_Attributes*, args::Reader*> tup3 = flag_util::ParseCmdVal(S_ocd, cmd_val);
   arg_r = tup3.at1();
@@ -12613,7 +12979,9 @@ void Assert::_AssertExpression(value::Expr* val, syntax_asdl::loc_t* blame_loc) 
   bool b;
   StackRoot _root0(&val);
   StackRoot _root1(&blame_loc);
-  StackRoot _root2(&result);
+  StackRoot _root2(&exp);
+  StackRoot _root3(&UP_exp);
+  StackRoot _root4(&result);
 
   exp = val->e;
   UP_exp = exp;
@@ -12641,6 +13009,10 @@ int Assert::Run(cmd_value::Argv* cmd_val) {
   value_asdl::value_t* UP_val = nullptr;
   bool b;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&rd);
+  StackRoot _root3(&val);
+  StackRoot _root4(&UP_val);
 
   Tuple2<args::_Attributes*, args::Reader*> tup5 = flag_util::ParseCmdVal(S_eln, cmd_val, true);
   arg_r = tup5.at1();
@@ -12699,6 +13071,10 @@ value_asdl::value_t* _MatchCallable::_ReturnValue(value_asdl::RegexMatch* match,
   eggex_ops::Yes* ops = nullptr;
   StackRoot _root0(&match);
   StackRoot _root1(&blame_loc);
+  StackRoot _root2(&val);
+  StackRoot _root3(&convert_func);
+  StackRoot _root4(&convert_tok);
+  StackRoot _root5(&ops);
 
   num_groups = (len(match->indices) / 2);
   if (group_index < num_groups) {
@@ -12754,6 +13130,12 @@ int _GetGroupIndex(value_asdl::value_t* group, value_asdl::eggex_ops_t* ops, syn
   mops::BigInt group_index_big;
   value_asdl::eggex_ops_t* UP_ops = nullptr;
   int i;
+  StackRoot _root0(&group);
+  StackRoot _root1(&ops);
+  StackRoot _root2(&blame_loc);
+  StackRoot _root3(&UP_group);
+  StackRoot _root4(&UP_ops);
+
   UP_group = group;
   group_index = -1;
   switch (group->tag()) {
@@ -12776,6 +13158,7 @@ int _GetGroupIndex(value_asdl::value_t* group, value_asdl::eggex_ops_t* ops, syn
           i = 0;
           for (ListIter<BigStr*> it(ops->capture_names); !it.Done(); it.Next(), ++i) {
             BigStr* name = it.Value();
+            StackRoot _for(&name          );
             if (str_equals(name, group->s)) {
               group_index = (i + 1);
               break;
@@ -12804,6 +13187,11 @@ value_asdl::value_t* MatchFunc::Call(typed_args::Reader* rd) {
   value_asdl::value_t* group_arg = nullptr;
   value_asdl::regex_match_t* match = nullptr;
   value_asdl::regex_match_t* UP_match = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&group_arg);
+  StackRoot _root2(&match);
+  StackRoot _root3(&UP_match);
+
   group_arg = rd->PosValue();
   rd->Done();
   match = this->mem->GetRegexMatch();
@@ -12828,6 +13216,10 @@ MatchMethod::MatchMethod(int to_return, expr_eval::ExprEvaluator* expr_ev) : ::f
 value_asdl::value_t* MatchMethod::Call(typed_args::Reader* rd) {
   value_asdl::RegexMatch* match = nullptr;
   value_asdl::value_t* group_arg = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&match);
+  StackRoot _root2(&group_arg);
+
   match = rd->PosMatch();
   group_arg = rd->PosValue();
   rd->Done();
@@ -12862,7 +13254,15 @@ value_asdl::value_t* ParseHay::_Call(BigStr* path) {
   source::OtherFile* src = nullptr;
   syntax_asdl::command_t* node = nullptr;
   StackRoot _root0(&path);
-  StackRoot _root1(&node);
+  StackRoot _root1(&call_loc);
+  StackRoot _root2(&f);
+  StackRoot _root3(&msg);
+  StackRoot _root4(&arena);
+  StackRoot _root5(&line_reader);
+  StackRoot _root6(&parse_opts);
+  StackRoot _root7(&c_parser);
+  StackRoot _root8(&src);
+  StackRoot _root9(&node);
 
   call_loc = loc::Missing;
   try {
@@ -12894,6 +13294,7 @@ value_asdl::value_t* ParseHay::_Call(BigStr* path) {
 value_asdl::value_t* ParseHay::Call(typed_args::Reader* rd) {
   BigStr* string = nullptr;
   StackRoot _root0(&rd);
+  StackRoot _root1(&string);
 
   string = rd->PosStr();
   rd->Done();
@@ -12923,6 +13324,7 @@ Dict<BigStr*, value_asdl::value_t*>* EvalHay::_Call(syntax_asdl::command_t* cmd)
 value_asdl::value_t* EvalHay::Call(typed_args::Reader* rd) {
   syntax_asdl::command_t* cmd = nullptr;
   StackRoot _root0(&rd);
+  StackRoot _root1(&cmd);
 
   cmd = rd->PosCommandFrag();
   rd->Done();
@@ -12934,11 +13336,16 @@ BlockAsStr::BlockAsStr(alloc::Arena* arena) {
 }
 
 value_asdl::value_t* BlockAsStr::_Call(value_asdl::value_t* block) {
+  StackRoot _root0(&block);
+
   return block;
 }
 
 value_asdl::value_t* BlockAsStr::Call(typed_args::Reader* rd) {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&val);
+
   val = rd->PosValue();
   rd->Done();
   return this->_Call(val);
@@ -12953,6 +13360,8 @@ Dict<BigStr*, value_asdl::value_t*>* HayFunc::_Call() {
 }
 
 value_asdl::value_t* HayFunc::Call(typed_args::Reader* rd) {
+  StackRoot _root0(&rd);
+
   return Alloc<value::Dict>(this->_Call());
 }
 
@@ -12976,6 +13385,13 @@ value_asdl::value_t* Object::Call(typed_args::Reader* rd) {
   Dict<BigStr*, value_asdl::value_t*>* props = nullptr;
   value_asdl::Obj* chain = nullptr;
   value_asdl::value_t* UP_prototype = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&prototype);
+  StackRoot _root2(&proto_loc);
+  StackRoot _root3(&props);
+  StackRoot _root4(&chain);
+  StackRoot _root5(&UP_prototype);
+
   prototype = rd->PosValue();
   proto_loc = rd->BlamePos();
   props = rd->PosDict();
@@ -13009,6 +13425,13 @@ value_asdl::value_t* Obj_call::Call(typed_args::Reader* rd) {
   syntax_asdl::loc_t* proto_loc = nullptr;
   value_asdl::Obj* chain = nullptr;
   value_asdl::value_t* UP_prototype = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&props);
+  StackRoot _root2(&prototype);
+  StackRoot _root3(&proto_loc);
+  StackRoot _root4(&chain);
+  StackRoot _root5(&UP_prototype);
+
   props = rd->PosDict();
   prototype = rd->OptionalValue();
   proto_loc = rd->BlamePos();
@@ -13040,6 +13463,9 @@ Prototype::Prototype() {
 
 value_asdl::value_t* Prototype::Call(typed_args::Reader* rd) {
   value_asdl::Obj* obj = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&obj);
+
   obj = rd->PosObj();
   rd->Done();
   if (obj->prototype == nullptr) {
@@ -13054,6 +13480,9 @@ PropView::PropView() {
 
 value_asdl::value_t* PropView::Call(typed_args::Reader* rd) {
   value_asdl::Obj* obj = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&obj);
+
   obj = rd->PosObj();
   rd->Done();
   return Alloc<value::Dict>(obj->d);
@@ -13066,6 +13495,10 @@ Len::Len() {
 value_asdl::value_t* Len::Call(typed_args::Reader* rd) {
   value_asdl::value_t* x = nullptr;
   value_asdl::value_t* UP_x = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&x);
+  StackRoot _root2(&UP_x);
+
   x = rd->PosValue();
   rd->Done();
   UP_x = x;
@@ -13095,6 +13528,9 @@ Type::Type() {
 
 value_asdl::value_t* Type::Call(typed_args::Reader* rd) {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&val);
+
   val = rd->PosValue();
   rd->Done();
   return Alloc<value::Str>(ui::ValType(val));
@@ -13109,6 +13545,11 @@ value_asdl::value_t* Join::Call(typed_args::Reader* rd) {
   BigStr* delim = nullptr;
   List<BigStr*>* strs = nullptr;
   int i;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&li);
+  StackRoot _root2(&delim);
+  StackRoot _root3(&strs);
+
   li = rd->PosList();
   delim = rd->OptionalStr(S_Aoo);
   rd->Done();
@@ -13116,6 +13557,7 @@ value_asdl::value_t* Join::Call(typed_args::Reader* rd) {
   i = 0;
   for (ListIter<value_asdl::value_t*> it(li); !it.Done(); it.Next(), ++i) {
     value_asdl::value_t* el = it.Value();
+    StackRoot _for(&el  );
     strs->append(val_ops::Stringify(el, rd->LeftParenToken(), S_gzE_1));
   }
   return Alloc<value::Str>(delim->join(strs));
@@ -13128,6 +13570,10 @@ Maybe::Maybe() {
 value_asdl::value_t* Maybe::Call(typed_args::Reader* rd) {
   value_asdl::value_t* val = nullptr;
   BigStr* s = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&val);
+  StackRoot _root2(&s);
+
   val = rd->PosValue();
   rd->Done();
   if (val == value::Null) {
@@ -13146,6 +13592,9 @@ Bool::Bool() {
 
 value_asdl::value_t* Bool::Call(typed_args::Reader* rd) {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&val);
+
   val = rd->PosValue();
   rd->Done();
   return Alloc<value::Bool>(val_ops::ToBool(val));
@@ -13161,6 +13610,11 @@ value_asdl::value_t* Int::Call(typed_args::Reader* rd) {
   bool ok;
   mops::BigInt big_int;
   BigStr* s = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&val);
+  StackRoot _root2(&UP_val);
+  StackRoot _root3(&s);
+
   val = rd->PosValue();
   rd->Done();
   UP_val = val;
@@ -13213,6 +13667,10 @@ Float::Float() {
 value_asdl::value_t* Float::Call(typed_args::Reader* rd) {
   value_asdl::value_t* val = nullptr;
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&val);
+  StackRoot _root2(&UP_val);
+
   val = rd->PosValue();
   rd->Done();
   UP_val = val;
@@ -13245,6 +13703,10 @@ Str_::Str_() {
 value_asdl::value_t* Str_::Call(typed_args::Reader* rd) {
   value_asdl::value_t* val = nullptr;
   BigStr* s = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&val);
+  StackRoot _root2(&s);
+
   val = rd->PosValue();
   rd->Done();
   switch (val->tag()) {
@@ -13269,6 +13731,13 @@ value_asdl::value_t* List_::Call(typed_args::Reader* rd) {
   val_ops::Iterator* it = nullptr;
   value_asdl::value_t* UP_val = nullptr;
   value_asdl::value_t* first = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&val);
+  StackRoot _root2(&l);
+  StackRoot _root3(&it);
+  StackRoot _root4(&UP_val);
+  StackRoot _root5(&first);
+
   val = rd->PosValue();
   rd->Done();
   l = Alloc<List<value_asdl::value_t*>>();
@@ -13313,6 +13782,11 @@ value_asdl::value_t* DictFunc::Call(typed_args::Reader* rd) {
   value_asdl::value_t* val = nullptr;
   value_asdl::value_t* UP_val = nullptr;
   Dict<BigStr*, value_asdl::value_t*>* d = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&val);
+  StackRoot _root2(&UP_val);
+  StackRoot _root3(&d);
+
   val = rd->PosValue();
   rd->Done();
   UP_val = val;
@@ -13370,6 +13844,8 @@ Runes::Runes() {
 }
 
 value_asdl::value_t* Runes::Call(typed_args::Reader* rd) {
+  StackRoot _root0(&rd);
+
   return value::Null;
 }
 
@@ -13378,6 +13854,8 @@ EncodeRunes::EncodeRunes() {
 }
 
 value_asdl::value_t* EncodeRunes::Call(typed_args::Reader* rd) {
+  StackRoot _root0(&rd);
+
   return value::Null;
 }
 
@@ -13386,6 +13864,8 @@ Bytes::Bytes() {
 }
 
 value_asdl::value_t* Bytes::Call(typed_args::Reader* rd) {
+  StackRoot _root0(&rd);
+
   return value::Null;
 }
 
@@ -13394,6 +13874,8 @@ EncodeBytes::EncodeBytes() {
 }
 
 value_asdl::value_t* EncodeBytes::Call(typed_args::Reader* rd) {
+  StackRoot _root0(&rd);
+
   return value::Null;
 }
 
@@ -13405,6 +13887,11 @@ value_asdl::value_t* Split::Call(typed_args::Reader* rd) {
   BigStr* s = nullptr;
   BigStr* ifs = nullptr;
   List<value_asdl::value_t*>* l = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&s);
+  StackRoot _root2(&ifs);
+  StackRoot _root3(&l);
+
   s = rd->PosStr();
   ifs = rd->OptionalStr();
   rd->Done();
@@ -13423,6 +13910,8 @@ FloatsEqual::FloatsEqual() {
 value_asdl::value_t* FloatsEqual::Call(typed_args::Reader* rd) {
   double left;
   double right;
+  StackRoot _root0(&rd);
+
   left = rd->PosFloat();
   right = rd->PosFloat();
   rd->Done();
@@ -13437,6 +13926,11 @@ value_asdl::value_t* Glob::Call(typed_args::Reader* rd) {
   BigStr* s = nullptr;
   List<BigStr*>* out = nullptr;
   List<value_asdl::value_t*>* l = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&s);
+  StackRoot _root2(&out);
+  StackRoot _root3(&l);
+
   s = rd->PosStr();
   rd->Done();
   out = Alloc<List<BigStr*>>();
@@ -13460,6 +13954,10 @@ value_asdl::value_t* ToJson8::Call(typed_args::Reader* rd) {
   bool type_errors;
   int indent;
   mylib::BufWriter* buf = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&val);
+  StackRoot _root2(&buf);
+
   val = rd->PosValue();
   space = mops::BigTruncate(rd->NamedInt(S_iya, 0));
   type_errors = rd->NamedBool(S_efv, true);
@@ -13494,6 +13992,12 @@ value_asdl::value_t* FromJson8::Call(typed_args::Reader* rd) {
   j8::Parser* p = nullptr;
   value_asdl::value_t* val = nullptr;
   Dict<BigStr*, value_asdl::value_t*>* props = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&s);
+  StackRoot _root2(&p);
+  StackRoot _root3(&val);
+  StackRoot _root4(&props);
+
   s = rd->PosStr();
   rd->Done();
   p = Alloc<j8::Parser>(s, this->is_j8);
@@ -13530,6 +14034,10 @@ value_asdl::value_t* Id::Call(typed_args::Reader* rd) {
   (void)unused_vm;
   value_asdl::value_t* val = nullptr;
   int id_;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&unused_vm);
+  StackRoot _root2(&val);
+
   unused_vm = rd->PosValue();
   val = rd->PosValue();
   rd->Done();
@@ -13558,6 +14066,9 @@ value_asdl::value_t* GetFrame::Call(typed_args::Reader* rd) {
   int index;
   int length;
   int i;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&unused_self);
+
   unused_self = rd->PosObj();
   index = mops::BigTruncate(rd->PosInt());
   rd->Done();
@@ -13582,6 +14093,10 @@ BindFrame::BindFrame() : ::vm::_Callable() {
 value_asdl::value_t* BindFrame::Call(typed_args::Reader* rd) {
   syntax_asdl::command_t* frag = nullptr;
   Dict<BigStr*, runtime_asdl::Cell*>* frame = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&frag);
+  StackRoot _root2(&frame);
+
   frag = rd->PosCommandFrag();
   frame = rd->PosFrame();
   rd->Done();
@@ -13596,11 +14111,16 @@ value_asdl::value_t* GetDebugStack::Call(typed_args::Reader* rd) {
   value_asdl::Obj* unused_self = nullptr;
   (void)unused_self;
   List<value_asdl::value_t*>* debug_frames = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&unused_self);
+  StackRoot _root2(&debug_frames);
+
   unused_self = rd->PosObj();
   rd->Done();
   debug_frames = Alloc<List<value_asdl::value_t*>>();
   for (ListIter<syntax_asdl::debug_frame_t*> it(this->mem->debug_stack); !it.Done(); it.Next()) {
     syntax_asdl::debug_frame_t* fr = it.Value();
+    StackRoot _for(&fr  );
     if (fr->tag() == debug_frame_e::BeforeErrTrap) {
       break;
     }
@@ -13617,6 +14137,13 @@ void _FormatDebugFrame(mylib::Writer* buf, syntax_asdl::Token* token) {
   BigStr* call_line = nullptr;
   BigStr* func_str = nullptr;
   BigStr* maybe_newline = nullptr;
+  StackRoot _root0(&buf);
+  StackRoot _root1(&token);
+  StackRoot _root2(&call_source);
+  StackRoot _root3(&call_line);
+  StackRoot _root4(&func_str);
+  StackRoot _root5(&maybe_newline);
+
   call_source = ui::GetLineSourceString(token->line);
   line_num = token->line->line_num;
   call_line = token->line->content;
@@ -13636,6 +14163,12 @@ value_asdl::value_t* DebugFrameToString::Call(typed_args::Reader* rd) {
   syntax_asdl::debug_frame_t* UP_frame = nullptr;
   mylib::BufWriter* buf = nullptr;
   syntax_asdl::Token* invoke_token = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&frame);
+  StackRoot _root2(&UP_frame);
+  StackRoot _root3(&buf);
+  StackRoot _root4(&invoke_token);
+
   frame = rd->PosDebugFrame();
   rd->Done();
   UP_frame = frame;
@@ -13677,6 +14210,9 @@ Shvar_get::Shvar_get(state::Mem* mem) : ::vm::_Callable() {
 
 value_asdl::value_t* Shvar_get::Call(typed_args::Reader* rd) {
   BigStr* name = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&name);
+
   name = rd->PosStr();
   rd->Done();
   return state::DynamicGetVar(this->mem, name, scope_e::Dynamic);
@@ -13688,6 +14224,9 @@ GetVar::GetVar(state::Mem* mem) : ::vm::_Callable() {
 
 value_asdl::value_t* GetVar::Call(typed_args::Reader* rd) {
   BigStr* name = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&name);
+
   name = rd->PosStr();
   rd->Done();
   return state::DynamicGetVar(this->mem, name, scope_e::LocalOrGlobal);
@@ -13702,6 +14241,10 @@ value_asdl::value_t* SetVar::Call(typed_args::Reader* rd) {
   value_asdl::value_t* val = nullptr;
   bool set_global;
   runtime_asdl::scope_t scope;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&var_name);
+  StackRoot _root2(&val);
+
   var_name = rd->PosStr();
   val = rd->PosValue();
   set_global = rd->NamedBool(S_qCj, false);
@@ -13724,7 +14267,11 @@ value_asdl::value_t* ParseCommand::Call(typed_args::Reader* rd) {
   source::Dynamic* src = nullptr;
   syntax_asdl::command_t* cmd = nullptr;
   StackRoot _root0(&rd);
-  StackRoot _root1(&cmd);
+  StackRoot _root1(&code_str);
+  StackRoot _root2(&line_reader);
+  StackRoot _root3(&c_parser);
+  StackRoot _root4(&src);
+  StackRoot _root5(&cmd);
 
   code_str = rd->PosStr();
   rd->Done();
@@ -13752,6 +14299,9 @@ ParseExpr::ParseExpr(parse_lib::ParseContext* parse_ctx, ui::ErrorFormatter* err
 
 value_asdl::value_t* ParseExpr::Call(typed_args::Reader* rd) {
   BigStr* code_str = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&code_str);
+
   code_str = rd->PosStr();
   rd->Done();
   return value::Null;
@@ -13831,6 +14381,8 @@ HayState::HayState() {
 
 Dict<BigStr*, value_asdl::value_t*>* HayState::_MakeOutputNode() {
   Dict<BigStr*, value_asdl::value_t*>* d = nullptr;
+  StackRoot _root0(&d);
+
   d = Alloc<Dict<BigStr*, value_asdl::value_t*>>();
   d->set(S_cmd, value::Null);
   d->set(S_ccA, Alloc<value::List>(Alloc<List<value_asdl::value_t*>>()));
@@ -13839,6 +14391,8 @@ Dict<BigStr*, value_asdl::value_t*>* HayState::_MakeOutputNode() {
 
 void HayState::PushEval() {
   Dict<BigStr*, value_asdl::value_t*>* node = nullptr;
+  StackRoot _root0(&node);
+
   node = this->_MakeOutputNode();
   this->result_stack = NewList<Dict<BigStr*, value_asdl::value_t*>*>(std::initializer_list<Dict<BigStr*, value_asdl::value_t*>*>{node});
   this->output = nullptr;
@@ -13846,6 +14400,8 @@ void HayState::PushEval() {
 
 void HayState::PopEval() {
   Dict<BigStr*, value_asdl::value_t*>* node = nullptr;
+  StackRoot _root0(&node);
+
   this->output = this->result_stack->at(0);
   node = this->_MakeOutputNode();
   this->result_stack = NewList<Dict<BigStr*, value_asdl::value_t*>*>(std::initializer_list<Dict<BigStr*, value_asdl::value_t*>*>{node});
@@ -13853,6 +14409,9 @@ void HayState::PopEval() {
 
 void HayState::AppendResult(Dict<BigStr*, value_asdl::value_t*>* d) {
   value_asdl::value_t* UP_children = nullptr;
+  StackRoot _root0(&d);
+  StackRoot _root1(&UP_children);
+
   UP_children = this->result_stack->at(-1)->at(S_ccA);
   value::List* children = static_cast<value::List*>(UP_children);
   children->items->append(Alloc<value::Dict>(d));
@@ -13867,15 +14426,22 @@ Dict<BigStr*, value_asdl::value_t*>* HayState::HayRegister() {
 }
 
 bool HayState::Resolve(BigStr* first_word) {
+  StackRoot _root0(&first_word);
+
   return dict_contains(this->cur_defs->children, first_word);
 }
 
 void HayState::DefinePath(List<BigStr*>* path) {
   runtime_asdl::HayNode* current = nullptr;
   Dict<BigStr*, runtime_asdl::HayNode*>* ch = nullptr;
+  StackRoot _root0(&path);
+  StackRoot _root1(&current);
+  StackRoot _root2(&ch);
+
   current = this->root_defs;
   for (ListIter<BigStr*> it(path); !it.Done(); it.Next()) {
     BigStr* name = it.Value();
+    StackRoot _for(&name  );
     if (!dict_contains(current->children, name)) {
       ch = Alloc<Dict<BigStr*, runtime_asdl::HayNode*>>();
       current->children->set(name, Alloc<HayNode>(ch));
@@ -13886,6 +14452,8 @@ void HayState::DefinePath(List<BigStr*>* path) {
 
 void HayState::Reset() {
   Dict<BigStr*, runtime_asdl::HayNode*>* ch = nullptr;
+  StackRoot _root0(&ch);
+
   ch = Alloc<Dict<BigStr*, runtime_asdl::HayNode*>>();
   this->root_defs = Alloc<HayNode>(ch);
   this->cur_defs = this->root_defs;
@@ -13896,6 +14464,11 @@ void HayState::Push(BigStr* hay_name) {
   Dict<BigStr*, value_asdl::value_t*>* top = nullptr;
   value::List* children = nullptr;
   value::Dict* last_child = nullptr;
+  StackRoot _root0(&hay_name);
+  StackRoot _root1(&top);
+  StackRoot _root2(&children);
+  StackRoot _root3(&last_child);
+
   top = this->result_stack->at(-1);
   children = static_cast<value::List*>(top->at(S_ccA));
   last_child = static_cast<value::Dict*>(children->items->at(-1));
@@ -13940,7 +14513,19 @@ int Hay::Run(cmd_value::Argv* cmd_val) {
   hnode_asdl::hnode_t* h = nullptr;
   mylib::Writer* f = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&var_name);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&action);
+  StackRoot _root3(&action_loc);
+  StackRoot _root4(&first);
+  StackRoot _root5(&names);
+  StackRoot _root6(&name_locs);
+  StackRoot _root7(&path);
+  StackRoot _root8(&var_name);
+  StackRoot _root9(&cmd);
+  StackRoot _root10(&result);
+  StackRoot _root11(&val);
+  StackRoot _root12(&h);
+  StackRoot _root13(&f);
 
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
@@ -13963,9 +14548,11 @@ int Hay::Run(cmd_value::Argv* cmd_val) {
     i = 0;
     for (ListIter<BigStr*> it(names); !it.Done(); it.Next(), ++i) {
       BigStr* name = it.Value();
+      StackRoot _for(&name    );
       path = name->split(S_ckc);
       for (ListIter<BigStr*> it(path); !it.Done(); it.Next()) {
         BigStr* p = it.Value();
+        StackRoot _for(&p      );
         if (len(p) == 0) {
           e_usage(StrFormat("got invalid path %r.  Parts can't be empty.", name), name_locs->at(i));
         }
@@ -14037,8 +14624,22 @@ int HayNode_::Run(cmd_value::Argv* cmd_val) {
   int unused_status;
   (void)unused_status;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&result);
-  StackRoot _root2(&bindings);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&hay_name);
+  StackRoot _root3(&arg0_loc);
+  StackRoot _root4(&rd);
+  StackRoot _root5(&cmd);
+  StackRoot _root6(&lit_block);
+  StackRoot _root7(&frag);
+  StackRoot _root8(&c);
+  StackRoot _root9(&result);
+  StackRoot _root10(&node_type);
+  StackRoot _root11(&arguments);
+  StackRoot _root12(&items);
+  StackRoot _root13(&brace_group);
+  StackRoot _root14(&line);
+  StackRoot _root15(&unbound_frag);
+  StackRoot _root16(&bindings);
 
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   Tuple2<BigStr*, syntax_asdl::loc_t*> tup4 = arg_r->Peek2();
@@ -14132,6 +14733,8 @@ Echo::Echo(optview::Exec* exec_opts) {
 
 arg_types::echo* Echo::_SimpleFlag() {
   Dict<BigStr*, value_asdl::value_t*>* attrs = nullptr;
+  StackRoot _root0(&attrs);
+
   if (this->simple_flag == nullptr) {
     attrs = Alloc<Dict<BigStr*, value_asdl::value_t*>>();
     attrs->set(S_ysz, Alloc<value::Bool>(false));
@@ -14155,6 +14758,18 @@ int Echo::Run(cmd_value::Argv* cmd_val) {
   BigStr* p = nullptr;
   mylib::BufWriter* buf = nullptr;
   int i;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&argv);
+  StackRoot _root2(&arg);
+  StackRoot _root3(&attrs);
+  StackRoot _root4(&arg_r);
+  StackRoot _root5(&new_argv);
+  StackRoot _root6(&parts);
+  StackRoot _root7(&lex);
+  StackRoot _root8(&s);
+  StackRoot _root9(&p);
+  StackRoot _root10(&buf);
+
   argv = cmd_val->argv->slice(1);
   if (this->exec_opts->simple_echo()) {
     typed_args::DoesNotAccept(cmd_val->proc_args);
@@ -14172,6 +14787,7 @@ int Echo::Run(cmd_value::Argv* cmd_val) {
     new_argv = Alloc<List<BigStr*>>();
     for (ListIter<BigStr*> it(argv); !it.Done(); it.Next()) {
       BigStr* a = it.Value();
+      StackRoot _for(&a    );
       parts = Alloc<List<BigStr*>>();
       lex = match::EchoLexer(a);
       while (!backslash_c) {
@@ -14199,6 +14815,7 @@ int Echo::Run(cmd_value::Argv* cmd_val) {
   i = 0;
   for (ListIter<BigStr*> it(argv); !it.Done(); it.Next(), ++i) {
     BigStr* a = it.Value();
+    StackRoot _for(&a  );
     if (i != 0) {
       buf->write(S_yfw);
     }
@@ -14226,10 +14843,12 @@ int MapFile::Run(cmd_value::Argv* cmd_val) {
   BigStr* line = nullptr;
   bool eof;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&arg);
-  StackRoot _root2(&var_name);
-  StackRoot _root3(&lines);
-  StackRoot _root4(&line);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&var_name);
+  StackRoot _root5(&lines);
+  StackRoot _root6(&line);
 
   Tuple2<args::_Attributes*, args::Reader*> tup2 = flag_util::ParseCmdVal(S_fhy, cmd_val);
   attrs = tup2.at0();
@@ -14288,6 +14907,13 @@ int Pp::_PrettyPrint(cmd_value::Argv* cmd_val) {
   syntax_asdl::Token* blame_tok = nullptr;
   BigStr* excerpt = nullptr;
   BigStr* prefix = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&rd);
+  StackRoot _root2(&val);
+  StackRoot _root3(&blame_tok);
+  StackRoot _root4(&excerpt);
+  StackRoot _root5(&prefix);
+
   rd = typed_args::ReaderForProc(cmd_val);
   val = rd->PosValue();
   rd->Done();
@@ -14324,14 +14950,24 @@ int Pp::Run(cmd_value::Argv* cmd_val) {
   BigStr* doc = nullptr;
   mylib::BufWriter* buf = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&arg_r);
-  StackRoot _root2(&action);
-  StackRoot _root3(&action_loc);
-  StackRoot _root4(&argv);
-  StackRoot _root5(&locs);
-  StackRoot _root6(&names);
-  StackRoot _root7(&node);
-  StackRoot _root8(&proc_val);
+  StackRoot _root1(&arg);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&action);
+  StackRoot _root4(&action_loc);
+  StackRoot _root5(&rd);
+  StackRoot _root6(&val);
+  StackRoot _root7(&tree);
+  StackRoot _root8(&ysh_type);
+  StackRoot _root9(&argv);
+  StackRoot _root10(&locs);
+  StackRoot _root11(&cell);
+  StackRoot _root12(&top);
+  StackRoot _root13(&names);
+  StackRoot _root14(&node);
+  StackRoot _root15(&proc_val);
+  StackRoot _root16(&user_proc);
+  StackRoot _root17(&doc);
+  StackRoot _root18(&buf);
 
   Tuple2<args::_Attributes*, args::Reader*> tup1 = flag_util::ParseCmdVal(S_ntm, cmd_val, true);
   arg = tup1.at0();
@@ -14378,6 +15014,7 @@ int Pp::Run(cmd_value::Argv* cmd_val) {
     i = 0;
     for (ListIter<BigStr*> it(argv); !it.Done(); it.Next(), ++i) {
       BigStr* name = it.Value();
+      StackRoot _for(&name    );
       if (!match::IsValidVarName(name)) {
         throw Alloc<error::Usage>(StrFormat("got invalid variable name %r", name), locs->at(i));
       }
@@ -14413,6 +15050,7 @@ int Pp::Run(cmd_value::Argv* cmd_val) {
       i = 0;
       for (ListIter<BigStr*> it(names); !it.Done(); it.Next(), ++i) {
         BigStr* name = it.Value();
+        StackRoot _for(&name      );
         Tuple2<value_asdl::value_t*, value_asdl::Obj*> tup5 = this->procs->GetInvokable(name);
         node = tup5.at0();
         if (node == nullptr) {
@@ -14427,6 +15065,7 @@ int Pp::Run(cmd_value::Argv* cmd_val) {
     print(S_qdr);
     for (ListIter<BigStr*> it(names); !it.Done(); it.Next()) {
       BigStr* name = it.Value();
+      StackRoot _for(&name    );
       Tuple2<value_asdl::value_t*, value_asdl::Obj*> tup6 = this->procs->GetInvokable(name);
       proc_val = tup6.at0();
       if (proc_val->tag() != value_e::Proc) {
@@ -14458,6 +15097,12 @@ int Write::Run(cmd_value::Argv* cmd_val) {
   arg_types::write* arg = nullptr;
   int i;
   BigStr* s = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&s);
+
   Tuple2<args::_Attributes*, args::Reader*> tup7 = flag_util::ParseCmdVal(S_bhu, cmd_val);
   attrs = tup7.at0();
   arg_r = tup7.at1();
@@ -14502,6 +15147,8 @@ int RunBlock::Run(cmd_value::Argv* cmd_val) {
   int unused;
   (void)unused;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&cmd_frag);
 
   Tuple2<args::_Attributes*, args::Reader*> tup8 = flag_util::ParseCmdVal(S_xzn, cmd_val, true);
   arg_r = tup8.at1();
@@ -14547,6 +15194,21 @@ int Json::Run(cmd_value::Argv* cmd_val) {
   BigStr* var_name = nullptr;
   BigStr* contents = nullptr;
   j8::Parser* p = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&action);
+  StackRoot _root3(&action_loc);
+  StackRoot _root4(&attrs);
+  StackRoot _root5(&arg_jw);
+  StackRoot _root6(&rd);
+  StackRoot _root7(&val);
+  StackRoot _root8(&buf);
+  StackRoot _root9(&place);
+  StackRoot _root10(&blame_loc);
+  StackRoot _root11(&var_name);
+  StackRoot _root12(&contents);
+  StackRoot _root13(&p);
+
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
   Tuple2<BigStr*, syntax_asdl::loc_t*> tup0 = arg_r->Peek2();
@@ -14664,6 +15326,12 @@ int Eval::Run(cmd_value::Argv* cmd_val) {
   cmd_parse::CommandParser* c_parser = nullptr;
   source::Dynamic* src = nullptr;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&code_str);
+  StackRoot _root3(&eval_loc);
+  StackRoot _root4(&line_reader);
+  StackRoot _root5(&c_parser);
+  StackRoot _root6(&src);
 
   Tuple2<args::_Attributes*, args::Reader*> tup0 = flag_util::ParseCmdVal(S_cCk, cmd_val);
   arg_r = tup0.at1();
@@ -14700,6 +15368,9 @@ int Eval::Run(cmd_value::Argv* cmd_val) {
 BigStr* _VarName(BigStr* module_path) {
   BigStr* basename = nullptr;
   int i;
+  StackRoot _root0(&module_path);
+  StackRoot _root1(&basename);
+
   basename = os_path::basename(module_path);
   i = basename->rfind(S_Aru);
   if (i != -1) {
@@ -14740,6 +15411,13 @@ Tuple2<BigStr*, cmd_parse::CommandParser*> ShellFile::LoadEmbeddedFile(BigStr* e
   BigStr* contents = nullptr;
   reader::FileLineReader* line_reader = nullptr;
   cmd_parse::CommandParser* c_parser = nullptr;
+  StackRoot _root0(&embed_path);
+  StackRoot _root1(&blame_loc);
+  StackRoot _root2(&load_path);
+  StackRoot _root3(&contents);
+  StackRoot _root4(&line_reader);
+  StackRoot _root5(&c_parser);
+
   try {
     load_path = os_path::join(S_vwz, embed_path);
     contents = this->loader->Get(load_path);
@@ -14757,6 +15435,12 @@ Tuple2<mylib::LineReader*, cmd_parse::CommandParser*> ShellFile::_LoadDiskFile(B
   mylib::LineReader* f = nullptr;
   reader::FileLineReader* line_reader = nullptr;
   cmd_parse::CommandParser* c_parser = nullptr;
+  StackRoot _root0(&fs_path);
+  StackRoot _root1(&blame_loc);
+  StackRoot _root2(&f);
+  StackRoot _root3(&line_reader);
+  StackRoot _root4(&c_parser);
+
   try {
     f = this->fd_state->Open(fs_path);
   }
@@ -14778,6 +15462,9 @@ int ShellFile::_SourceExec(cmd_value::Argv* cmd_val, args::Reader* arg_r, BigStr
   StackRoot _root1(&arg_r);
   StackRoot _root2(&path);
   StackRoot _root3(&c_parser);
+  StackRoot _root4(&call_loc);
+  StackRoot _root5(&source_argv);
+  StackRoot _root6(&src);
 
   call_loc = cmd_val->arg_locs->at(0);
   {  // with
@@ -14816,6 +15503,10 @@ value_asdl::Obj* ShellFile::_NewModule() {
   value_asdl::Obj* methods = nullptr;
   Dict<BigStr*, value_asdl::value_t*>* props = nullptr;
   value_asdl::Obj* module_obj = nullptr;
+  StackRoot _root0(&methods);
+  StackRoot _root1(&props);
+  StackRoot _root2(&module_obj);
+
   methods = Alloc<Obj>(nullptr, Alloc<Dict<BigStr*, value_asdl::value_t*>>(std::initializer_list<BigStr*>{S_fBo}, std::initializer_list<value_asdl::value_t*>{Alloc<value::BuiltinProc>(this->module_invoke)}));
   props = Alloc<Dict<BigStr*, value_asdl::value_t*>>();
   module_obj = Alloc<Obj>(methods, props);
@@ -14832,6 +15523,7 @@ int ShellFile::_UseExec(cmd_value::Argv* cmd_val, BigStr* path, syntax_asdl::loc
   StackRoot _root3(&c_parser);
   StackRoot _root4(&props);
   StackRoot _root5(&error_strs);
+  StackRoot _root6(&src);
 
   error_strs = Alloc<List<BigStr*>>();
   {  // with
@@ -14868,6 +15560,7 @@ int ShellFile::_UseExec(cmd_value::Argv* cmd_val, BigStr* path, syntax_asdl::loc
   if (len(error_strs)) {
     for (ListIter<BigStr*> it(error_strs); !it.Done(); it.Next()) {
       BigStr* s = it.Value();
+      StackRoot _for(&s    );
       this->errfmt->PrintMessage(StrFormat("Error: %s", s), path_loc);
     }
     return 1;
@@ -14887,6 +15580,16 @@ int ShellFile::_Source(cmd_value::Argv* cmd_val) {
   BigStr* resolved = nullptr;
   mylib::LineReader* f = nullptr;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&path_arg);
+  StackRoot _root5(&path_loc);
+  StackRoot _root6(&embed_path);
+  StackRoot _root7(&load_path);
+  StackRoot _root8(&c_parser);
+  StackRoot _root9(&resolved);
+  StackRoot _root10(&f);
 
   Tuple2<args::_Attributes*, args::Reader*> tup2 = flag_util::ParseCmdVal(S_cmd, cmd_val);
   attrs = tup2.at0();
@@ -14936,6 +15639,12 @@ int ShellFile::_Source(cmd_value::Argv* cmd_val) {
 int ShellFile::_BindNames(value_asdl::Obj* module_obj, BigStr* module_name, List<BigStr*>* pick_names, List<syntax_asdl::CompoundWord*>* pick_locs) {
   int i;
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&module_obj);
+  StackRoot _root1(&module_name);
+  StackRoot _root2(&pick_names);
+  StackRoot _root3(&pick_locs);
+  StackRoot _root4(&val);
+
   state::SetGlobalValue(this->mem, module_name, module_obj);
   if (pick_names == nullptr) {
     return 0;
@@ -14943,6 +15652,7 @@ int ShellFile::_BindNames(value_asdl::Obj* module_obj, BigStr* module_name, List
   i = 0;
   for (ListIter<BigStr*> it(pick_names); !it.Done(); it.Next(), ++i) {
     BigStr* name = it.Value();
+    StackRoot _for(&name  );
     val = module_obj->d->get(name);
     if (val == nullptr) {
       this->errfmt->Print_(StrFormat("use: module doesn't provide name %r", name), pick_locs->at(i));
@@ -14974,10 +15684,24 @@ int ShellFile::_Use(cmd_value::Argv* cmd_val) {
   BigStr* normalized = nullptr;
   mylib::LineReader* f = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&pick_names);
-  StackRoot _root2(&pick_locs);
-  StackRoot _root3(&var_name);
-  StackRoot _root4(&module_obj);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&path_arg);
+  StackRoot _root5(&path_loc);
+  StackRoot _root6(&pick_names);
+  StackRoot _root7(&pick_locs);
+  StackRoot _root8(&flag);
+  StackRoot _root9(&flag_loc);
+  StackRoot _root10(&p);
+  StackRoot _root11(&embed_path);
+  StackRoot _root12(&var_name);
+  StackRoot _root13(&cached_obj);
+  StackRoot _root14(&load_path);
+  StackRoot _root15(&c_parser);
+  StackRoot _root16(&module_obj);
+  StackRoot _root17(&normalized);
+  StackRoot _root18(&f);
 
   Tuple2<args::_Attributes*, args::Reader*> tup6 = flag_util::ParseCmdVal(S_eas, cmd_val);
   attrs = tup6.at0();
@@ -15089,6 +15813,13 @@ void _PrintFreeForm(Tuple3<BigStr*, BigStr*, BigStr*>* row) {
   BigStr* detail = nullptr;
   BigStr* what = nullptr;
   BigStr* prefix = nullptr;
+  StackRoot _root0(&row);
+  StackRoot _root1(&name);
+  StackRoot _root2(&kind);
+  StackRoot _root3(&detail);
+  StackRoot _root4(&what);
+  StackRoot _root5(&prefix);
+
   Tuple3<BigStr*, BigStr*, BigStr*>* tup12 = row;
   name = tup12->at0();
   kind = tup12->at1();
@@ -15136,6 +15867,14 @@ void _PrintTableRow(Tuple3<BigStr*, BigStr*, BigStr*>* row) {
   BigStr* name_row = nullptr;
   BigStr* kind_row = nullptr;
   BigStr* detail_row = nullptr;
+  StackRoot _root0(&row);
+  StackRoot _root1(&name);
+  StackRoot _root2(&kind);
+  StackRoot _root3(&detail);
+  StackRoot _root4(&name_row);
+  StackRoot _root5(&kind_row);
+  StackRoot _root6(&detail_row);
+
   Tuple3<BigStr*, BigStr*, BigStr*>* tup13 = row;
   name = tup13->at0();
   kind = tup13->at1();
@@ -15177,6 +15916,18 @@ int Command::Run(cmd_value::Argv* cmd_val) {
   runtime_asdl::CommandStatus* cmd_st = nullptr;
   int run_flags;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&argv);
+  StackRoot _root5(&locs);
+  StackRoot _root6(&r);
+  StackRoot _root7(&row);
+  StackRoot _root8(&name);
+  StackRoot _root9(&kind);
+  StackRoot _root10(&detail);
+  StackRoot _root11(&cmd_val2);
+  StackRoot _root12(&cmd_st);
 
   Tuple2<args::_Attributes*, args::Reader*> tup14 = flag_util::ParseCmdVal(S_zij, cmd_val, true);
   attrs = tup14.at0();
@@ -15189,6 +15940,7 @@ int Command::Run(cmd_value::Argv* cmd_val) {
     status = 0;
     for (ListIter<BigStr*> it(argv); !it.Done(); it.Next()) {
       BigStr* argument = it.Value();
+      StackRoot _for(&argument    );
       r = _ResolveName(argument, this->procs, this->aliases, this->search_path, false);
       if (len(r)) {
         row = r->at(0);
@@ -15228,6 +15980,8 @@ int Command::Run(cmd_value::Argv* cmd_val) {
 }
 
 cmd_value::Argv* _ShiftArgv(cmd_value::Argv* cmd_val) {
+  StackRoot _root0(&cmd_val);
+
   return Alloc<cmd_value::Argv>(cmd_val->argv->slice(1), cmd_val->arg_locs->slice(1), cmd_val->is_last_cmd, cmd_val->self_obj, cmd_val->proc_args);
 }
 
@@ -15246,6 +16000,13 @@ int Builtin::Run(cmd_value::Argv* cmd_val) {
   syntax_asdl::CompoundWord* location = nullptr;
   cmd_value::Argv* cmd_val2 = nullptr;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&argv);
+  StackRoot _root4(&locs);
+  StackRoot _root5(&name);
+  StackRoot _root6(&location);
+  StackRoot _root7(&cmd_val2);
 
   Tuple2<args::_Attributes*, args::Reader*> tup17 = flag_util::ParseCmdVal(S_utc, cmd_val, true);
   attrs = tup17.at0();
@@ -15288,6 +16049,13 @@ int RunProc::Run(cmd_value::Argv* cmd_val) {
   runtime_asdl::CommandStatus* cmd_st = nullptr;
   int run_flags;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&argv);
+  StackRoot _root3(&locs);
+  StackRoot _root4(&name);
+  StackRoot _root5(&proc);
+  StackRoot _root6(&cmd_val2);
+  StackRoot _root7(&cmd_st);
 
   Tuple2<args::_Attributes*, args::Reader*> tup19 = flag_util::ParseCmdVal(S_pkv, cmd_val, true);
   arg_r = tup19.at1();
@@ -15312,6 +16080,8 @@ int RunProc::Run(cmd_value::Argv* cmd_val) {
 
 int _LookupAnyBuiltin(BigStr* name) {
   int to_run;
+  StackRoot _root0(&name);
+
   to_run = consts::LookupNormalBuiltin(name);
   if (to_run == consts::NO_INDEX) {
     to_run = consts::LookupSpecialBuiltin(name);
@@ -15346,6 +16116,19 @@ int Invoke::Run(cmd_value::Argv* cmd_val) {
   value::Proc* sh_func = nullptr;
   int to_run;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&argv);
+  StackRoot _root5(&locs);
+  StackRoot _root6(&r);
+  StackRoot _root7(&cmd_val2);
+  StackRoot _root8(&name);
+  StackRoot _root9(&location);
+  StackRoot _root10(&tried);
+  StackRoot _root11(&proc_val);
+  StackRoot _root12(&self_obj);
+  StackRoot _root13(&sh_func);
 
   Tuple2<args::_Attributes*, args::Reader*> tup22 = flag_util::ParseCmdVal(S_wwk, cmd_val, true);
   attrs = tup22.at0();
@@ -15361,6 +16144,7 @@ int Invoke::Run(cmd_value::Argv* cmd_val) {
     print(StrFormat(_TABLE_ROW_FMT, S_gov, S_klA, S_oqC, S_xnE));
     for (ListIter<BigStr*> it(argv); !it.Done(); it.Next()) {
       BigStr* name = it.Value();
+      StackRoot _for(&name    );
       r = _ResolveName(name, this->procs, this->aliases, this->search_path, true, true);
       if (len(r)) {
         for (ListIter<Tuple3<BigStr*, BigStr*, BigStr*>*> it(r); !it.Done(); it.Next()) {
@@ -15420,6 +16204,9 @@ Extern::Extern(vm::_Executor* shell_ex, state::Procs* procs, ui::ErrorFormatter*
 
 int Extern::Run(cmd_value::Argv* cmd_val) {
   args::Reader* arg_r = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+
   Tuple2<args::_Attributes*, args::Reader*> tup25 = flag_util::ParseCmdVal(S_Fvh, cmd_val, true);
   arg_r = tup25.at1();
   print(S_vtm);
@@ -15429,6 +16216,13 @@ int Extern::Run(cmd_value::Argv* cmd_val) {
 List<Tuple3<BigStr*, BigStr*, BigStr*>*>* _ResolveName(BigStr* name, state::Procs* procs, Dict<BigStr*, BigStr*>* aliases, executor::SearchPath* search_path, bool do_all, bool do_private) {
   BigStr* no_str = nullptr;
   List<Tuple3<BigStr*, BigStr*, BigStr*>*>* results = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&procs);
+  StackRoot _root2(&aliases);
+  StackRoot _root3(&search_path);
+  StackRoot _root4(&no_str);
+  StackRoot _root5(&results);
+
   no_str = nullptr;
   results = Alloc<List<Tuple3<BigStr*, BigStr*, BigStr*>*>>();
   if (dict_contains(aliases, name)) {
@@ -15468,6 +16262,7 @@ List<Tuple3<BigStr*, BigStr*, BigStr*>*>* _ResolveName(BigStr* name, state::Proc
   }
   for (ListIter<BigStr*> it(search_path->LookupReflect(name, do_all)); !it.Done(); it.Next()) {
     BigStr* path = it.Value();
+    StackRoot _for(&path  );
     if (posix::access(path, X_OK)) {
       results->append((Alloc<Tuple3<BigStr*, BigStr*, BigStr*>>(name, S_xeh, path)));
     }
@@ -15490,6 +16285,13 @@ void Type::_PrintEntry(arg_types::type* arg, Tuple3<BigStr*, BigStr*, BigStr*>* 
   BigStr* kind = nullptr;
   BigStr* detail = nullptr;
   value::Proc* sh_func = nullptr;
+  StackRoot _root0(&arg);
+  StackRoot _root1(&row);
+  StackRoot _root2(&name);
+  StackRoot _root3(&kind);
+  StackRoot _root4(&detail);
+  StackRoot _root5(&sh_func);
+
   Tuple3<BigStr*, BigStr*, BigStr*>* tup26 = row;
   name = tup26->at0();
   kind = tup26->at1();
@@ -15522,6 +16324,15 @@ int Type::Run(cmd_value::Argv* cmd_val) {
   List<BigStr*>* names = nullptr;
   List<BigStr*>* paths = nullptr;
   List<Tuple3<BigStr*, BigStr*, BigStr*>*>* r = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&procs);
+  StackRoot _root5(&names);
+  StackRoot _root6(&paths);
+  StackRoot _root7(&r);
+
   Tuple2<args::_Attributes*, args::Reader*> tup27 = flag_util::ParseCmdVal(S_qEi, cmd_val);
   attrs = tup27.at0();
   arg_r = tup27.at1();
@@ -15537,10 +16348,12 @@ int Type::Run(cmd_value::Argv* cmd_val) {
   if (arg->P) {
     for (ListIter<BigStr*> it(names); !it.Done(); it.Next()) {
       BigStr* name = it.Value();
+      StackRoot _for(&name    );
       paths = this->search_path->LookupReflect(name, arg->a);
       if (len(paths)) {
         for (ListIter<BigStr*> it(paths); !it.Done(); it.Next()) {
           BigStr* path = it.Value();
+          StackRoot _for(&path        );
           print(path);
         }
       }
@@ -15552,6 +16365,7 @@ int Type::Run(cmd_value::Argv* cmd_val) {
   }
   for (ListIter<BigStr*> it(names); !it.Done(); it.Next()) {
     BigStr* argument = it.Value();
+    StackRoot _for(&argument  );
     r = _ResolveName(argument, procs, this->aliases, this->search_path, arg->a);
     if (arg->a) {
       for (ListIter<Tuple3<BigStr*, BigStr*, BigStr*>*> it(r); !it.Done(); it.Next()) {
@@ -15590,6 +16404,10 @@ Keys::Keys() {
 value_asdl::value_t* Keys::Call(typed_args::Reader* rd) {
   Dict<BigStr*, value_asdl::value_t*>* dictionary = nullptr;
   List<value_asdl::value_t*>* keys = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&dictionary);
+  StackRoot _root2(&keys);
+
   dictionary = rd->PosDict();
   rd->Done();
   keys = Alloc<List<value_asdl::value_t*>>();
@@ -15607,6 +16425,10 @@ Values::Values() {
 value_asdl::value_t* Values::Call(typed_args::Reader* rd) {
   Dict<BigStr*, value_asdl::value_t*>* dictionary = nullptr;
   List<value_asdl::value_t*>* values = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&dictionary);
+  StackRoot _root2(&values);
+
   dictionary = rd->PosDict();
   rd->Done();
   values = dictionary->values();
@@ -15620,6 +16442,10 @@ Erase::Erase() {
 value_asdl::value_t* Erase::Call(typed_args::Reader* rd) {
   Dict<BigStr*, value_asdl::value_t*>* dictionary = nullptr;
   BigStr* key = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&dictionary);
+  StackRoot _root2(&key);
+
   dictionary = rd->PosDict();
   key = rd->PosStr();
   rd->Done();
@@ -15637,6 +16463,13 @@ value_asdl::value_t* Get::Call(typed_args::Reader* rd) {
   value_asdl::value_t* default_value = nullptr;
   value_asdl::value_t* UP_obj = nullptr;
   Dict<BigStr*, value_asdl::value_t*>* d = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&obj);
+  StackRoot _root2(&key);
+  StackRoot _root3(&default_value);
+  StackRoot _root4(&UP_obj);
+  StackRoot _root5(&d);
+
   obj = rd->PosValue();
   key = rd->PosStr();
   default_value = rd->OptionalValue();
@@ -15676,12 +16509,17 @@ int EVAL_DICT = 2;
 
 List<BigStr*>* _CheckPosArgs(List<value_asdl::value_t*>* pos_args_raw, syntax_asdl::loc_t* blame_loc) {
   List<BigStr*>* pos_args = nullptr;
+  StackRoot _root0(&pos_args_raw);
+  StackRoot _root1(&blame_loc);
+  StackRoot _root2(&pos_args);
+
   if (pos_args_raw == nullptr) {
     return nullptr;
   }
   pos_args = Alloc<List<BigStr*>>();
   for (ListIter<value_asdl::value_t*> it(pos_args_raw); !it.Done(); it.Next()) {
     value_asdl::value_t* arg = it.Value();
+    StackRoot _for(&arg  );
     if (arg->tag() != value_e::Str) {
       throw Alloc<error::TypeErr>(arg, S_cFv, blame_loc);
     }
@@ -15708,7 +16546,14 @@ value_asdl::value_t* EvalExpr::Call(typed_args::Reader* rd) {
   List<BigStr*>* pos_args = nullptr;
   value_asdl::value_t* result = nullptr;
   StackRoot _root0(&rd);
-  StackRoot _root1(&result);
+  StackRoot _root1(&unused_self);
+  StackRoot _root2(&lazy);
+  StackRoot _root3(&dollar0);
+  StackRoot _root4(&pos_args_raw);
+  StackRoot _root5(&vars_);
+  StackRoot _root6(&blame_tok);
+  StackRoot _root7(&pos_args);
+  StackRoot _root8(&result);
 
   if (this->pure_ex == nullptr) {
     unused_self = rd->PosObj();
@@ -15754,6 +16599,10 @@ value_asdl::value_t* EvalInFrame::Call(typed_args::Reader* rd) {
   int unused_status;
   (void)unused_status;
   StackRoot _root0(&rd);
+  StackRoot _root1(&unused);
+  StackRoot _root2(&cmd);
+  StackRoot _root3(&in_frame);
+  StackRoot _root4(&frag);
 
   unused = rd->PosValue();
   cmd = rd->PosCommand();
@@ -15794,7 +16643,14 @@ value_asdl::value_t* Eval::Call(typed_args::Reader* rd) {
   int unused_status;
   (void)unused_status;
   StackRoot _root0(&rd);
-  StackRoot _root1(&bindings);
+  StackRoot _root1(&unused);
+  StackRoot _root2(&bound);
+  StackRoot _root3(&dollar0);
+  StackRoot _root4(&pos_args_raw);
+  StackRoot _root5(&vars_);
+  StackRoot _root6(&frag);
+  StackRoot _root7(&pos_args);
+  StackRoot _root8(&bindings);
 
   if (this->pure_ex == nullptr) {
     unused = rd->PosValue();
@@ -15863,7 +16719,11 @@ value_asdl::value_t* CaptureStdout::Call(typed_args::Reader* rd) {
   BigStr* stdout_str = nullptr;
   Dict<BigStr*, value_asdl::value_t*>* properties = nullptr;
   StackRoot _root0(&rd);
-  StackRoot _root1(&stdout_str);
+  StackRoot _root1(&unused);
+  StackRoot _root2(&cmd);
+  StackRoot _root3(&frag);
+  StackRoot _root4(&stdout_str);
+  StackRoot _root5(&properties);
 
   unused = rd->PosValue();
   cmd = rd->PosCommand();
@@ -15898,8 +16758,12 @@ value_asdl::value_t* CaptureAll::Call(typed_args::Reader* rd) {
   BigStr* stderr_str = nullptr;
   Dict<BigStr*, value_asdl::value_t*>* out = nullptr;
   StackRoot _root0(&rd);
-  StackRoot _root1(&stdout_str);
-  StackRoot _root2(&stderr_str);
+  StackRoot _root1(&unused);
+  StackRoot _root2(&cmd);
+  StackRoot _root3(&frag);
+  StackRoot _root4(&stdout_str);
+  StackRoot _root5(&stderr_str);
+  StackRoot _root6(&out);
 
   unused = rd->PosValue();
   cmd = rd->PosCommand();
@@ -15928,6 +16792,10 @@ value_asdl::value_t* PromptVal::Call(typed_args::Reader* rd) {
   value_asdl::value_t* unused = nullptr;
   (void)unused;
   BigStr* what = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&unused);
+  StackRoot _root2(&what);
+
   unused = rd->PosValue();
   what = rd->PosStr();
   rd->Done();
@@ -15942,6 +16810,8 @@ Time::Time() {
 }
 
 value_asdl::value_t* Time::Call(typed_args::Reader* rd) {
+  StackRoot _root0(&rd);
+
   return value::Null;
 }
 
@@ -15950,6 +16820,8 @@ Strftime::Strftime() {
 }
 
 value_asdl::value_t* Strftime::Call(typed_args::Reader* rd) {
+  StackRoot _root0(&rd);
+
   return value::Null;
 }
 
@@ -15958,6 +16830,8 @@ Glob::Glob() {
 }
 
 value_asdl::value_t* Glob::Call(typed_args::Reader* rd) {
+  StackRoot _root0(&rd);
+
   return value::Null;
 }
 
@@ -15975,6 +16849,10 @@ Append::Append() {
 value_asdl::value_t* Append::Call(typed_args::Reader* rd) {
   List<value_asdl::value_t*>* items = nullptr;
   value_asdl::value_t* to_append = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&items);
+  StackRoot _root2(&to_append);
+
   items = rd->PosList();
   to_append = rd->PosValue();
   rd->Done();
@@ -15988,6 +16866,9 @@ Clear::Clear() {
 
 value_asdl::value_t* Clear::Call(typed_args::Reader* rd) {
   List<value_asdl::value_t*>* li = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&li);
+
   li = rd->PosList();
   rd->Done();
   li->clear();
@@ -16001,6 +16882,10 @@ Extend::Extend() {
 value_asdl::value_t* Extend::Call(typed_args::Reader* rd) {
   List<value_asdl::value_t*>* a = nullptr;
   List<value_asdl::value_t*>* b = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&a);
+  StackRoot _root2(&b);
+
   a = rd->PosList();
   b = rd->PosList();
   rd->Done();
@@ -16014,6 +16899,9 @@ Pop::Pop() {
 
 value_asdl::value_t* Pop::Call(typed_args::Reader* rd) {
   List<value_asdl::value_t*>* items = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&items);
+
   items = rd->PosList();
   rd->Done();
   return items->pop();
@@ -16025,6 +16913,9 @@ Reverse::Reverse() {
 
 value_asdl::value_t* Reverse::Call(typed_args::Reader* rd) {
   List<value_asdl::value_t*>* li = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&li);
+
   li = rd->PosList();
   rd->Done();
   li->reverse();
@@ -16039,6 +16930,10 @@ value_asdl::value_t* IndexOf::Call(typed_args::Reader* rd) {
   List<value_asdl::value_t*>* li = nullptr;
   value_asdl::value_t* needle = nullptr;
   int i;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&li);
+  StackRoot _root2(&needle);
+
   li = rd->PosList();
   needle = rd->PosValue();
   rd->Done();
@@ -16060,6 +16955,10 @@ value_asdl::value_t* LastIndexOf::Call(typed_args::Reader* rd) {
   List<value_asdl::value_t*>* li = nullptr;
   value_asdl::value_t* needle = nullptr;
   int i;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&li);
+  StackRoot _root2(&needle);
+
   li = rd->PosList();
   needle = rd->PosValue();
   rd->Done();
@@ -16081,6 +16980,10 @@ value_asdl::value_t* Remove::Call(typed_args::Reader* rd) {
   List<value_asdl::value_t*>* li = nullptr;
   value_asdl::value_t* to_remove = nullptr;
   int i;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&li);
+  StackRoot _root2(&to_remove);
+
   li = rd->PosList();
   to_remove = rd->PosValue();
   rd->Done();
@@ -16105,6 +17008,10 @@ value_asdl::value_t* Insert::Call(typed_args::Reader* rd) {
   value_asdl::value_t* to_insert = nullptr;
   int length;
   int i;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&li);
+  StackRoot _root2(&to_insert);
+
   li = rd->PosList();
   at_index = mops::BigTruncate(rd->PosInt());
   to_insert = rd->PosValue();
@@ -16146,6 +17053,10 @@ SetValue::SetValue(state::Mem* mem) {
 value_asdl::value_t* SetValue::Call(typed_args::Reader* rd) {
   value::Place* place = nullptr;
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&place);
+  StackRoot _root2(&val);
+
   place = rd->PosPlace();
   val = rd->PosValue();
   rd->Done();
@@ -16165,6 +17076,15 @@ value_asdl::value_t* SourceCode::Call(typed_args::Reader* rd) {
   Dict<BigStr*, value_asdl::value_t*>* result = nullptr;
   syntax_asdl::BraceGroup* brace_group = nullptr;
   syntax_asdl::SourceLine* line = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&cmd);
+  StackRoot _root2(&lit_block);
+  StackRoot _root3(&frag);
+  StackRoot _root4(&c);
+  StackRoot _root5(&result);
+  StackRoot _root6(&brace_group);
+  StackRoot _root7(&line);
+
   cmd = rd->PosCommand();
   rd->Done();
   lit_block = nullptr;
@@ -16196,6 +17116,11 @@ BigStr* GetDocComment(syntax_asdl::command_t* body) {
   BigStr* doc = nullptr;
   syntax_asdl::BraceGroup* bgroup = nullptr;
   syntax_asdl::Token* token = nullptr;
+  StackRoot _root0(&body);
+  StackRoot _root1(&doc);
+  StackRoot _root2(&bgroup);
+  StackRoot _root3(&token);
+
   doc = nullptr;
   if (body->tag() == command_e::BraceGroup) {
     bgroup = static_cast<BraceGroup*>(body);
@@ -16214,6 +17139,10 @@ DocComment::DocComment() {
 value_asdl::value_t* DocComment::Call(typed_args::Reader* rd) {
   value::Proc* proc_val = nullptr;
   BigStr* doc = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&proc_val);
+  StackRoot _root2(&doc);
+
   proc_val = rd->PosProc();
   rd->Done();
   doc = GetDocComment(proc_val->body);
@@ -16238,6 +17167,9 @@ using value_asdl::eggex_ops_t;
 using value_asdl::RegexMatch;
 
 Tuple3<bool, int, int> _StrMatchStart(BigStr* s, BigStr* p) {
+  StackRoot _root0(&s);
+  StackRoot _root1(&p);
+
   if (s->startswith(p)) {
     return Tuple3<bool, int, int>(true, 0, len(p));
   }
@@ -16248,6 +17180,9 @@ Tuple3<bool, int, int> _StrMatchStart(BigStr* s, BigStr* p) {
 
 Tuple3<bool, int, int> _StrMatchEnd(BigStr* s, BigStr* p) {
   int len_s;
+  StackRoot _root0(&s);
+  StackRoot _root1(&p);
+
   len_s = len(s);
   if (s->endswith(p)) {
     return Tuple3<bool, int, int>(true, (len_s - len(p)), len_s);
@@ -16263,6 +17198,11 @@ Tuple3<bool, int, int> _EggexMatchCommon(BigStr* s, value::Eggex* p, BigStr* ere
   List<int>* indices = nullptr;
   int start;
   int end;
+  StackRoot _root0(&s);
+  StackRoot _root1(&p);
+  StackRoot _root2(&ere);
+  StackRoot _root3(&indices);
+
   cflags = regex_translate::LibcFlags(p->canonical_flags);
   eflags = 0;
   indices = libc::regex_search(ere, cflags, s, eflags);
@@ -16276,6 +17216,10 @@ Tuple3<bool, int, int> _EggexMatchCommon(BigStr* s, value::Eggex* p, BigStr* ere
 
 Tuple3<bool, int, int> _EggexMatchStart(BigStr* s, value::Eggex* p) {
   BigStr* ere = nullptr;
+  StackRoot _root0(&s);
+  StackRoot _root1(&p);
+  StackRoot _root2(&ere);
+
   ere = regex_translate::AsPosixEre(p);
   if (!ere->startswith(S_EAB)) {
     ere = str_concat(S_EAB, ere);
@@ -16285,6 +17229,10 @@ Tuple3<bool, int, int> _EggexMatchStart(BigStr* s, value::Eggex* p) {
 
 Tuple3<bool, int, int> _EggexMatchEnd(BigStr* s, value::Eggex* p) {
   BigStr* ere = nullptr;
+  StackRoot _root0(&s);
+  StackRoot _root1(&p);
+  StackRoot _root2(&ere);
+
   ere = regex_translate::AsPosixEre(p);
   if (!ere->endswith(S_Czx)) {
     ere = str_concat(ere, S_Czx);
@@ -16304,6 +17252,12 @@ value_asdl::value_t* HasAffix::Call(typed_args::Reader* rd) {
   BigStr* pattern_str = nullptr;
   value::Eggex* pattern_eggex = nullptr;
   bool matched;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&string);
+  StackRoot _root2(&pattern_val);
+  StackRoot _root3(&pattern_str);
+  StackRoot _root4(&pattern_eggex);
+
   string = rd->PosStr();
   pattern_val = rd->PosValue();
   pattern_str = nullptr;
@@ -16363,6 +17317,13 @@ value_asdl::value_t* Trim::Call(typed_args::Reader* rd) {
   int start;
   int end;
   BigStr* res = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&string);
+  StackRoot _root2(&pattern_val);
+  StackRoot _root3(&pattern_str);
+  StackRoot _root4(&pattern_eggex);
+  StackRoot _root5(&res);
+
   string = rd->PosStr();
   pattern_val = rd->OptionalValue();
   pattern_str = nullptr;
@@ -16432,6 +17393,9 @@ Upper::Upper() {
 
 value_asdl::value_t* Upper::Call(typed_args::Reader* rd) {
   BigStr* s = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&s);
+
   s = rd->PosStr();
   rd->Done();
   return Alloc<value::Str>(s->upper());
@@ -16443,6 +17407,9 @@ Lower::Lower() {
 
 value_asdl::value_t* Lower::Call(typed_args::Reader* rd) {
   BigStr* s = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&s);
+
   s = rd->PosStr();
   rd->Done();
   return Alloc<value::Str>(s->lower());
@@ -16464,6 +17431,14 @@ value_asdl::value_t* SearchMatch::Call(typed_args::Reader* rd) {
   int pos;
   int eflags;
   List<int>* indices = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&string);
+  StackRoot _root2(&pattern);
+  StackRoot _root3(&eggex_val);
+  StackRoot _root4(&ere);
+  StackRoot _root5(&capture);
+  StackRoot _root6(&indices);
+
   string = rd->PosStr();
   pattern = rd->PosValue();
   switch (pattern->tag()) {
@@ -16486,8 +17461,8 @@ value_asdl::value_t* SearchMatch::Call(typed_args::Reader* rd) {
   }
   pos = mops::BigTruncate(rd->NamedInt(S_uaE, 0));
   rd->Done();
-  if ((this->which_method == LEFT_MATCH and !ere->startswith(S_EAB))) {
-    ere = str_concat(S_EAB, ere);
+  if (this->which_method == LEFT_MATCH) {
+    ere = StrFormat("^(%s)", ere);
   }
   if (this->which_method == LEFT_MATCH) {
     eflags = 0;
@@ -16498,6 +17473,9 @@ value_asdl::value_t* SearchMatch::Call(typed_args::Reader* rd) {
   indices = libc::regex_search(ere, cflags, string, eflags, pos);
   if (indices == nullptr) {
     return value::Null;
+  }
+  if (this->which_method == LEFT_MATCH) {
+    indices = indices->slice(2);
   }
   return Alloc<RegexMatch>(string, indices, capture);
 }
@@ -16559,13 +17537,26 @@ value_asdl::value_t* Replace::Call(typed_args::Reader* rd) {
   StackRoot _root3(&eggex_val);
   StackRoot _root4(&subst_str);
   StackRoot _root5(&subst_expr);
-  StackRoot _root6(&s);
-  StackRoot _root7(&ere);
-  StackRoot _root8(&parts);
-  StackRoot _root9(&indices);
-  StackRoot _root10(&arg0);
-  StackRoot _root11(&argv);
-  StackRoot _root12(&named_vars);
+  StackRoot _root6(&pattern);
+  StackRoot _root7(&eggex_val_);
+  StackRoot _root8(&string_val_);
+  StackRoot _root9(&subst);
+  StackRoot _root10(&subst_str_);
+  StackRoot _root11(&subst_expr_);
+  StackRoot _root12(&s);
+  StackRoot _root13(&result);
+  StackRoot _root14(&ere);
+  StackRoot _root15(&parts);
+  StackRoot _root16(&indices);
+  StackRoot _root17(&arg0);
+  StackRoot _root18(&argv);
+  StackRoot _root19(&named_vars);
+  StackRoot _root20(&captured);
+  StackRoot _root21(&val);
+  StackRoot _root22(&convert_func);
+  StackRoot _root23(&convert_tok);
+  StackRoot _root24(&val_str);
+  StackRoot _root25(&name);
 
   string = rd->PosStr();
   string_val = nullptr;
@@ -16717,6 +17708,17 @@ value_asdl::value_t* Split::Call(typed_args::Reader* rd) {
   List<int>* m = nullptr;
   int start;
   int end;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&string);
+  StackRoot _root2(&string_sep);
+  StackRoot _root3(&eggex_sep);
+  StackRoot _root4(&sep);
+  StackRoot _root5(&eggex_sep_);
+  StackRoot _root6(&string_sep_);
+  StackRoot _root7(&chunks);
+  StackRoot _root8(&regex);
+  StackRoot _root9(&m);
+
   string = rd->PosStr();
   string_sep = nullptr;
   eggex_sep = nullptr;
@@ -16799,6 +17801,11 @@ value_asdl::value_t* Lines::Call(typed_args::Reader* rd) {
   List<value_asdl::value_t*>* chunks = nullptr;
   int length;
   int next_pos;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&string);
+  StackRoot _root2(&eol);
+  StackRoot _root3(&chunks);
+
   string = rd->PosStr();
   eol = rd->NamedStr(S_wog, S_nfs);
   cursor = 0;
@@ -16829,6 +17836,10 @@ using value_asdl::Obj;
 
 BigStr* _GetStringField(value_asdl::Obj* obj, BigStr* field_name) {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&obj);
+  StackRoot _root1(&field_name);
+  StackRoot _root2(&val);
+
   val = obj->d->get(field_name);
   if (val == nullptr) {
     return nullptr;
@@ -16845,6 +17856,9 @@ Index__::Index__() {
 
 value_asdl::value_t* Index__::Call(typed_args::Reader* rd) {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&val);
+
   val = this->_Call(rd);
   if (val == nullptr) {
     throw Alloc<error::Expr>(S_fBA, rd->LeastSpecificLocation());
@@ -16867,6 +17881,19 @@ value_asdl::value_t* Index__::_Call(typed_args::Reader* rd) {
   BigStr* unique_id = nullptr;
   value_asdl::Obj* obj_with_params = nullptr;
   Dict<BigStr*, value_asdl::value_t*>* props = nullptr;
+  StackRoot _root0(&rd);
+  StackRoot _root1(&left_obj);
+  StackRoot _root2(&right);
+  StackRoot _root3(&left_name);
+  StackRoot _root4(&UP_right);
+  StackRoot _root5(&objects);
+  StackRoot _root6(&buf);
+  StackRoot _root7(&r_unique_id);
+  StackRoot _root8(&r_name);
+  StackRoot _root9(&unique_id);
+  StackRoot _root10(&obj_with_params);
+  StackRoot _root11(&props);
+
   left_obj = rd->PosObj();
   right = rd->PosValue();
   rd->Done();
@@ -16887,6 +17914,7 @@ value_asdl::value_t* Index__::_Call(typed_args::Reader* rd) {
       i = 0;
       for (ListIter<value_asdl::value_t*> it(right->items); !it.Done(); it.Next(), ++i) {
         value_asdl::value_t* val = it.Value();
+        StackRoot _for(&val      );
         if (val->tag() != value_e::Obj) {
           return nullptr;
         }
@@ -16927,6 +17955,7 @@ value_asdl::value_t* Index__::_Call(typed_args::Reader* rd) {
   i = 0;
   for (ListIter<value_asdl::Obj*> it(objects); !it.Done(); it.Next(), ++i) {
     value_asdl::Obj* r = it.Value();
+    StackRoot _for(&r  );
     if (i != 0) {
       buf->write(S_Cce);
     }
@@ -16964,6 +17993,8 @@ Times::Times() : ::vm::_Builtin() {
 }
 
 int Times::Run(cmd_value::Argv* cmd_val) {
+  StackRoot _root0(&cmd_val);
+
   pyos::PrintTimes();
   return 0;
 }
@@ -16982,6 +18013,12 @@ int Help::_ShowTopic(BigStr* topic_id, syntax_asdl::loc_t* blame_loc) {
   BigStr* chapter_name = nullptr;
   BigStr* lower = nullptr;
   bool found;
+  StackRoot _root0(&topic_id);
+  StackRoot _root1(&blame_loc);
+  StackRoot _root2(&prefix);
+  StackRoot _root3(&chapter_name);
+  StackRoot _root4(&lower);
+
   prefix = S_Bql;
   chapter_name = this->help_data->get(topic_id);
   if (chapter_name != nullptr) {
@@ -17012,6 +18049,12 @@ int Help::Run(cmd_value::Argv* cmd_val) {
   syntax_asdl::loc_t* blame_loc = nullptr;
   bool unused_found;
   (void)unused_found;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&topic_id);
+  StackRoot _root4(&blame_loc);
+
   Tuple2<args::_Attributes*, args::Reader*> tup0 = flag_util::ParseCmdVal(S_sea, cmd_val);
   attrs = tup0.at0();
   arg_r = tup0.at1();
@@ -17044,6 +18087,8 @@ IsMain::IsMain(state::Mem* mem) {
 }
 
 int IsMain::Run(cmd_value::Argv* cmd_val) {
+  StackRoot _root0(&cmd_val);
+
   return this->mem->is_main ? 0 : 1;
 }
 
@@ -17056,6 +18101,10 @@ SourceGuard::SourceGuard(Dict<BigStr*, bool>* guards, optview::Exec* exec_opts, 
 int SourceGuard::Run(cmd_value::Argv* cmd_val) {
   args::Reader* arg_r = nullptr;
   BigStr* name = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&name);
+
   Tuple2<args::_Attributes*, args::Reader*> tup0 = flag_util::ParseCmdVal(S_uiC, cmd_val);
   arg_r = tup0.at1();
   Tuple2<BigStr*, syntax_asdl::CompoundWord*> tup1 = arg_r->ReadRequired2(S_bds);
@@ -17093,6 +18142,17 @@ int ModuleInvoke::Run(cmd_value::Argv* cmd_val) {
   value_asdl::value_t* proc_val = nullptr;
   value_asdl::Obj* self_obj2 = nullptr;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&invokable_name);
+  StackRoot _root3(&invokable_loc);
+  StackRoot _root4(&argv);
+  StackRoot _root5(&locs);
+  StackRoot _root6(&self_obj);
+  StackRoot _root7(&val);
+  StackRoot _root8(&cmd_val2);
+  StackRoot _root9(&proc);
+  StackRoot _root10(&proc_val);
+  StackRoot _root11(&self_obj2);
 
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
@@ -17181,6 +18241,8 @@ syntax_asdl::printf_part_t* _FormatStringParser::_ParseFormatStr() {
   BigStr* flag = nullptr;
   BigStr* type_val = nullptr;
   StackRoot _root0(&part);
+  StackRoot _root1(&flag);
+  StackRoot _root2(&type_val);
 
   this->_Next(lex_mode_e::PrintfPercent);
   part = printf_part::Percent::CreateNull(true);
@@ -17209,9 +18271,6 @@ syntax_asdl::printf_part_t* _FormatStringParser::_ParseFormatStr() {
     type_val = lexer::TokenVal(part->type);
     if (str_contains(S_ayy, type_val)) {
       p_die(S_aCB, part->type);
-    }
-    if (str_equals(type_val, S_emj)) {
-      p_die(S_syf, part->type);
     }
   }
   else {
@@ -17299,11 +18358,34 @@ BigStr* Printf::_Percent(printf_osh::_PrintfState* pr, printf_part::Percent* par
   BigStr* digits = nullptr;
   BigStr* sign = nullptr;
   int n;
+  StackRoot _root0(&pr);
+  StackRoot _root1(&part);
+  StackRoot _root2(&varargs);
+  StackRoot _root3(&locs);
+  StackRoot _root4(&flags);
+  StackRoot _root5(&width_str);
+  StackRoot _root6(&width_loc);
+  StackRoot _root7(&precision_str);
+  StackRoot _root8(&precision_loc);
+  StackRoot _root9(&s);
+  StackRoot _root10(&word_loc);
+  StackRoot _root11(&typ);
+  StackRoot _root12(&c_parts);
+  StackRoot _root13(&lex);
+  StackRoot _root14(&tok_val);
+  StackRoot _root15(&p);
+  StackRoot _root16(&blame_loc);
+  StackRoot _root17(&tzcell);
+  StackRoot _root18(&tzval);
+  StackRoot _root19(&digits);
+  StackRoot _root20(&sign);
+
   num_args = len(varargs);
   flags = Alloc<List<BigStr*>>();
   if (len(part->flags) > 0) {
     for (ListIter<syntax_asdl::Token*> it(part->flags); !it.Done(); it.Next()) {
       syntax_asdl::Token* flag_token = it.Value();
+      StackRoot _for(&flag_token    );
       flags->append(lexer::TokenVal(flag_token));
     }
   }
@@ -17405,7 +18487,7 @@ BigStr* Printf::_Percent(printf_osh::_PrintfState* pr, printf_part::Percent* par
     else {
       if (str_equals(typ, S_jFv)) {
         c_parts = Alloc<List<BigStr*>>();
-        lex = match::EchoLexer(s);
+        lex = match::PrintfBLexer(s);
         while (true) {
           Tuple2<int, BigStr*> tup0 = lex->Next();
           id_ = tup0.at0();
@@ -17423,138 +18505,143 @@ BigStr* Printf::_Percent(printf_osh::_PrintfState* pr, printf_part::Percent* par
         s = S_Aoo->join(c_parts);
       }
       else {
-        if ((part->type->id == Id::Format_Time or str_contains(S_wkf, typ))) {
-          if (match::LooksLikeInteger(s)) {
-            Tuple2<bool, mops::BigInt> tup1 = mops::FromStr2(s);
-            ok = tup1.at0();
-            d = tup1.at1();
-            if (!ok) {
-              this->errfmt->Print_(StrFormat("Integer too big: %s", s), word_loc);
-              pr->status = 1;
-              return nullptr;
-            }
-          }
-          else {
-            num_bytes = len(s);
-            if ((num_bytes > 0 and str_contains(S_oEq, s->at(0)))) {
-              if (num_bytes == 1) {
-                d = mops::ZERO;
-              }
-              else {
-                if (num_bytes == 2) {
-                  d = mops::IntWiden(ord(s->at(1)));
-                }
-                else {
-                  try {
-                    small_i = string_ops::DecodeUtf8Char(s, 1);
-                  }
-                  catch (error::Expr* e) {
-                    this->errfmt->Print_(StrFormat("Warning: %s", e->UserErrorString()), word_loc);
-                    small_i = ord(s->at(1));
-                  }
-                  d = mops::IntWiden(small_i);
-                }
-              }
-            }
-            else {
-              if ((!has_arg and part->type->id == Id::Format_Time)) {
-                d = mops::MINUS_ONE;
-              }
-              else {
-                if (has_arg) {
-                  blame_loc = word_loc;
-                }
-                else {
-                  blame_loc = part->type;
-                }
-                this->errfmt->Print_(StrFormat("printf expected an integer, got %r", s), blame_loc);
+        if (str_equals(typ, S_emj)) {
+          s = s->at(0);
+        }
+        else {
+          if ((part->type->id == Id::Format_Time or str_contains(S_wkf, typ))) {
+            if (match::LooksLikeInteger(s)) {
+              Tuple2<bool, mops::BigInt> tup1 = mops::FromStr2(s);
+              ok = tup1.at0();
+              d = tup1.at1();
+              if (!ok) {
+                this->errfmt->Print_(StrFormat("Integer too big: %s", s), word_loc);
                 pr->status = 1;
                 return nullptr;
               }
             }
-          }
-          if (part->type->id == Id::Format_Time) {
-            tzcell = this->mem->GetCell(S_nhf);
-            if ((tzcell and (tzcell->exported and tzcell->val->tag() == value_e::Str))) {
-              tzval = static_cast<value::Str*>(tzcell->val);
-              posix::putenv(S_nhf, tzval->s);
-            }
-            time_::tzset();
-            if (mops::Equal(d, mops::MINUS_ONE)) {
-              ts = time_::time();
-            }
             else {
-              if (mops::Equal(d, mops::MINUS_TWO)) {
-                ts = this->shell_start_time;
+              num_bytes = len(s);
+              if ((num_bytes > 0 and str_contains(S_oEq, s->at(0)))) {
+                if (num_bytes == 1) {
+                  d = mops::ZERO;
+                }
+                else {
+                  if (num_bytes == 2) {
+                    d = mops::IntWiden(ord(s->at(1)));
+                  }
+                  else {
+                    try {
+                      small_i = string_ops::DecodeUtf8Char(s, 1);
+                    }
+                    catch (error::Expr* e) {
+                      this->errfmt->Print_(StrFormat("Warning: %s", e->UserErrorString()), word_loc);
+                      small_i = ord(s->at(1));
+                    }
+                    d = mops::IntWiden(small_i);
+                  }
+                }
               }
               else {
-                ts = mops::BigTruncate(d);
+                if ((!has_arg and part->type->id == Id::Format_Time)) {
+                  d = mops::MINUS_ONE;
+                }
+                else {
+                  if (has_arg) {
+                    blame_loc = word_loc;
+                  }
+                  else {
+                    blame_loc = part->type;
+                  }
+                  this->errfmt->Print_(StrFormat("printf expected an integer, got %r", s), blame_loc);
+                  pr->status = 1;
+                  return nullptr;
+                }
               }
             }
-            s = time_::strftime(typ->slice(1, -2), time_::localtime(ts));
-            if (precision >= 0) {
-              s = s->slice(0, precision);
+            if (part->type->id == Id::Format_Time) {
+              tzcell = this->mem->GetCell(S_nhf);
+              if ((tzcell and (tzcell->exported and tzcell->val->tag() == value_e::Str))) {
+                tzval = static_cast<value::Str*>(tzcell->val);
+                posix::putenv(S_nhf, tzval->s);
+              }
+              time_::tzset();
+              if (mops::Equal(d, mops::MINUS_ONE)) {
+                ts = time_::time();
+              }
+              else {
+                if (mops::Equal(d, mops::MINUS_TWO)) {
+                  ts = this->shell_start_time;
+                }
+                else {
+                  ts = mops::BigTruncate(d);
+                }
+              }
+              s = time_::strftime(typ->slice(1, -2), time_::localtime(ts));
+              if (precision >= 0) {
+                s = s->slice(0, precision);
+              }
+            }
+            else {
+              if ((mops::Greater(mops::ZERO, d) and str_contains(S_Eop, typ))) {
+                this->errfmt->Print_(StrFormat("Can't format negative number with %%%s: %d", typ, mops::BigTruncate(d)), part->type);
+                pr->status = 1;
+                return nullptr;
+              }
+              if (str_equals(typ, S_Ala)) {
+                s = mops::ToOctal(d);
+              }
+              else {
+                if (str_equals(typ, S_rqD)) {
+                  s = mops::ToHexLower(d);
+                }
+                else {
+                  if (str_equals(typ, S_awm)) {
+                    s = mops::ToHexUpper(d);
+                  }
+                  else {
+                    s = mops::ToStr(d);
+                  }
+                }
+              }
+              zero_pad = 0;
+              if ((width >= 0 and list_contains(flags, S_wfw))) {
+                zero_pad = 1;
+              }
+              else {
+                if ((precision > 0 and len(s) < precision)) {
+                  zero_pad = 2;
+                }
+              }
+              if (zero_pad) {
+                negative = str_equals(s->at(0), S_Bjq);
+                if (negative) {
+                  digits = s->slice(1);
+                  sign = S_Bjq;
+                  if (zero_pad == 1) {
+                    n = (width - 1);
+                  }
+                  else {
+                    n = precision;
+                  }
+                }
+                else {
+                  digits = s;
+                  sign = S_Aoo;
+                  if (zero_pad == 1) {
+                    n = width;
+                  }
+                  else {
+                    n = precision;
+                  }
+                }
+                s = str_concat(sign, digits->rjust(n, S_wfw));
+              }
             }
           }
           else {
-            if ((mops::Greater(mops::ZERO, d) and str_contains(S_Eop, typ))) {
-              this->errfmt->Print_(StrFormat("Can't format negative number with %%%s: %d", typ, mops::BigTruncate(d)), part->type);
-              pr->status = 1;
-              return nullptr;
-            }
-            if (str_equals(typ, S_Ala)) {
-              s = mops::ToOctal(d);
-            }
-            else {
-              if (str_equals(typ, S_rqD)) {
-                s = mops::ToHexLower(d);
-              }
-              else {
-                if (str_equals(typ, S_awm)) {
-                  s = mops::ToHexUpper(d);
-                }
-                else {
-                  s = mops::ToStr(d);
-                }
-              }
-            }
-            zero_pad = 0;
-            if ((width >= 0 and list_contains(flags, S_wfw))) {
-              zero_pad = 1;
-            }
-            else {
-              if ((precision > 0 and len(s) < precision)) {
-                zero_pad = 2;
-              }
-            }
-            if (zero_pad) {
-              negative = str_equals(s->at(0), S_Bjq);
-              if (negative) {
-                digits = s->slice(1);
-                sign = S_Bjq;
-                if (zero_pad == 1) {
-                  n = (width - 1);
-                }
-                else {
-                  n = precision;
-                }
-              }
-              else {
-                digits = s;
-                sign = S_Aoo;
-                if (zero_pad == 1) {
-                  n = width;
-                }
-                else {
-                  n = precision;
-                }
-              }
-              s = str_concat(sign, digits->rjust(n, S_wfw));
-            }
+            assert(0);  // AssertionError
           }
-        }
-        else {
-          assert(0);  // AssertionError
         }
       }
     }
@@ -17575,11 +18662,20 @@ int Printf::_Format(List<syntax_asdl::printf_part_t*>* parts, List<BigStr*>* var
   int num_args;
   syntax_asdl::printf_part_t* UP_part = nullptr;
   BigStr* s = nullptr;
+  StackRoot _root0(&parts);
+  StackRoot _root1(&varargs);
+  StackRoot _root2(&locs);
+  StackRoot _root3(&out);
+  StackRoot _root4(&pr);
+  StackRoot _root5(&UP_part);
+  StackRoot _root6(&s);
+
   pr = Alloc<_PrintfState>();
   num_args = len(varargs);
   while (true) {
     for (ListIter<syntax_asdl::printf_part_t*> it(parts); !it.Done(); it.Next()) {
       syntax_asdl::printf_part_t* part = it.Value();
+      StackRoot _for(&part    );
       UP_part = part;
       if (part->tag() == printf_part_e::Literal) {
         Token* part = static_cast<Token*>(UP_part);
@@ -17636,13 +18732,22 @@ int Printf::Run(cmd_value::Argv* cmd_val) {
   syntax_asdl::loc__Missing* v_loc = nullptr;
   value_asdl::sh_lvalue_t* lval = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&arg);
-  StackRoot _root2(&fmt);
-  StackRoot _root3(&varargs);
-  StackRoot _root4(&locs);
-  StackRoot _root5(&parts);
-  StackRoot _root6(&result);
-  StackRoot _root7(&lval);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&fmt);
+  StackRoot _root5(&fmt_loc);
+  StackRoot _root6(&varargs);
+  StackRoot _root7(&locs);
+  StackRoot _root8(&arena);
+  StackRoot _root9(&parts);
+  StackRoot _root10(&line_reader);
+  StackRoot _root11(&lexer);
+  StackRoot _root12(&parser);
+  StackRoot _root13(&out);
+  StackRoot _root14(&result);
+  StackRoot _root15(&v_loc);
+  StackRoot _root16(&lval);
 
   Tuple2<args::_Attributes*, args::Reader*> tup2 = flag_util::ParseCmdVal(S_Foo, cmd_val);
   attrs = tup2.at0();
@@ -17707,6 +18812,8 @@ int Cat::_CatFile(int fd) {
   List<BigStr*>* chunks = nullptr;
   int n;
   int err_num;
+  StackRoot _root0(&chunks);
+
   chunks = Alloc<List<BigStr*>>();
   while (true) {
     Tuple2<int, int> tup0 = pyos::Read(fd, 4096, chunks);
@@ -17742,6 +18849,11 @@ int Cat::Run(cmd_value::Argv* cmd_val) {
   int st;
   bool opened;
   int my_fd;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&argv);
+  StackRoot _root3(&locs);
+
   Tuple2<args::_Attributes*, args::Reader*> tup1 = flag_util::ParseCmdVal(S_Deg, cmd_val);
   arg_r = tup1.at1();
   Tuple2<List<BigStr*>*, List<syntax_asdl::CompoundWord*>*> tup2 = arg_r->Rest2();
@@ -17754,6 +18866,7 @@ int Cat::Run(cmd_value::Argv* cmd_val) {
   i = 0;
   for (ListIter<BigStr*> it(argv); !it.Done(); it.Next(), ++i) {
     BigStr* path = it.Value();
+    StackRoot _for(&path  );
     if (str_equals(path, S_Bjq)) {
       st = this->_CatFile(STDIN_FILENO);
       if (st != 0) {
@@ -17794,6 +18907,13 @@ int Rm::Run(cmd_value::Argv* cmd_val) {
   int status;
   int i;
   int err_num;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&argv);
+  StackRoot _root5(&locs);
+
   Tuple2<args::_Attributes*, args::Reader*> tup3 = flag_util::ParseCmdVal(S_CAv, cmd_val);
   attrs = tup3.at0();
   arg_r = tup3.at1();
@@ -17808,6 +18928,7 @@ int Rm::Run(cmd_value::Argv* cmd_val) {
   i = 0;
   for (ListIter<BigStr*> it(argv); !it.Done(); it.Next(), ++i) {
     BigStr* path = it.Value();
+    StackRoot _for(&path  );
     err_num = pyos::Unlink(path);
     if ((arg->f and err_num == ENOENT)) {
       continue;
@@ -17835,6 +18956,10 @@ int Sleep::Run(cmd_value::Argv* cmd_val) {
   double secs;
   int err_num;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&duration);
+  StackRoot _root3(&duration_loc);
+  StackRoot _root4(&msg);
 
   Tuple2<args::_Attributes*, args::Reader*> tup5 = flag_util::ParseCmdVal(S_dws, cmd_val);
   arg_r = tup5.at1();
@@ -17905,6 +19030,11 @@ int Jobs::Run(cmd_value::Argv* cmd_val) {
   args::Reader* arg_r = nullptr;
   arg_types::jobs* arg = nullptr;
   int style;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+
   Tuple2<args::_Attributes*, args::Reader*> tup0 = flag_util::ParseCmdVal(S_jtz, cmd_val);
   attrs = tup0.at0();
   arg_r = tup0.at1();
@@ -17941,6 +19071,12 @@ int Fg::Run(cmd_value::Argv* cmd_val) {
   int status;
   runtime_asdl::wait_status_t* wait_st = nullptr;
   runtime_asdl::wait_status_t* UP_wait_st = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&job_spec);
+  StackRoot _root2(&job);
+  StackRoot _root3(&wait_st);
+  StackRoot _root4(&UP_wait_st);
+
   job_spec = S_Aoo;
   if (len(cmd_val->argv) > 1) {
     job_spec = cmd_val->argv->at(1);
@@ -17993,6 +19129,8 @@ Bg::Bg(process::JobList* job_list) {
 }
 
 int Bg::Run(cmd_value::Argv* cmd_val) {
+  StackRoot _root0(&cmd_val);
+
   throw Alloc<error::Usage>(S_wha, loc::Missing);
 }
 
@@ -18006,6 +19144,10 @@ int Fork::Run(cmd_value::Argv* cmd_val) {
   syntax_asdl::loc_t* location = nullptr;
   syntax_asdl::command_t* cmd_frag = nullptr;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&arg);
+  StackRoot _root3(&location);
+  StackRoot _root4(&cmd_frag);
 
   Tuple2<args::_Attributes*, args::Reader*> tup1 = flag_util::ParseCmdVal(S_Fzz_1, cmd_val, true);
   arg_r = tup1.at1();
@@ -18029,6 +19171,10 @@ int ForkWait::Run(cmd_value::Argv* cmd_val) {
   syntax_asdl::loc_t* location = nullptr;
   syntax_asdl::command_t* cmd_frag = nullptr;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&arg);
+  StackRoot _root3(&location);
+  StackRoot _root4(&cmd_frag);
 
   Tuple2<args::_Attributes*, args::Reader*> tup3 = flag_util::ParseCmdVal(S_xAx, cmd_val, true);
   arg_r = tup3.at1();
@@ -18057,6 +19203,13 @@ int Exec::Run(cmd_value::Argv* cmd_val) {
   BigStr* cmd = nullptr;
   BigStr* argv0_path = nullptr;
   cmd_value::Argv* c2 = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&environ);
+  StackRoot _root3(&cmd);
+  StackRoot _root4(&argv0_path);
+  StackRoot _root5(&c2);
+
   Tuple2<args::_Attributes*, args::Reader*> tup5 = flag_util::ParseCmdVal(S_Evy, cmd_val);
   arg_r = tup5.at1();
   if (arg_r->AtEnd()) {
@@ -18103,10 +19256,19 @@ int Wait::_WaitForJobs(List<BigStr*>* job_ids, List<syntax_asdl::CompoundWord*>*
   int status;
   runtime_asdl::wait_status_t* wait_st = nullptr;
   runtime_asdl::wait_status_t* UP_wait_st = nullptr;
+  StackRoot _root0(&job_ids);
+  StackRoot _root1(&arg_locs);
+  StackRoot _root2(&jobs);
+  StackRoot _root3(&location);
+  StackRoot _root4(&job);
+  StackRoot _root5(&wait_st);
+  StackRoot _root6(&UP_wait_st);
+
   jobs = Alloc<List<process::Job*>>();
   i = 0;
   for (ListIter<BigStr*> it(job_ids); !it.Done(); it.Next(), ++i) {
     BigStr* job_id = it.Value();
+    StackRoot _for(&job_id  );
     location = arg_locs->at(i);
     job = nullptr;
     if ((str_equals(job_id, S_Aoo) or job_id->startswith(S_dkr))) {
@@ -18130,6 +19292,7 @@ int Wait::_WaitForJobs(List<BigStr*>* job_ids, List<syntax_asdl::CompoundWord*>*
   status = 1;
   for (ListIter<process::Job*> it(jobs); !it.Done(); it.Next()) {
     process::Job* job = it.Value();
+    StackRoot _for(&job  );
     wait_st = job->JobWait(this->waiter);
     UP_wait_st = wait_st;
     switch (wait_st->tag()) {
@@ -18168,6 +19331,8 @@ int Wait::_WaitNext() {
   int w1_arg;
   int pid;
   process::Process* pr = nullptr;
+  StackRoot _root0(&pr);
+
   n = this->job_list->NumRunning();
   if (n == 0) {
     status = 127;
@@ -18221,7 +19386,12 @@ int Wait::_Run(cmd_value::Argv* cmd_val) {
   int pid;
   process::Process* pr = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&arg);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&job_ids);
+  StackRoot _root5(&arg_locs);
+  StackRoot _root6(&pr);
 
   Tuple2<args::_Attributes*, args::Reader*> tup7 = flag_util::ParseCmdVal(S_Awk, cmd_val);
   attrs = tup7.at0();
@@ -18275,6 +19445,10 @@ int Umask::Run(cmd_value::Argv* cmd_val) {
   int mask;
   BigStr* a = nullptr;
   int new_mask;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&argv);
+  StackRoot _root2(&a);
+
   argv = cmd_val->argv->slice(1);
   if (len(argv) == 0) {
     mask = posix::umask(0);
@@ -18356,6 +19530,20 @@ int Ulimit::Run(cmd_value::Argv* cmd_val) {
   syntax_asdl::loc_t* extra_loc2 = nullptr;
   mops::BigInt old_soft;
   mops::BigInt old_hard;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&extra);
+  StackRoot _root5(&extra_loc);
+  StackRoot _root6(&fmt);
+  StackRoot _root7(&soft2);
+  StackRoot _root8(&hard2);
+  StackRoot _root9(&s);
+  StackRoot _root10(&s_loc);
+  StackRoot _root11(&extra2);
+  StackRoot _root12(&extra_loc2);
+
   Tuple2<args::_Attributes*, args::Reader*> tup11 = flag_util::ParseCmdVal(S_otx, cmd_val);
   attrs = tup11.at0();
   arg_r = tup11.at1();
@@ -18409,9 +19597,11 @@ int Ulimit::Run(cmd_value::Argv* cmd_val) {
     for (ListIter<Tuple4<BigStr*, int, int, BigStr*>*> it(this->_Table()); !it.Done(); it.Next()) {
       Tuple4<BigStr*, int, int, BigStr*>* tup13 = it.Value();
       BigStr* flag = tup13->at0();
+      StackRoot _unpack_0(&flag);
       int what = tup13->at1();
       int factor = tup13->at2();
       BigStr* desc = tup13->at3();
+      StackRoot _unpack_3(&desc);
       Tuple2<mops::BigInt, mops::BigInt> tup14 = pyos::GetRLimit(what);
       soft = tup14.at0();
       hard = tup14.at1();
@@ -18505,6 +19695,7 @@ int Ulimit::Run(cmd_value::Argv* cmd_val) {
 
 namespace pure_osh {  // define
 
+using option_asdl::builtin_i;
 using syntax_asdl::loc;
 using types_asdl::opt_group_i;
 using error::e_usage;
@@ -18515,6 +19706,8 @@ Boolean::Boolean(int status) {
 }
 
 int Boolean::Run(cmd_value::Argv* cmd_val) {
+  StackRoot _root0(&cmd_val);
+
   typed_args::DoesNotAccept(cmd_val->proc_args);
   return this->status;
 }
@@ -18531,12 +19724,19 @@ int Alias::Run(cmd_value::Argv* cmd_val) {
   int status;
   int i;
   BigStr* name = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&argv);
+  StackRoot _root3(&alias_exp);
+  StackRoot _root4(&name);
+
   Tuple2<args::_Attributes*, args::Reader*> tup0 = flag_util::ParseCmdVal(S_nwn, cmd_val);
   arg_r = tup0.at1();
   argv = arg_r->Rest();
   if (len(argv) == 0) {
     for (ListIter<BigStr*> it(sorted(this->aliases)); !it.Done(); it.Next()) {
       BigStr* name = it.Value();
+      StackRoot _for(&name    );
       alias_exp = this->aliases->at(name);
       print(StrFormat("alias %s=%r", name, alias_exp));
     }
@@ -18546,6 +19746,7 @@ int Alias::Run(cmd_value::Argv* cmd_val) {
   i = 0;
   for (ListIter<BigStr*> it(argv); !it.Done(); it.Next(), ++i) {
     BigStr* arg = it.Value();
+    StackRoot _for(&arg  );
     Tuple2<BigStr*, BigStr*> tup1 = mylib::split_once(arg, S_bby);
     name = tup1.at0();
     alias_exp = tup1.at1();
@@ -18578,6 +19779,12 @@ int UnAlias::Run(cmd_value::Argv* cmd_val) {
   List<BigStr*>* argv = nullptr;
   int status;
   int i;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&argv);
+
   Tuple2<args::_Attributes*, args::Reader*> tup2 = flag_util::ParseCmdVal(S_Brd, cmd_val);
   attrs = tup2.at0();
   arg_r = tup2.at1();
@@ -18594,6 +19801,7 @@ int UnAlias::Run(cmd_value::Argv* cmd_val) {
   i = 0;
   for (ListIter<BigStr*> it(argv); !it.Done(); it.Next(), ++i) {
     BigStr* name = it.Value();
+    StackRoot _for(&name  );
     if (dict_contains(this->aliases, name)) {
       mylib::dict_erase(this->aliases, name);
     }
@@ -18606,15 +19814,21 @@ int UnAlias::Run(cmd_value::Argv* cmd_val) {
 }
 
 void SetOptionsFromFlags(state::MutableOpts* exec_opts, List<Tuple2<BigStr*, bool>*>* opt_changes, List<Tuple2<BigStr*, bool>*>* shopt_changes) {
+  StackRoot _root0(&exec_opts);
+  StackRoot _root1(&opt_changes);
+  StackRoot _root2(&shopt_changes);
+
   for (ListIter<Tuple2<BigStr*, bool>*> it(opt_changes); !it.Done(); it.Next()) {
     Tuple2<BigStr*, bool>* tup3 = it.Value();
     BigStr* opt_name = tup3->at0();
+    StackRoot _unpack_0(&opt_name);
     bool b = tup3->at1();
     exec_opts->SetAnyOption(opt_name, b);
   }
   for (ListIter<Tuple2<BigStr*, bool>*> it(shopt_changes); !it.Done(); it.Next()) {
     Tuple2<BigStr*, bool>* tup4 = it.Value();
     BigStr* opt_name = tup4->at0();
+    StackRoot _unpack_0(&opt_name);
     bool b = tup4->at1();
     exec_opts->SetAnyOption(opt_name, b);
   }
@@ -18624,6 +19838,9 @@ bool ShowOptions(state::MutableOpts* mutable_opts, List<BigStr*>* opt_names) {
   bool any_false;
   int opt_num;
   bool b;
+  StackRoot _root0(&mutable_opts);
+  StackRoot _root1(&opt_names);
+
   if (len(opt_names) == 0) {
     opt_names = Alloc<List<BigStr*>>();
     for (ListIter<int> it(consts::SET_OPTION_NUMS); !it.Done(); it.Next()) {
@@ -18634,6 +19851,7 @@ bool ShowOptions(state::MutableOpts* mutable_opts, List<BigStr*>* opt_names) {
   any_false = false;
   for (ListIter<BigStr*> it(opt_names); !it.Done(); it.Next()) {
     BigStr* opt_name = it.Value();
+    StackRoot _for(&opt_name  );
     opt_num = state::_SetOptionNum(opt_name);
     b = mutable_opts->Get(opt_num);
     if (!b) {
@@ -18647,6 +19865,9 @@ bool ShowOptions(state::MutableOpts* mutable_opts, List<BigStr*>* opt_names) {
 bool _ShowShoptOptions(state::MutableOpts* mutable_opts, List<int>* opt_nums) {
   bool any_false;
   bool b;
+  StackRoot _root0(&mutable_opts);
+  StackRoot _root1(&opt_nums);
+
   if (len(opt_nums) == 0) {
     opt_nums->extend(consts::VISIBLE_SHOPT_NUMS);
   }
@@ -18668,19 +19889,14 @@ Set::Set(state::MutableOpts* exec_opts, state::Mem* mem) {
 }
 
 int Set::Run(cmd_value::Argv* cmd_val) {
-  Dict<BigStr*, BigStr*>* mapping = nullptr;
-  BigStr* str_val = nullptr;
-  BigStr* code_str = nullptr;
   args::Reader* arg_r = nullptr;
   args::_Attributes* arg = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&arg);
+
   if (len(cmd_val->argv) == 1) {
-    mapping = this->mem->GetAllVars();
-    for (ListIter<BigStr*> it(sorted(mapping)); !it.Done(); it.Next()) {
-      BigStr* name = it.Value();
-      str_val = mapping->at(name);
-      code_str = StrFormat("%s=%s", name, j8_lite::MaybeShellEncode(str_val));
-      print(code_str);
-    }
+    assign_osh::PrintVariables(this->mem, nullptr, nullptr, Alloc<Dict<BigStr*, value_asdl::value_t*>>(), false, builtin_i::set);
     return 0;
   }
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
@@ -18693,16 +19909,21 @@ int Set::Run(cmd_value::Argv* cmd_val) {
   for (ListIter<Tuple2<BigStr*, bool>*> it(arg->opt_changes); !it.Done(); it.Next()) {
     Tuple2<BigStr*, bool>* tup5 = it.Value();
     BigStr* opt_name = tup5->at0();
+    StackRoot _unpack_0(&opt_name);
     bool b = tup5->at1();
     this->exec_opts->SetOldOption(opt_name, b);
   }
   for (ListIter<Tuple2<BigStr*, bool>*> it(arg->shopt_changes); !it.Done(); it.Next()) {
     Tuple2<BigStr*, bool>* tup6 = it.Value();
     BigStr* opt_name = tup6->at0();
+    StackRoot _unpack_0(&opt_name);
     bool b = tup6->at1();
     this->exec_opts->SetAnyOption(opt_name, b);
   }
-  if ((arg->saw_double_dash or !arg_r->AtEnd())) {
+  if (arg->saw_single_dash) {
+    this->exec_opts->DoSingleDash();
+  }
+  if ((arg->saw_double_dash or (arg->saw_single_dash or !arg_r->AtEnd()))) {
     this->mem->SetArgv(arg_r->Rest());
   }
   return 0;
@@ -18722,6 +19943,9 @@ int Shopt::_PrintOptions(bool use_set_opts, List<BigStr*>* opt_names) {
   List<int>* opt_nums = nullptr;
   int opt_group;
   int index;
+  StackRoot _root0(&opt_names);
+  StackRoot _root1(&opt_nums);
+
   if (use_set_opts) {
     any_false = ShowOptions(this->mutable_opts, opt_names);
     if (len(opt_names)) {
@@ -18736,6 +19960,7 @@ int Shopt::_PrintOptions(bool use_set_opts, List<BigStr*>* opt_names) {
     opt_nums = Alloc<List<int>>();
     for (ListIter<BigStr*> it(opt_names); !it.Done(); it.Next()) {
       BigStr* opt_name = it.Value();
+      StackRoot _for(&opt_name    );
       opt_group = consts::OptionGroupNum(opt_name);
       if (opt_group == opt_group_i::YshUpgrade) {
         opt_nums->extend(consts::YSH_UPGRADE);
@@ -18788,7 +20013,12 @@ int Shopt::Run(cmd_value::Argv* cmd_val) {
   (void)unused;
   bool ignore_shopt_not_impl;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&opt_names);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&opt_names);
+  StackRoot _root5(&cmd_frag);
+  StackRoot _root6(&opt_nums);
 
   Tuple2<args::_Attributes*, args::Reader*> tup7 = flag_util::ParseCmdVal(S_ene, cmd_val, true);
   attrs = tup7.at0();
@@ -18798,6 +20028,7 @@ int Shopt::Run(cmd_value::Argv* cmd_val) {
   if (arg->q) {
     for (ListIter<BigStr*> it(opt_names); !it.Done(); it.Next()) {
       BigStr* name = it.Value();
+      StackRoot _for(&name    );
       index = consts::OptionNum(name);
       if (index == 0) {
         if (this->exec_opts->ignore_shopt_not_impl()) {
@@ -18834,6 +20065,7 @@ int Shopt::Run(cmd_value::Argv* cmd_val) {
     opt_nums = Alloc<List<int>>();
     for (ListIter<BigStr*> it(opt_names); !it.Done(); it.Next()) {
       BigStr* opt_name = it.Value();
+      StackRoot _for(&opt_name    );
       opt_group = consts::OptionGroupNum(opt_name);
       if (opt_group == opt_group_i::YshUpgrade) {
         opt_nums->extend(consts::YSH_UPGRADE);
@@ -18874,6 +20106,7 @@ int Shopt::Run(cmd_value::Argv* cmd_val) {
   ignore_shopt_not_impl = this->exec_opts->ignore_shopt_not_impl();
   for (ListIter<BigStr*> it(opt_names); !it.Done(); it.Next()) {
     BigStr* opt_name = it.Value();
+    StackRoot _for(&opt_name  );
     this->mutable_opts->SetAnyOption(opt_name, b, ignore_shopt_not_impl);
   }
   return 0;
@@ -18891,6 +20124,14 @@ int Hash::Run(cmd_value::Argv* cmd_val) {
   int status;
   BigStr* full_path = nullptr;
   List<BigStr*>* commands = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&rest);
+  StackRoot _root5(&full_path);
+  StackRoot _root6(&commands);
+
   Tuple2<args::_Attributes*, args::Reader*> tup8 = flag_util::ParseCmdVal(S_drr, cmd_val);
   attrs = tup8.at0();
   arg_r = tup8.at1();
@@ -18907,6 +20148,7 @@ int Hash::Run(cmd_value::Argv* cmd_val) {
   if (len(rest)) {
     for (ListIter<BigStr*> it(rest); !it.Done(); it.Next()) {
       BigStr* cmd = it.Value();
+      StackRoot _for(&cmd    );
       full_path = this->search_path->CachedLookup(cmd);
       if (full_path == nullptr) {
         print_stderr(StrFormat("hash: %r not found", cmd));
@@ -18919,6 +20161,7 @@ int Hash::Run(cmd_value::Argv* cmd_val) {
     commands->sort();
     for (ListIter<BigStr*> it(commands); !it.Done(); it.Next()) {
       BigStr* cmd = it.Value();
+      StackRoot _for(&cmd    );
       print(cmd);
     }
   }
@@ -18930,6 +20173,10 @@ Dict<BigStr*, bool>* _ParseOptSpec(BigStr* spec_str) {
   int i;
   int n;
   BigStr* ch = nullptr;
+  StackRoot _root0(&spec_str);
+  StackRoot _root1(&spec);
+  StackRoot _root2(&ch);
+
   spec = Alloc<Dict<BigStr*, bool>>();
   i = 0;
   n = len(spec_str);
@@ -18973,6 +20220,8 @@ int GetOptsState::_OptInd() {
 BigStr* GetOptsState::GetArg(List<BigStr*>* argv) {
   int optind;
   int i;
+  StackRoot _root0(&argv);
+
   optind = this->_OptInd();
   if (optind == -1) {
     return nullptr;
@@ -18993,6 +20242,8 @@ void GetOptsState::IncIndex() {
 }
 
 void GetOptsState::SetArg(BigStr* optarg) {
+  StackRoot _root0(&optarg);
+
   state::BuiltinSetString(this->mem, S_apD, optarg);
 }
 
@@ -19006,6 +20257,15 @@ Tuple2<int, BigStr*> _GetOpts(Dict<BigStr*, bool>* spec, List<BigStr*>* argv, pu
   bool more_chars;
   BigStr* optarg = nullptr;
   List<BigStr*>* tmp = nullptr;
+  StackRoot _root0(&spec);
+  StackRoot _root1(&argv);
+  StackRoot _root2(&my_state);
+  StackRoot _root3(&errfmt);
+  StackRoot _root4(&current);
+  StackRoot _root5(&flag_char);
+  StackRoot _root6(&optarg);
+  StackRoot _root7(&tmp);
+
   current = my_state->GetArg(argv);
   if (current == nullptr) {
     my_state->Fail();
@@ -19071,6 +20331,15 @@ int GetOpts::Run(cmd_value::Argv* cmd_val) {
   List<BigStr*>* user_argv = nullptr;
   int status;
   BigStr* flag_char = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&spec_str);
+  StackRoot _root3(&var_name);
+  StackRoot _root4(&var_loc);
+  StackRoot _root5(&spec);
+  StackRoot _root6(&user_argv);
+  StackRoot _root7(&flag_char);
+
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
   spec_str = arg_r->ReadRequired(S_seh);
@@ -19126,6 +20395,14 @@ int Shvar::Run(cmd_value::Argv* cmd_val) {
   int unused;
   (void)unused;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&cmd_frag);
+  StackRoot _root3(&vars);
+  StackRoot _root4(&args);
+  StackRoot _root5(&arg_locs);
+  StackRoot _root6(&name);
+  StackRoot _root7(&s);
+  StackRoot _root8(&v);
 
   Tuple2<args::_Attributes*, args::Reader*> tup0 = flag_util::ParseCmdVal(S_bBe, cmd_val, true);
   arg_r = tup0.at1();
@@ -19140,6 +20417,7 @@ int Shvar::Run(cmd_value::Argv* cmd_val) {
   i = 0;
   for (ListIter<BigStr*> it(args); !it.Done(); it.Next(), ++i) {
     BigStr* arg = it.Value();
+    StackRoot _for(&arg  );
     Tuple2<BigStr*, BigStr*> tup2 = mylib::split_once(arg, S_bby);
     name = tup2.at0();
     s = tup2.at1();
@@ -19178,6 +20456,8 @@ Ctx::Ctx(state::Mem* mem, cmd_eval::CommandEvaluator* cmd_ev) {
 
 Dict<BigStr*, value_asdl::value_t*>* Ctx::_GetContext() {
   Dict<BigStr*, value_asdl::value_t*>* ctx = nullptr;
+  StackRoot _root0(&ctx);
+
   ctx = this->mem->GetContext();
   if (ctx == nullptr) {
     throw Alloc<error::Expr>(S_mci, loc::Missing);
@@ -19198,6 +20478,9 @@ int Ctx::_Push(Dict<BigStr*, value_asdl::value_t*>* context, syntax_asdl::comman
 
 int Ctx::_Set(Dict<BigStr*, value_asdl::value_t*>* updates) {
   Dict<BigStr*, value_asdl::value_t*>* ctx = nullptr;
+  StackRoot _root0(&updates);
+  StackRoot _root1(&ctx);
+
   ctx = this->_GetContext();
   ctx->update(updates);
   return 0;
@@ -19206,6 +20489,12 @@ int Ctx::_Set(Dict<BigStr*, value_asdl::value_t*>* updates) {
 int Ctx::_Emit(BigStr* field, value_asdl::value_t* item, syntax_asdl::loc_t* blame) {
   Dict<BigStr*, value_asdl::value_t*>* ctx = nullptr;
   value_asdl::value_t* UP_arr = nullptr;
+  StackRoot _root0(&field);
+  StackRoot _root1(&item);
+  StackRoot _root2(&blame);
+  StackRoot _root3(&ctx);
+  StackRoot _root4(&UP_arr);
+
   ctx = this->_GetContext();
   if (!dict_contains(ctx, field)) {
     ctx->set(field, Alloc<value::List>(Alloc<List<value_asdl::value_t*>>()));
@@ -19231,6 +20520,16 @@ int Ctx::Run(cmd_value::Argv* cmd_val) {
   syntax_asdl::CompoundWord* field_loc = nullptr;
   value_asdl::value_t* item = nullptr;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&rd);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&verb);
+  StackRoot _root4(&verb_loc);
+  StackRoot _root5(&context);
+  StackRoot _root6(&block);
+  StackRoot _root7(&updates);
+  StackRoot _root8(&field);
+  StackRoot _root9(&field_loc);
+  StackRoot _root10(&item);
 
   rd = typed_args::ReaderForProc(cmd_val);
   Tuple2<args::_Attributes*, args::Reader*> tup3 = flag_util::ParseCmdVal(S_acj, cmd_val, true);
@@ -19280,6 +20579,8 @@ int PushRegisters::Run(cmd_value::Argv* cmd_val) {
   int unused;
   (void)unused;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&cmd_frag);
 
   Tuple2<args::_Attributes*, args::Reader*> tup6 = flag_util::ParseCmdVal(S_gma, cmd_val, true);
   arg_r = tup6.at1();
@@ -19303,6 +20604,13 @@ int Append::Run(cmd_value::Argv* cmd_val) {
   value_asdl::value_t* val = nullptr;
   value_asdl::value_t* UP_val = nullptr;
   List<value_asdl::value_t*>* typed = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&rd);
+  StackRoot _root3(&val);
+  StackRoot _root4(&UP_val);
+  StackRoot _root5(&typed);
+
   Tuple2<args::_Attributes*, args::Reader*> tup7 = flag_util::ParseCmdVal(S_BEq, cmd_val, true);
   arg_r = tup7.at1();
   rd = typed_args::ReaderForProc(cmd_val);
@@ -19355,6 +20663,11 @@ Tuple2<bool, bool> _AppendParts(BigStr* s, List<Tuple2<runtime_asdl::span_t, int
   mylib::BufWriter* buf = nullptr;
   bool done;
   runtime_asdl::span_t last_span_type;
+  StackRoot _root0(&s);
+  StackRoot _root1(&spans);
+  StackRoot _root2(&parts);
+  StackRoot _root3(&buf);
+
   start_index = 0;
   last_span_was_black = false;
   for (ListIter<Tuple2<runtime_asdl::span_t, int>*> it(spans); !it.Done(); it.Next()) {
@@ -19440,10 +20753,11 @@ BigStr* _ReadN(int num_bytes, cmd_eval::CommandEvaluator* cmd_ev) {
   return S_Aoo->join(chunks);
 }
 
-Tuple2<BigStr*, bool> _ReadPortion(int delim_byte, int max_chars, cmd_eval::CommandEvaluator* cmd_ev) {
+Tuple2<BigStr*, bool> _ReadPortion(int delim_byte, int max_chars, bool allow_escape, cmd_eval::CommandEvaluator* cmd_ev) {
   List<int>* ch_array = nullptr;
   bool eof;
-  int bytes_read;
+  int chars_read;
+  bool backslash;
   int ch;
   int err_num;
   StackRoot _root0(&cmd_ev);
@@ -19451,9 +20765,10 @@ Tuple2<BigStr*, bool> _ReadPortion(int delim_byte, int max_chars, cmd_eval::Comm
 
   ch_array = Alloc<List<int>>();
   eof = false;
-  bytes_read = 0;
+  chars_read = 0;
+  backslash = false;
   while (true) {
-    if ((max_chars >= 0 and bytes_read >= max_chars)) {
+    if ((max_chars >= 0 and chars_read >= max_chars)) {
       break;
     }
     Tuple2<int, int> tup3 = pyos::ReadByte(0);
@@ -19473,20 +20788,36 @@ Tuple2<BigStr*, bool> _ReadPortion(int delim_byte, int max_chars, cmd_eval::Comm
         break;
       }
       else {
-        if (ch == delim_byte) {
-          break;
+        if (backslash) {
+          backslash = false;
+          if (ch == pyos::NEWLINE_CH) {
+            continue;
+          }
+          ch_array->append(pyos::BACKSLASH_CH);
+          ch_array->append(ch);
         }
         else {
-          if (ch == 0) {
-            ;  // pass
+          if ((allow_escape and ch == pyos::BACKSLASH_CH)) {
+            backslash = true;
+            continue;
           }
           else {
-            ch_array->append(ch);
+            if (ch == delim_byte) {
+              break;
+            }
+            else {
+              if (ch == 0) {
+                ;  // pass
+              }
+              else {
+                ch_array->append(ch);
+              }
+            }
           }
         }
       }
     }
-    bytes_read += 1;
+    chars_read += 1;
   }
   return Tuple2<BigStr*, bool>(pyutil::ChArrayToString(ch_array), eof);
 }
@@ -19543,6 +20874,8 @@ BigStr* ReadAll() {
   List<BigStr*>* chunks = nullptr;
   int n;
   int err_num;
+  StackRoot _root0(&chunks);
+
   chunks = Alloc<List<BigStr*>>();
   while (true) {
     Tuple2<int, int> tup5 = pyos::Read(0, 4096, chunks);
@@ -19620,8 +20953,12 @@ int Read::_ReadYsh(arg_types::read* arg, args::Reader* arg_r, cmd_value::Argv* c
   StackRoot _root1(&arg_r);
   StackRoot _root2(&cmd_val);
   StackRoot _root3(&place);
-  StackRoot _root4(&blame_loc);
-  StackRoot _root5(&contents);
+  StackRoot _root4(&rd);
+  StackRoot _root5(&blame_loc);
+  StackRoot _root6(&var_name);
+  StackRoot _root7(&next_arg);
+  StackRoot _root8(&next_loc);
+  StackRoot _root9(&contents);
 
   place = nullptr;
   if (cmd_val->proc_args) {
@@ -19675,6 +21012,10 @@ int Read::_Run(cmd_value::Argv* cmd_val) {
   int bits;
   int status;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&names);
 
   Tuple2<args::_Attributes*, args::Reader*> tup9 = flag_util::ParseCmdVal(S_hDl, cmd_val, true);
   attrs = tup9.at0();
@@ -19731,22 +21072,19 @@ int Read::_Read(arg_types::read* arg, List<BigStr*>* names) {
   int max_results;
   bool raw;
   int delim_byte;
-  List<mylib::BufWriter*>* parts = nullptr;
-  bool join_next;
-  int status;
   BigStr* chunk = nullptr;
   bool eof;
-  List<Tuple2<runtime_asdl::span_t, int>*>* spans = nullptr;
-  bool done;
+  int status;
   List<BigStr*>* entries = nullptr;
   int num_parts;
   BigStr* var_name = nullptr;
   StackRoot _root0(&arg);
   StackRoot _root1(&names);
   StackRoot _root2(&s);
-  StackRoot _root3(&parts);
+  StackRoot _root3(&name);
   StackRoot _root4(&chunk);
   StackRoot _root5(&entries);
+  StackRoot _root6(&var_name);
 
   arg_N = mops::BigTruncate(arg->N);
   if (arg_N >= 0) {
@@ -19796,32 +21134,11 @@ int Read::_Read(arg_types::read* arg, List<BigStr*>* names) {
       delim_byte = pyos::NEWLINE_CH;
     }
   }
-  parts = Alloc<List<mylib::BufWriter*>>();
-  join_next = false;
-  status = 0;
-  while (true) {
-    Tuple2<BigStr*, bool> tup10 = _ReadPortion(delim_byte, mops::BigTruncate(arg->n), this->cmd_ev);
-    chunk = tup10.at0();
-    eof = tup10.at1();
-    if (eof) {
-      status = 1;
-    }
-    if (len(chunk) == 0) {
-      break;
-    }
-    spans = this->splitter->SplitForRead(chunk, !raw, do_split);
-    Tuple2<bool, bool> tup11 = _AppendParts(chunk, spans, max_results, join_next, parts);
-    done = tup11.at0();
-    join_next = tup11.at1();
-    if (done) {
-      break;
-    }
-  }
-  entries = Alloc<List<BigStr*>>();
-  for (ListIter<mylib::BufWriter*> it(parts); !it.Done(); it.Next()) {
-    mylib::BufWriter* buf = it.Value();
-    entries->append(buf->getvalue());
-  }
+  Tuple2<BigStr*, bool> tup10 = _ReadPortion(delim_byte, mops::BigTruncate(arg->n), !raw, this->cmd_ev);
+  chunk = tup10.at0();
+  eof = tup10.at1();
+  status = eof ? 1 : 0;
+  entries = this->splitter->SplitForRead(chunk, !raw, do_split, max_results);
   num_parts = len(entries);
   if (arg->a != nullptr) {
     state::BuiltinSetArray(this->mem, arg->a, entries);
@@ -19878,6 +21195,7 @@ ctx_EnvVars::ctx_EnvVars(state::Mem* mem, Dict<BigStr*, BigStr*>* env_vars) {
 ctx_EnvVars::~ctx_EnvVars() {
   for (DictIter<BigStr*, BigStr*> it(this->env_vars); !it.Done(); it.Next()) {
     BigStr* name = it.Key();
+    StackRoot _for(&name  );
     this->mem->Unset(location::LName(name), scope_e::GlobalOnly);
   }
   gHeap.PopRoot();
@@ -19899,6 +21217,10 @@ Tuple3<int, BigStr*, int> BindXCallback::__call__(BigStr* cmd, BigStr* line_buff
   int post_point;
   StackRoot _root0(&cmd);
   StackRoot _root1(&line_buffer);
+  StackRoot _root2(&cmd_val);
+  StackRoot _root3(&readline_line);
+  StackRoot _root4(&readline_point);
+  StackRoot _root5(&post_line_buffer);
 
   {  // with
     ctx_EnvVars ctx{this->mem, Alloc<Dict<BigStr*, BigStr*>>(std::initializer_list<BigStr*>{S_BkF, S_cbE}, std::initializer_list<BigStr*>{line_buffer, str(point)})};
@@ -19915,6 +21237,9 @@ Tuple3<int, BigStr*, int> BindXCallback::__call__(BigStr* cmd, BigStr* line_buff
 
 BigStr* BindXCallback::_get_rl_env_var(BigStr* envvar_name) {
   value_asdl::value_t* envvar_val = nullptr;
+  StackRoot _root0(&envvar_name);
+  StackRoot _root1(&envvar_val);
+
   envvar_val = this->mem->GetValue(envvar_name, scope_e::GlobalOnly);
   switch (envvar_val->tag()) {
     case value_e::Str: {
@@ -19953,6 +21278,16 @@ int Bind::Run(cmd_value::Argv* cmd_val) {
   int i;
   BigStr* msg = nullptr;
   BigStr* msg2 = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&readline);
+  StackRoot _root2(&attrs);
+  StackRoot _root3(&arg_r);
+  StackRoot _root4(&arg);
+  StackRoot _root5(&bindings);
+  StackRoot _root6(&arg_locs);
+  StackRoot _root7(&msg);
+  StackRoot _root8(&msg2);
+
   readline = this->readline;
   if (!readline) {
     e_usage(S_pFB, loc::Missing);
@@ -19963,6 +21298,7 @@ int Bind::Run(cmd_value::Argv* cmd_val) {
   found = false;
   for (ListIter<BigStr*> it(this->exclusive_flags); !it.Done(); it.Next()) {
     BigStr* flag = it.Value();
+    StackRoot _for(&flag  );
     if ((dict_contains(attrs->attrs, flag) and attrs->attrs->at(flag)->tag() != value_e::Undef)) {
       if (found) {
         this->errfmt->Print_(str_concat(S_Fuv, S_izl->join(this->exclusive_flags)), cmd_val->arg_locs->at(0));
@@ -20027,6 +21363,7 @@ int Bind::Run(cmd_value::Argv* cmd_val) {
       i = 0;
       for (ListIter<BigStr*> it(bindings); !it.Done(); it.Next(), ++i) {
         BigStr* binding = it.Value();
+        StackRoot _for(&binding      );
         try {
           readline->parse_and_bind(binding);
         }
@@ -20052,6 +21389,11 @@ void Bind::_BindShellCmd(BigStr* bindseq) {
   List<BigStr*>* cmdseq_split = nullptr;
   BigStr* keyseq = nullptr;
   BigStr* cmd = nullptr;
+  StackRoot _root0(&bindseq);
+  StackRoot _root1(&cmdseq_split);
+  StackRoot _root2(&keyseq);
+  StackRoot _root3(&cmd);
+
   cmdseq_split = bindseq->strip()->split(S_fyj, 1);
   if (len(cmdseq_split) != 2) {
     throw Alloc<ValueError>(StrFormat("%s: missing colon separator", bindseq));
@@ -20089,6 +21431,16 @@ int History::Run(cmd_value::Argv* cmd_val) {
   int start_index;
   int num_to_show;
   BigStr* item = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&readline);
+  StackRoot _root2(&attrs);
+  StackRoot _root3(&arg_r);
+  StackRoot _root4(&arg);
+  StackRoot _root5(&hist_file);
+  StackRoot _root6(&num_arg);
+  StackRoot _root7(&num_arg_loc);
+  StackRoot _root8(&item);
+
   readline = this->readline;
   if (!readline) {
     e_usage(S_pFB, loc::Missing);
@@ -20167,6 +21519,128 @@ int History::Run(cmd_value::Argv* cmd_val) {
   return 0;
 }
 
+Fc::Fc(py_readline::Readline* readline, mylib::Writer* f) {
+  this->readline = readline;
+  this->f = f;
+}
+
+int Fc::Run(cmd_value::Argv* cmd_val) {
+  py_readline::Readline* readline = nullptr;
+  args::_Attributes* attrs = nullptr;
+  args::Reader* arg_r = nullptr;
+  arg_types::fc* arg = nullptr;
+  int num_items;
+  BigStr* first_arg = nullptr;
+  syntax_asdl::loc_t* first_arg_loc = nullptr;
+  int first_index;
+  BigStr* last_arg = nullptr;
+  syntax_asdl::loc_t* last_arg_loc = nullptr;
+  int last_index;
+  bool is_reversed;
+  int tmp;
+  int limit;
+  int step;
+  int i;
+  BigStr* item = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&readline);
+  StackRoot _root2(&attrs);
+  StackRoot _root3(&arg_r);
+  StackRoot _root4(&arg);
+  StackRoot _root5(&first_arg);
+  StackRoot _root6(&first_arg_loc);
+  StackRoot _root7(&last_arg);
+  StackRoot _root8(&last_arg_loc);
+  StackRoot _root9(&item);
+
+  readline = this->readline;
+  if (!readline) {
+    e_usage(S_pFB, loc::Missing);
+  }
+  Tuple2<args::_Attributes*, args::Reader*> tup4 = flag_util::ParseCmdVal(S_kAs, cmd_val);
+  attrs = tup4.at0();
+  arg_r = tup4.at1();
+  arg = Alloc<arg_types::fc>(attrs->attrs);
+  num_items = readline->get_current_history_length();
+  Tuple2<BigStr*, syntax_asdl::loc_t*> tup5 = arg_r->Peek2();
+  first_arg = tup5.at0();
+  first_arg_loc = tup5.at1();
+  if (first_arg == nullptr) {
+    if (num_items > 16) {
+      first_index = -16;
+    }
+    else {
+      first_index = 1;
+    }
+  }
+  else {
+    try {
+      first_index = to_int(first_arg);
+    }
+    catch (ValueError*) {
+      e_usage(StrFormat("got invalid argument %r", first_arg), first_arg_loc);
+    }
+  }
+  if (first_index < 0) {
+    first_index += num_items;
+  }
+  arg_r->Next();
+  Tuple2<BigStr*, syntax_asdl::loc_t*> tup6 = arg_r->Peek2();
+  last_arg = tup6.at0();
+  last_arg_loc = tup6.at1();
+  if (last_arg == nullptr) {
+    last_index = (num_items - 1);
+  }
+  else {
+    try {
+      last_index = to_int(last_arg);
+    }
+    catch (ValueError*) {
+      e_usage(StrFormat("got invalid argument %r", last_arg), last_arg_loc);
+    }
+  }
+  if (last_index < 0) {
+    last_index += num_items;
+  }
+  arg_r->Next();
+  if (!arg_r->AtEnd()) {
+    e_usage(S_sAk, loc::Missing);
+  }
+  if (arg->l) {
+    is_reversed = first_index > last_index;
+    if ((arg->r and !is_reversed)) {
+      is_reversed = true;
+      tmp = first_index;
+      first_index = last_index;
+      last_index = tmp;
+    }
+    if (is_reversed) {
+      limit = (last_index - 1);
+      step = -1;
+    }
+    else {
+      limit = (last_index + 1);
+      step = 1;
+    }
+    i = first_index;
+    while (i != limit) {
+      item = readline->get_history_item(i);
+      if (arg->n) {
+        this->f->write(StrFormat("\t %s\n", item));
+      }
+      else {
+        this->f->write(StrFormat("%d\t %s\n", i, item));
+      }
+      i += step;
+    }
+    return 0;
+  }
+  if (arg->e != nullptr) {
+    ;  // pass
+  }
+  e_usage(S_Dwv, loc::Missing);
+}
+
 }  // define namespace readline_osh
 
 namespace trap_osh {  // define
@@ -20185,6 +21659,8 @@ TrapState::TrapState(iolib::SignalSafe* signal_safe) {
 
 void TrapState::ClearForSubProgram(bool inherit_errtrace) {
   syntax_asdl::command_t* hook_err = nullptr;
+  StackRoot _root0(&hook_err);
+
   hook_err = this->hooks->get(S_zDr);
   this->hooks->clear();
   if ((hook_err != nullptr and inherit_errtrace)) {
@@ -20194,18 +21670,27 @@ void TrapState::ClearForSubProgram(bool inherit_errtrace) {
 }
 
 syntax_asdl::command_t* TrapState::GetHook(BigStr* hook_name) {
+  StackRoot _root0(&hook_name);
+
   return this->hooks->get(hook_name, nullptr);
 }
 
 void TrapState::AddUserHook(BigStr* hook_name, syntax_asdl::command_t* handler) {
+  StackRoot _root0(&hook_name);
+  StackRoot _root1(&handler);
+
   this->hooks->set(hook_name, handler);
 }
 
 void TrapState::RemoveUserHook(BigStr* hook_name) {
+  StackRoot _root0(&hook_name);
+
   mylib::dict_erase(this->hooks, hook_name);
 }
 
 void TrapState::AddUserTrap(int sig_num, syntax_asdl::command_t* handler) {
+  StackRoot _root0(&handler);
+
   this->traps->set(sig_num, handler);
   if (sig_num == SIGINT) {
     this->signal_safe->SetSigIntTrapped(true);
@@ -20240,6 +21725,10 @@ List<syntax_asdl::command_t*>* TrapState::GetPendingTraps() {
   List<int>* signals = nullptr;
   List<syntax_asdl::command_t*>* run_list = nullptr;
   syntax_asdl::command_t* node = nullptr;
+  StackRoot _root0(&signals);
+  StackRoot _root1(&run_list);
+  StackRoot _root2(&node);
+
   signals = this->signal_safe->TakePendingSignals();
   if (len(signals) == 0) {
     this->signal_safe->ReuseEmptyList(signals);
@@ -20265,6 +21754,9 @@ bool TrapState::ThisProcessHasTraps() {
 bool _IsUnsignedInteger(BigStr* s, syntax_asdl::loc_t* blame_loc) {
   bool ok;
   mops::BigInt big_int;
+  StackRoot _root0(&s);
+  StackRoot _root1(&blame_loc);
+
   if (!match::LooksLikeInteger(s)) {
     return false;
   }
@@ -20278,6 +21770,8 @@ bool _IsUnsignedInteger(BigStr* s, syntax_asdl::loc_t* blame_loc) {
 }
 
 int _GetSignalNumber(BigStr* sig_spec) {
+  StackRoot _root0(&sig_spec);
+
   if ((str_equals(sig_spec->strip(), S_vrA) || str_equals(sig_spec->strip(), S_AEs) || str_equals(sig_spec->strip(), S_xtx) || str_equals(sig_spec->strip(), S_bEx) || str_equals(sig_spec->strip(), S_kqx) || str_equals(sig_spec->strip(), S_Dfm) || str_equals(sig_spec->strip(), S_Apn) || str_equals(sig_spec->strip(), S_rFk))) {
     return to_int(sig_spec);
   }
@@ -20302,7 +21796,10 @@ syntax_asdl::command_t* Trap::_ParseTrapCode(BigStr* code_str) {
   source::Dynamic* src = nullptr;
   syntax_asdl::command_t* node = nullptr;
   StackRoot _root0(&code_str);
-  StackRoot _root1(&node);
+  StackRoot _root1(&line_reader);
+  StackRoot _root2(&c_parser);
+  StackRoot _root3(&src);
+  StackRoot _root4(&node);
 
   line_reader = reader::StringLineReader(code_str, this->arena);
   c_parser = this->parse_ctx->MakeOshParser(line_reader);
@@ -20333,10 +21830,15 @@ int Trap::Run(cmd_value::Argv* cmd_val) {
   int sig_num;
   syntax_asdl::command_t* node = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&sig_spec);
-  StackRoot _root2(&sig_loc);
-  StackRoot _root3(&sig_key);
-  StackRoot _root4(&node);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&code_str);
+  StackRoot _root5(&code_loc);
+  StackRoot _root6(&sig_spec);
+  StackRoot _root7(&sig_loc);
+  StackRoot _root8(&sig_key);
+  StackRoot _root9(&node);
 
   Tuple2<args::_Attributes*, args::Reader*> tup1 = flag_util::ParseCmdVal(S_gFu, cmd_val);
   attrs = tup1.at0();
@@ -20358,6 +21860,7 @@ int Trap::Run(cmd_value::Argv* cmd_val) {
   if (arg->l) {
     for (ListIter<BigStr*> it(_HOOK_NAMES); !it.Done(); it.Next()) {
       BigStr* hook_name = it.Value();
+      StackRoot _for(&hook_name    );
       print(StrFormat("   %s", hook_name));
     }
     signal_def::PrintSignals();
@@ -20456,6 +21959,8 @@ void Arena::SaveTokens() {
 }
 
 void Arena::PushSource(syntax_asdl::source_t* src) {
+  StackRoot _root0(&src);
+
   this->source_instances->append(src);
 }
 
@@ -20465,6 +21970,9 @@ void Arena::PopSource() {
 
 syntax_asdl::SourceLine* Arena::AddLine(BigStr* line, int line_num) {
   syntax_asdl::SourceLine* src_line = nullptr;
+  StackRoot _root0(&line);
+  StackRoot _root1(&src_line);
+
   src_line = Alloc<SourceLine>(line_num, line, this->source_instances->at(-1));
   this->lines_list->append(src_line);
   return src_line;
@@ -20482,6 +21990,11 @@ BigStr* Arena::SnipCodeString(syntax_asdl::Token* left, syntax_asdl::Token* righ
   bool found_left;
   bool found_right;
   BigStr* piece = nullptr;
+  StackRoot _root0(&left);
+  StackRoot _root1(&right);
+  StackRoot _root2(&pieces);
+  StackRoot _root3(&piece);
+
   if (inclusive) {
     ileft = left->col;
     iright = (right->col + right->length);
@@ -20497,6 +22010,7 @@ BigStr* Arena::SnipCodeString(syntax_asdl::Token* left, syntax_asdl::Token* righ
   if (left->line == right->line) {
     for (ListIter<syntax_asdl::SourceLine*> it(this->lines_list); !it.Done(); it.Next()) {
       syntax_asdl::SourceLine* li = it.Value();
+      StackRoot _for(&li    );
       if (li == left->line) {
         pieces->append(li->content->slice(ileft, iright));
         return S_Aoo->join(pieces);
@@ -20508,6 +22022,7 @@ BigStr* Arena::SnipCodeString(syntax_asdl::Token* left, syntax_asdl::Token* righ
   found_right = false;
   for (ListIter<syntax_asdl::SourceLine*> it(this->lines_list); !it.Done(); it.Next()) {
     syntax_asdl::SourceLine* li = it.Value();
+    StackRoot _for(&li  );
     if (li == left->line) {
       found_left = true;
       saving = true;
@@ -20532,6 +22047,9 @@ BigStr* Arena::SnipCodeString(syntax_asdl::Token* left, syntax_asdl::Token* righ
 syntax_asdl::Token* Arena::NewToken(int id_, int col, int length, syntax_asdl::SourceLine* src_line) {
   syntax_asdl::Token* tok = nullptr;
   int span_id;
+  StackRoot _root0(&src_line);
+  StackRoot _root1(&tok);
+
   if (length >= 65536) {
     throw Alloc<error::Parse>(S_Aoo, Alloc<loc::TokenTooLong>(src_line, id_, length, col));
   }
@@ -20557,6 +22075,8 @@ syntax_asdl::Token* Arena::GetToken(int span_id) {
 }
 
 int Arena::GetSpanId(syntax_asdl::Token* tok) {
+  StackRoot _root0(&tok);
+
   return this->span_id_lookup->at(tok);
 }
 
@@ -20595,18 +22115,26 @@ ArrayIndexEvaluator::ArrayIndexEvaluator() {
 }
 
 mops::BigInt ArrayIndexEvaluator::StringToBigInt(BigStr* s, syntax_asdl::loc_t* blame_loc) {
+  StackRoot _root0(&s);
+  StackRoot _root1(&blame_loc);
+
   FAIL(kNotImplemented);  // Python NotImplementedError
 }
 
 bool InternalStringArray_IsEmpty(value::InternalStringArray* array_val) {
+  StackRoot _root0(&array_val);
+
   return len(array_val->strs) == 0;
 }
 
 int InternalStringArray_Count(value::InternalStringArray* array_val) {
   int length;
+  StackRoot _root0(&array_val);
+
   length = 0;
   for (ListIter<BigStr*> it(array_val->strs); !it.Done(); it.Next()) {
     BigStr* s = it.Value();
+    StackRoot _for(&s  );
     if (s != nullptr) {
       length += 1;
     }
@@ -20615,16 +22143,22 @@ int InternalStringArray_Count(value::InternalStringArray* array_val) {
 }
 
 int InternalStringArray_Length(value::InternalStringArray* array_val) {
+  StackRoot _root0(&array_val);
+
   return len(array_val->strs);
 }
 
 List<int>* InternalStringArray_GetKeys(value::InternalStringArray* array_val) {
   List<int>* indices = nullptr;
   int i;
+  StackRoot _root0(&array_val);
+  StackRoot _root1(&indices);
+
   indices = Alloc<List<int>>();
   i = 0;
   for (ListIter<BigStr*> it(array_val->strs); !it.Done(); it.Next(), ++i) {
     BigStr* s = it.Value();
+    StackRoot _for(&s  );
     if (s != nullptr) {
       indices->append(i);
     }
@@ -20633,15 +22167,22 @@ List<int>* InternalStringArray_GetKeys(value::InternalStringArray* array_val) {
 }
 
 List<BigStr*>* InternalStringArray_GetValues(value::InternalStringArray* array_val) {
+  StackRoot _root0(&array_val);
+
   return array_val->strs;
 }
 
 void InternalStringArray_AppendValues(value::InternalStringArray* array_val, List<BigStr*>* strs) {
+  StackRoot _root0(&array_val);
+  StackRoot _root1(&strs);
+
   array_val->strs->extend(strs);
 }
 
 Tuple3<int, int, runtime_asdl::error_code_t> _InternalStringArray_CanonicalizeIndex(value::InternalStringArray* array_val, int index) {
   int n;
+  StackRoot _root0(&array_val);
+
   n = len(array_val->strs);
   if (index < 0) {
     index += n;
@@ -20655,6 +22196,8 @@ Tuple3<int, int, runtime_asdl::error_code_t> _InternalStringArray_CanonicalizeIn
 Tuple2<bool, runtime_asdl::error_code_t> InternalStringArray_HasElement(value::InternalStringArray* array_val, int index) {
   int n;
   runtime_asdl::error_code_t error_code;
+  StackRoot _root0(&array_val);
+
   Tuple3<int, int, runtime_asdl::error_code_t> tup0 = _InternalStringArray_CanonicalizeIndex(array_val, index);
   index = tup0.at0();
   n = tup0.at1();
@@ -20672,6 +22215,9 @@ Tuple2<BigStr*, runtime_asdl::error_code_t> InternalStringArray_GetElement(value
   int n;
   runtime_asdl::error_code_t error_code;
   BigStr* s = nullptr;
+  StackRoot _root0(&array_val);
+  StackRoot _root1(&s);
+
   Tuple3<int, int, runtime_asdl::error_code_t> tup1 = _InternalStringArray_CanonicalizeIndex(array_val, index);
   index = tup1.at0();
   n = tup1.at1();
@@ -20692,6 +22238,10 @@ runtime_asdl::error_code_t InternalStringArray_SetElement(value::InternalStringA
   List<BigStr*>* strs = nullptr;
   int n;
   runtime_asdl::error_code_t error_code;
+  StackRoot _root0(&array_val);
+  StackRoot _root1(&s);
+  StackRoot _root2(&strs);
+
   strs = array_val->strs;
   Tuple3<int, int, runtime_asdl::error_code_t> tup2 = _InternalStringArray_CanonicalizeIndex(array_val, index);
   index = tup2.at0();
@@ -20701,13 +22251,13 @@ runtime_asdl::error_code_t InternalStringArray_SetElement(value::InternalStringA
     return error_code;
   }
   if (index < n) {
-    array_val->strs->set(index, s);
+    strs->set(index, s);
   }
   else {
     for (int i = 0; i < ((index - n) + 1); ++i) {
-      array_val->strs->append(nullptr);
+      strs->append(nullptr);
     }
-    array_val->strs->set(index, s);
+    strs->set(index, s);
   }
   return error_code_e::OK;
 }
@@ -20716,6 +22266,9 @@ runtime_asdl::error_code_t InternalStringArray_UnsetElement(value::InternalStrin
   List<BigStr*>* strs = nullptr;
   int n;
   int last_index;
+  StackRoot _root0(&array_val);
+  StackRoot _root1(&strs);
+
   strs = array_val->strs;
   n = len(strs);
   last_index = (n - 1);
@@ -20745,6 +22298,9 @@ runtime_asdl::error_code_t InternalStringArray_UnsetElement(value::InternalStrin
 bool InternalStringArray_Equals(value::InternalStringArray* lhs, value::InternalStringArray* rhs) {
   int len_lhs;
   int len_rhs;
+  StackRoot _root0(&lhs);
+  StackRoot _root1(&rhs);
+
   len_lhs = len(lhs->strs);
   len_rhs = len(rhs->strs);
   if (len_lhs != len_rhs) {
@@ -20759,8 +22315,11 @@ bool InternalStringArray_Equals(value::InternalStringArray* lhs, value::Internal
 }
 
 bool _InternalStringArray_HasHoles(value::InternalStringArray* array_val) {
+  StackRoot _root0(&array_val);
+
   for (ListIter<BigStr*> it(array_val->strs); !it.Done(); it.Next()) {
     BigStr* s = it.Value();
+    StackRoot _for(&s  );
     if (s == nullptr) {
       return true;
     }
@@ -20772,6 +22331,10 @@ BigStr* InternalStringArray_ToStrForShellPrint(value::InternalStringArray* array
   List<BigStr*>* buff = nullptr;
   bool first;
   int i;
+  StackRoot _root0(&array_val);
+  StackRoot _root1(&name);
+  StackRoot _root2(&buff);
+
   buff = Alloc<List<BigStr*>>();
   first = true;
   if (_InternalStringArray_HasHoles(array_val)) {
@@ -20780,6 +22343,7 @@ BigStr* InternalStringArray_ToStrForShellPrint(value::InternalStringArray* array
       i = 0;
       for (ListIter<BigStr*> it(array_val->strs); !it.Done(); it.Next(), ++i) {
         BigStr* element = it.Value();
+        StackRoot _for(&element      );
         if (element != nullptr) {
           if (first) {
             buff->append(S_nbf);
@@ -20794,6 +22358,7 @@ BigStr* InternalStringArray_ToStrForShellPrint(value::InternalStringArray* array
       i = 0;
       for (ListIter<BigStr*> it(array_val->strs); !it.Done(); it.Next(), ++i) {
         BigStr* element = it.Value();
+        StackRoot _for(&element      );
         if (element != nullptr) {
           if (!first) {
             buff->append(S_yfw);
@@ -20811,6 +22376,7 @@ BigStr* InternalStringArray_ToStrForShellPrint(value::InternalStringArray* array
     buff->append(S_ijB);
     for (ListIter<BigStr*> it(array_val->strs); !it.Done(); it.Next()) {
       BigStr* element = it.Value();
+      StackRoot _for(&element    );
       if (!first) {
         buff->append(S_yfw);
       }
@@ -20826,15 +22392,21 @@ BigStr* InternalStringArray_ToStrForShellPrint(value::InternalStringArray* array
 
 value::BashAssoc* BashAssoc_New() {
   Dict<BigStr*, BigStr*>* d = nullptr;
+  StackRoot _root0(&d);
+
   d = Alloc<Dict<BigStr*, BigStr*>>();
   return Alloc<value::BashAssoc>(d);
 }
 
 value::BashAssoc* BashAssoc_Copy(value::BashAssoc* val) {
   Dict<BigStr*, BigStr*>* d = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&d);
+
   d = Alloc<Dict<BigStr*, BigStr*>>();
   for (DictIter<BigStr*, BigStr*> it(val->d); !it.Done(); it.Next()) {
     BigStr* key = it.Key();
+    StackRoot _for(&key  );
     d->set(key, val->d->at(key));
   }
   return Alloc<value::BashAssoc>(d);
@@ -20844,6 +22416,14 @@ void BashAssoc_ListInitialize(value::BashAssoc* val, value::InitializerList* ini
   BigStr* k = nullptr;
   BigStr* s = nullptr;
   BigStr* old_s = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&initializer);
+  StackRoot _root2(&exec_opts);
+  StackRoot _root3(&blame_loc);
+  StackRoot _root4(&k);
+  StackRoot _root5(&s);
+  StackRoot _root6(&old_s);
+
   if (!has_plus) {
     val->d->clear();
   }
@@ -20854,6 +22434,7 @@ void BashAssoc_ListInitialize(value::BashAssoc* val, value::InitializerList* ini
     k = nullptr;
     for (ListIter<value_asdl::InitializerValue*> it(initializer->assigns); !it.Done(); it.Next()) {
       value_asdl::InitializerValue* assign = it.Value();
+      StackRoot _for(&assign    );
       s = assign->rval;
       if (assign->key != nullptr) {
         s = StrFormat("[%s]%s%s", assign->key, assign->plus_eq ? S_Coy : S_bby, s);
@@ -20873,6 +22454,7 @@ void BashAssoc_ListInitialize(value::BashAssoc* val, value::InitializerList* ini
   }
   for (ListIter<value_asdl::InitializerValue*> it(initializer->assigns); !it.Done(); it.Next()) {
     value_asdl::InitializerValue* triplet = it.Value();
+    StackRoot _for(&triplet  );
     if (triplet->key == nullptr) {
       e_die(StrFormat("Key is missing. BashAssoc requires a key for %r", triplet->rval), blame_loc);
     }
@@ -20888,54 +22470,85 @@ void BashAssoc_ListInitialize(value::BashAssoc* val, value::InitializerList* ini
 }
 
 bool BashAssoc_IsEmpty(value::BashAssoc* assoc_val) {
+  StackRoot _root0(&assoc_val);
+
   return len(assoc_val->d) == 0;
 }
 
 int BashAssoc_Count(value::BashAssoc* assoc_val) {
+  StackRoot _root0(&assoc_val);
+
   return len(assoc_val->d);
 }
 
 Dict<BigStr*, BigStr*>* BashAssoc_GetDict(value::BashAssoc* assoc_val) {
+  StackRoot _root0(&assoc_val);
+
   return assoc_val->d;
 }
 
 void BashAssoc_AppendDict(value::BashAssoc* assoc_val, Dict<BigStr*, BigStr*>* d) {
+  StackRoot _root0(&assoc_val);
+  StackRoot _root1(&d);
+
   for (DictIter<BigStr*, BigStr*> it(d); !it.Done(); it.Next()) {
     BigStr* key = it.Key();
+    StackRoot _for(&key  );
     assoc_val->d->set(key, d->at(key));
   }
 }
 
 List<BigStr*>* BashAssoc_GetKeys(value::BashAssoc* assoc_val) {
+  StackRoot _root0(&assoc_val);
+
   return assoc_val->d->keys();
 }
 
 List<BigStr*>* BashAssoc_GetValues(value::BashAssoc* assoc_val) {
+  StackRoot _root0(&assoc_val);
+
   return assoc_val->d->values();
 }
 
 bool BashAssoc_HasElement(value::BashAssoc* assoc_val, BigStr* s) {
+  StackRoot _root0(&assoc_val);
+  StackRoot _root1(&s);
+
   return dict_contains(assoc_val->d, s);
 }
 
 BigStr* BashAssoc_GetElement(value::BashAssoc* assoc_val, BigStr* s) {
+  StackRoot _root0(&assoc_val);
+  StackRoot _root1(&s);
+
   return assoc_val->d->get(s);
 }
 
 void BashAssoc_SetElement(value::BashAssoc* assoc_val, BigStr* key, BigStr* s) {
+  StackRoot _root0(&assoc_val);
+  StackRoot _root1(&key);
+  StackRoot _root2(&s);
+
   assoc_val->d->set(key, s);
 }
 
 void BashAssoc_UnsetElement(value::BashAssoc* assoc_val, BigStr* key) {
+  StackRoot _root0(&assoc_val);
+  StackRoot _root1(&key);
+
   mylib::dict_erase(assoc_val->d, key);
 }
 
 bool BashAssoc_Equals(value::BashAssoc* lhs, value::BashAssoc* rhs) {
+  StackRoot _root0(&lhs);
+  StackRoot _root1(&rhs);
+
   if (len(lhs->d) != len(rhs->d)) {
     return false;
   }
   for (DictIter<BigStr*, BigStr*> it(lhs->d); !it.Done(); it.Next()) {
     BigStr* k = it.Key();
+    StackRoot _for(&k  );
     if ((!dict_contains(rhs->d, k) or !(str_equals(rhs->d->at(k), lhs->d->at(k))))) {
       return false;
     }
@@ -20948,10 +22561,16 @@ BigStr* BashAssoc_ToStrForShellPrint(value::BashAssoc* assoc_val) {
   bool first;
   BigStr* key_quoted = nullptr;
   BigStr* value_quoted = nullptr;
+  StackRoot _root0(&assoc_val);
+  StackRoot _root1(&buff);
+  StackRoot _root2(&key_quoted);
+  StackRoot _root3(&value_quoted);
+
   buff = NewList<BigStr*>(std::initializer_list<BigStr*>{S_ijB});
   first = true;
   for (ListIter<BigStr*> it(sorted(assoc_val->d)); !it.Done(); it.Next()) {
     BigStr* key = it.Value();
+    StackRoot _for(&key  );
     if (!first) {
       buff->append(S_yfw);
     }
@@ -20969,6 +22588,8 @@ BigStr* BashAssoc_ToStrForShellPrint(value::BashAssoc* assoc_val) {
 value::BashArray* BashArray_New() {
   Dict<mops::BigInt, BigStr*>* d = nullptr;
   mops::BigInt max_index;
+  StackRoot _root0(&d);
+
   d = Alloc<Dict<mops::BigInt, BigStr*>>();
   max_index = mops::MINUS_ONE;
   return Alloc<value::BashArray>(d, max_index);
@@ -20976,6 +22597,9 @@ value::BashArray* BashArray_New() {
 
 value::BashArray* BashArray_Copy(value::BashArray* val) {
   Dict<mops::BigInt, BigStr*>* d = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&d);
+
   d = Alloc<Dict<mops::BigInt, BigStr*>>();
   for (DictIter<mops::BigInt, BigStr*> it(val->d); !it.Done(); it.Next()) {
     mops::BigInt index = it.Key();
@@ -20987,10 +22611,14 @@ value::BashArray* BashArray_Copy(value::BashArray* val) {
 value::BashArray* BashArray_FromList(List<BigStr*>* strs) {
   Dict<mops::BigInt, BigStr*>* d = nullptr;
   mops::BigInt max_index;
+  StackRoot _root0(&strs);
+  StackRoot _root1(&d);
+
   d = Alloc<Dict<mops::BigInt, BigStr*>>();
   max_index = mops::MINUS_ONE;
   for (ListIter<BigStr*> it(strs); !it.Done(); it.Next()) {
     BigStr* s = it.Value();
+    StackRoot _for(&s  );
     max_index = mops::Add(max_index, mops::ONE);
     if (s != nullptr) {
       d->set(max_index, s);
@@ -21007,6 +22635,8 @@ void BashArray_ListInitialize(value::BashArray* val, value::InitializerList* ini
   StackRoot _root1(&initializer);
   StackRoot _root2(&blame_loc);
   StackRoot _root3(&arith_ev);
+  StackRoot _root4(&s);
+  StackRoot _root5(&old_s);
 
   if (!has_plus) {
     val->d->clear();
@@ -21015,6 +22645,7 @@ void BashArray_ListInitialize(value::BashArray* val, value::InitializerList* ini
   array_index = val->max_index;
   for (ListIter<value_asdl::InitializerValue*> it(initializer->assigns); !it.Done(); it.Next()) {
     value_asdl::InitializerValue* triplet = it.Value();
+    StackRoot _for(&triplet  );
     if (triplet->key != nullptr) {
       array_index = arith_ev->StringToBigInt(triplet->key, blame_loc);
     }
@@ -21036,19 +22667,28 @@ void BashArray_ListInitialize(value::BashArray* val, value::InitializerList* ini
 }
 
 bool BashArray_IsEmpty(value::BashArray* sparse_val) {
+  StackRoot _root0(&sparse_val);
+
   return len(sparse_val->d) == 0;
 }
 
 int BashArray_Count(value::BashArray* sparse_val) {
+  StackRoot _root0(&sparse_val);
+
   return len(sparse_val->d);
 }
 
 mops::BigInt BashArray_Length(value::BashArray* sparse_val) {
+  StackRoot _root0(&sparse_val);
+
   return mops::Add(sparse_val->max_index, mops::ONE);
 }
 
 List<mops::BigInt>* BashArray_GetKeys(value::BashArray* sparse_val) {
   List<mops::BigInt>* keys = nullptr;
+  StackRoot _root0(&sparse_val);
+  StackRoot _root1(&keys);
+
   keys = sparse_val->d->keys();
   mylib::BigIntSort(keys);
   return keys;
@@ -21056,6 +22696,9 @@ List<mops::BigInt>* BashArray_GetKeys(value::BashArray* sparse_val) {
 
 List<BigStr*>* BashArray_GetValues(value::BashArray* sparse_val) {
   List<BigStr*>* values = nullptr;
+  StackRoot _root0(&sparse_val);
+  StackRoot _root1(&values);
+
   values = Alloc<List<BigStr*>>();
   for (ListIter<mops::BigInt> it(BashArray_GetKeys(sparse_val)); !it.Done(); it.Next()) {
     mops::BigInt index = it.Value();
@@ -21065,14 +22708,20 @@ List<BigStr*>* BashArray_GetValues(value::BashArray* sparse_val) {
 }
 
 void BashArray_AppendValues(value::BashArray* sparse_val, List<BigStr*>* strs) {
+  StackRoot _root0(&sparse_val);
+  StackRoot _root1(&strs);
+
   for (ListIter<BigStr*> it(strs); !it.Done(); it.Next()) {
     BigStr* s = it.Value();
+    StackRoot _for(&s  );
     sparse_val->max_index = mops::Add(sparse_val->max_index, mops::ONE);
     sparse_val->d->set(sparse_val->max_index, s);
   }
 }
 
 Tuple2<mops::BigInt, runtime_asdl::error_code_t> _BashArray_CanonicalizeIndex(value::BashArray* sparse_val, mops::BigInt index) {
+  StackRoot _root0(&sparse_val);
+
   if (BigInt_Less(index, mops::ZERO)) {
     index = mops::Add(index, mops::Add(sparse_val->max_index, mops::ONE));
     if (BigInt_Less(index, mops::ZERO)) {
@@ -21084,6 +22733,8 @@ Tuple2<mops::BigInt, runtime_asdl::error_code_t> _BashArray_CanonicalizeIndex(va
 
 Tuple2<bool, runtime_asdl::error_code_t> BashArray_HasElement(value::BashArray* sparse_val, mops::BigInt index) {
   runtime_asdl::error_code_t error_code;
+  StackRoot _root0(&sparse_val);
+
   Tuple2<mops::BigInt, runtime_asdl::error_code_t> tup3 = _BashArray_CanonicalizeIndex(sparse_val, index);
   index = tup3.at0();
   error_code = tup3.at1();
@@ -21095,6 +22746,8 @@ Tuple2<bool, runtime_asdl::error_code_t> BashArray_HasElement(value::BashArray* 
 
 Tuple2<BigStr*, runtime_asdl::error_code_t> BashArray_GetElement(value::BashArray* sparse_val, mops::BigInt index) {
   runtime_asdl::error_code_t error_code;
+  StackRoot _root0(&sparse_val);
+
   Tuple2<mops::BigInt, runtime_asdl::error_code_t> tup4 = _BashArray_CanonicalizeIndex(sparse_val, index);
   index = tup4.at0();
   error_code = tup4.at1();
@@ -21106,6 +22759,9 @@ Tuple2<BigStr*, runtime_asdl::error_code_t> BashArray_GetElement(value::BashArra
 
 runtime_asdl::error_code_t BashArray_SetElement(value::BashArray* sparse_val, mops::BigInt index, BigStr* s) {
   runtime_asdl::error_code_t error_code;
+  StackRoot _root0(&sparse_val);
+  StackRoot _root1(&s);
+
   Tuple2<mops::BigInt, runtime_asdl::error_code_t> tup5 = _BashArray_CanonicalizeIndex(sparse_val, index);
   index = tup5.at0();
   error_code = tup5.at1();
@@ -21121,6 +22777,8 @@ runtime_asdl::error_code_t BashArray_SetElement(value::BashArray* sparse_val, mo
 
 runtime_asdl::error_code_t BashArray_UnsetElement(value::BashArray* sparse_val, mops::BigInt index) {
   runtime_asdl::error_code_t error_code;
+  StackRoot _root0(&sparse_val);
+
   Tuple2<mops::BigInt, runtime_asdl::error_code_t> tup6 = _BashArray_CanonicalizeIndex(sparse_val, index);
   index = tup6.at0();
   error_code = tup6.at1();
@@ -21143,6 +22801,9 @@ runtime_asdl::error_code_t BashArray_UnsetElement(value::BashArray* sparse_val, 
 bool BashArray_Equals(value::BashArray* lhs, value::BashArray* rhs) {
   int len_lhs;
   int len_rhs;
+  StackRoot _root0(&lhs);
+  StackRoot _root1(&rhs);
+
   len_lhs = len(lhs->d);
   len_rhs = len(rhs->d);
   if (len_lhs != len_rhs) {
@@ -21160,6 +22821,9 @@ bool BashArray_Equals(value::BashArray* lhs, value::BashArray* rhs) {
 BigStr* BashArray_ToStrForShellPrint(value::BashArray* sparse_val) {
   List<BigStr*>* body = nullptr;
   bool is_sparse;
+  StackRoot _root0(&sparse_val);
+  StackRoot _root1(&body);
+
   body = Alloc<List<BigStr*>>();
   is_sparse = !mops::Equal(mops::IntWiden(BashArray_Count(sparse_val)), BashArray_Length(sparse_val));
   for (ListIter<mops::BigInt> it(BashArray_GetKeys(sparse_val)); !it.Done(); it.Next()) {
@@ -21178,9 +22842,14 @@ BigStr* BashArray_ToStrForShellPrint(value::BashArray* sparse_val) {
 BigStr* InitializerList_ToStrForShellPrint(value::InitializerList* val) {
   List<BigStr*>* body = nullptr;
   BigStr* key = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&body);
+  StackRoot _root2(&key);
+
   body = Alloc<List<BigStr*>>();
   for (ListIter<value_asdl::InitializerValue*> it(val->assigns); !it.Done(); it.Next()) {
     value_asdl::InitializerValue* init = it.Value();
+    StackRoot _for(&init  );
     if (len(body) > 0) {
       body->append(S_yfw);
     }
@@ -21218,10 +22887,15 @@ int _PromptLen(BigStr* prompt_str) {
   bool escaped;
   BigStr* display_str = nullptr;
   BigStr* last_line = nullptr;
+  StackRoot _root0(&prompt_str);
+  StackRoot _root1(&display_str);
+  StackRoot _root2(&last_line);
+
   escaped = false;
   display_str = S_Aoo;
   for (StrIter it(prompt_str); !it.Done(); it.Next()) {
     BigStr* c = it.Value();
+    StackRoot _for(&c  );
     if (str_equals(c, S_FDc)) {
       escaped = true;
     }
@@ -21246,6 +22920,8 @@ PromptState::PromptState() {
 }
 
 void PromptState::SetLastPrompt(BigStr* prompt_str) {
+  StackRoot _root0(&prompt_str);
+
   this->last_prompt_str = prompt_str;
   this->last_prompt_len = _PromptLen(prompt_str);
 }
@@ -21278,6 +22954,9 @@ List<BigStr*>* _IDisplay::ReadlineInitCommands() {
 }
 
 void _IDisplay::PrintCandidates(BigStr* unused_subst, List<BigStr*>* matches, int unused_match_len) {
+  StackRoot _root0(&unused_subst);
+  StackRoot _root1(&matches);
+
   try {
     this->_PrintCandidates(unused_subst, matches, unused_match_len);
   }
@@ -21286,6 +22965,9 @@ void _IDisplay::PrintCandidates(BigStr* unused_subst, List<BigStr*>* matches, in
 }
 
 void _IDisplay::_PrintCandidates(BigStr* unused_subst, List<BigStr*>* matches, int unused_match_len) {
+  StackRoot _root0(&unused_subst);
+  StackRoot _root1(&matches);
+
   FAIL(kNotImplemented);  // Python NotImplementedError
 }
 
@@ -21294,6 +22976,8 @@ void _IDisplay::Reset() {
 }
 
 void _IDisplay::ShowPromptOnRight(BigStr* rendered) {
+  StackRoot _root0(&rendered);
+
   ;  // pass
 }
 
@@ -21315,6 +22999,11 @@ void MinimalDisplay::_PrintCandidates(BigStr* unused_subst, List<BigStr*>* match
   List<int>* lens = nullptr;
   int max_match_len;
   int term_width;
+  StackRoot _root0(&unused_subst);
+  StackRoot _root1(&matches);
+  StackRoot _root2(&to_display);
+  StackRoot _root3(&lens);
+
   this->f->write(S_nfs);
   display_pos = this->comp_state->display_pos;
   to_display = Alloc<List<BigStr*>>();
@@ -21343,6 +23032,11 @@ int _PrintPacked(List<BigStr*>* matches, int max_match_len, int term_width, int 
   int i;
   BigStr* fmt2 = nullptr;
   int num_left;
+  StackRoot _root0(&matches);
+  StackRoot _root1(&f);
+  StackRoot _root2(&fmt);
+  StackRoot _root3(&fmt2);
+
   w = (max_match_len + 2);
   num_per_line = max(1, ((term_width - 2) / w));
   fmt = str_concat(str_concat(S_aAh, str(w)), S_anC);
@@ -21352,6 +23046,7 @@ int _PrintPacked(List<BigStr*>* matches, int max_match_len, int term_width, int 
   i = 0;
   for (ListIter<BigStr*> it(matches); !it.Done(); it.Next()) {
     BigStr* m = it.Value();
+    StackRoot _for(&m  );
     if ((i % num_per_line) == 0) {
       f->write(S_yfw);
     }
@@ -21389,11 +23084,19 @@ int _PrintLong(List<BigStr*>* matches, int max_match_len, int term_width, int ma
   BigStr* desc = nullptr;
   BigStr* fmt2 = nullptr;
   int num_left;
+  StackRoot _root0(&matches);
+  StackRoot _root1(&descriptions);
+  StackRoot _root2(&f);
+  StackRoot _root3(&fmt);
+  StackRoot _root4(&desc);
+  StackRoot _root5(&fmt2);
+
   max_desc = max(0, ((term_width - max_match_len) - 3));
   fmt = str_concat(str_concat(str_concat(str_concat(str_concat(str_concat(S_ppj, str(max_match_len)), S_uok), ansi::YELLOW), S_ubF), ansi::RESET), S_nfs);
   num_lines = 0;
   for (ListIter<BigStr*> it(matches); !it.Done(); it.Next()) {
     BigStr* rl_match = it.Value();
+    StackRoot _for(&rl_match  );
     desc = descriptions->get(rl_match);
     if (desc == nullptr) {
       desc = S_Aoo;
@@ -21464,6 +23167,11 @@ void NiceDisplay::_PrintCandidates(BigStr* unused_subst, List<BigStr*>* matches,
   List<int>* lens = nullptr;
   int max_match_len;
   int num_lines;
+  StackRoot _root0(&unused_subst);
+  StackRoot _root1(&matches);
+  StackRoot _root2(&to_display);
+  StackRoot _root3(&lens);
+
   term_width = this->_GetTermWidth();
   display_pos = this->comp_state->display_pos;
   this->debug_f->write(StrFormat("DISPLAY POS in _PrintCandidates = %d\n", display_pos));
@@ -21508,6 +23216,9 @@ void NiceDisplay::_PrintCandidates(BigStr* unused_subst, List<BigStr*>* matches,
 void NiceDisplay::ShowPromptOnRight(BigStr* rendered) {
   int n;
   BigStr* spaces = nullptr;
+  StackRoot _root0(&rendered);
+  StackRoot _root1(&spaces);
+
   n = ((this->_GetTermWidth() - 2) - len(rendered));
   spaces = str_repeat(S_yfw, n);
   this->f->write(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat(spaces, ansi::REVERSE), S_yfw), rendered), S_yfw), ansi::RESET), S_Avc));
@@ -21532,11 +23243,22 @@ void NiceDisplay::EraseLines() {
 }
 
 void ExecutePrintCandidates(comp_ui::_IDisplay* display, BigStr* sub, List<BigStr*>* matches, int max_len) {
+  StackRoot _root0(&display);
+  StackRoot _root1(&sub);
+  StackRoot _root2(&matches);
+
   display->PrintCandidates(sub, matches, max_len);
 }
 
 void InitReadline(py_readline::Readline* readline, BigStr* hist_file, completion::RootCompleter* root_comp, comp_ui::_IDisplay* display, util::_DebugFile* debug_f) {
   completion::ReadlineCallback* complete_cb = nullptr;
+  StackRoot _root0(&readline);
+  StackRoot _root1(&hist_file);
+  StackRoot _root2(&root_comp);
+  StackRoot _root3(&display);
+  StackRoot _root4(&debug_f);
+  StackRoot _root5(&complete_cb);
+
   if (hist_file != nullptr) {
     try {
       readline->read_history_file(hist_file);
@@ -21548,6 +23270,7 @@ void InitReadline(py_readline::Readline* readline, BigStr* hist_file, completion
   readline->parse_and_bind(S_sph);
   for (ListIter<BigStr*> it(display->ReadlineInitCommands()); !it.Done(); it.Next()) {
     BigStr* cmd = it.Value();
+    StackRoot _for(&cmd  );
     readline->parse_and_bind(cmd);
   }
   complete_cb = Alloc<completion::ReadlineCallback>(readline, root_comp, debug_f);
@@ -21613,11 +23336,17 @@ void AdjustArg(BigStr* arg, List<BigStr*>* break_chars, List<BigStr*>* argv_out)
   int ch;
   bool emit_span;
   int begin;
+  StackRoot _root0(&arg);
+  StackRoot _root1(&break_chars);
+  StackRoot _root2(&argv_out);
+  StackRoot _root3(&end_indices);
+
   end_indices = Alloc<List<int>>();
   state = ST_Begin;
   i = 0;
   for (StrIter it(arg); !it.Done(); it.Next(), ++i) {
     BigStr* c = it.Value();
+    StackRoot _for(&c  );
     ch = list_contains(break_chars, c) ? CH_Break : CH_Other;
     Tuple2<int, bool> tup0 = _TRANSITIONS(state, ch);
     state = tup0.at0();
@@ -21653,6 +23382,9 @@ ctx_Completing::~ctx_Completing() {
 }
 
 void _PrintOpts(Dict<BigStr*, bool>* opts, mylib::BufWriter* f) {
+  StackRoot _root0(&opts);
+  StackRoot _root1(&f);
+
   f->write(S_dxy);
   for (DictIter<BigStr*, bool> it(opts); !it.Done(); it.Next()) {
     BigStr* k = it.Key();
@@ -21678,10 +23410,15 @@ void Lookup::PrintSpecs() {
   mylib::BufWriter* f = nullptr;
   Dict<BigStr*, bool>* base_opts = nullptr;
   completion::UserSpec* user_spec = nullptr;
+  StackRoot _root0(&f);
+  StackRoot _root1(&base_opts);
+  StackRoot _root2(&user_spec);
+
   f = Alloc<mylib::BufWriter>();
   f->write(S_jDw);
   for (ListIter<BigStr*> it(sorted(this->lookup)); !it.Done(); it.Next()) {
     BigStr* name = it.Value();
+    StackRoot _for(&name  );
     Tuple2<Dict<BigStr*, bool>*, completion::UserSpec*>* tup1 = this->lookup->at(name);
     base_opts = tup1->at0();
     user_spec = tup1->at1();
@@ -21693,8 +23430,11 @@ void Lookup::PrintSpecs() {
   for (ListIter<Tuple3<BigStr*, Dict<BigStr*, bool>*, completion::UserSpec*>*> it(this->patterns); !it.Done(); it.Next()) {
     Tuple3<BigStr*, Dict<BigStr*, bool>*, completion::UserSpec*>* tup2 = it.Value();
     BigStr* pat = tup2->at0();
+    StackRoot _unpack_0(&pat);
     Dict<BigStr*, bool>* base_opts = tup2->at1();
+    StackRoot _unpack_1(&base_opts);
     completion::UserSpec* spec = tup2->at2();
+    StackRoot _unpack_2(&spec);
     f->write(StrFormat("%s:\n", pat));
     _PrintOpts(base_opts, f);
     user_spec->PrintSpec(f);
@@ -21711,6 +23451,10 @@ List<BigStr*>* Lookup::GetCommandsChanged() {
 }
 
 void Lookup::RegisterName(BigStr* name, Dict<BigStr*, bool>* base_opts, completion::UserSpec* user_spec) {
+  StackRoot _root0(&name);
+  StackRoot _root1(&base_opts);
+  StackRoot _root2(&user_spec);
+
   this->lookup->set(name, (Alloc<Tuple2<Dict<BigStr*, bool>*, completion::UserSpec*>>(base_opts, user_spec)));
   if ((!str_equals(name, S_jaj) && !str_equals(name, S_lgv))) {
     this->commands_with_spec_changes->append(name);
@@ -21718,6 +23462,10 @@ void Lookup::RegisterName(BigStr* name, Dict<BigStr*, bool>* base_opts, completi
 }
 
 void Lookup::RegisterGlob(BigStr* glob_pat, Dict<BigStr*, bool>* base_opts, completion::UserSpec* user_spec) {
+  StackRoot _root0(&glob_pat);
+  StackRoot _root1(&base_opts);
+  StackRoot _root2(&user_spec);
+
   this->patterns->append((Alloc<Tuple3<BigStr*, Dict<BigStr*, bool>*, completion::UserSpec*>>(glob_pat, base_opts, user_spec)));
 }
 
@@ -21726,6 +23474,12 @@ Tuple2<Dict<BigStr*, bool>*, completion::UserSpec*> Lookup::GetSpecForName(BigSt
   Dict<BigStr*, bool>* a = nullptr;
   completion::UserSpec* b = nullptr;
   BigStr* key = nullptr;
+  StackRoot _root0(&argv0);
+  StackRoot _root1(&pair);
+  StackRoot _root2(&a);
+  StackRoot _root3(&b);
+  StackRoot _root4(&key);
+
   pair = this->lookup->get(argv0);
   if (pair) {
     Tuple2<Dict<BigStr*, bool>*, completion::UserSpec*>* tup3 = pair;
@@ -21744,8 +23498,11 @@ Tuple2<Dict<BigStr*, bool>*, completion::UserSpec*> Lookup::GetSpecForName(BigSt
   for (ListIter<Tuple3<BigStr*, Dict<BigStr*, bool>*, completion::UserSpec*>*> it(this->patterns); !it.Done(); it.Next()) {
     Tuple3<BigStr*, Dict<BigStr*, bool>*, completion::UserSpec*>* tup5 = it.Value();
     BigStr* glob_pat = tup5->at0();
+    StackRoot _unpack_0(&glob_pat);
     Dict<BigStr*, bool>* base_opts = tup5->at1();
+    StackRoot _unpack_1(&base_opts);
     completion::UserSpec* user_spec = tup5->at2();
+    StackRoot _unpack_2(&user_spec);
     if (libc::fnmatch(glob_pat, key)) {
       return Tuple2<Dict<BigStr*, bool>*, completion::UserSpec*>(base_opts, user_spec);
     }
@@ -21756,6 +23513,9 @@ Tuple2<Dict<BigStr*, bool>*, completion::UserSpec*> Lookup::GetSpecForName(BigSt
 Tuple2<Dict<BigStr*, bool>*, completion::UserSpec*> Lookup::GetFirstSpec() {
   Dict<BigStr*, bool>* a = nullptr;
   completion::UserSpec* b = nullptr;
+  StackRoot _root0(&a);
+  StackRoot _root1(&b);
+
   Tuple2<Dict<BigStr*, bool>*, completion::UserSpec*>* tup6 = this->lookup->at(S_lgv);
   a = tup6->at0();
   b = tup6->at1();
@@ -21765,6 +23525,9 @@ Tuple2<Dict<BigStr*, bool>*, completion::UserSpec*> Lookup::GetFirstSpec() {
 Tuple2<Dict<BigStr*, bool>*, completion::UserSpec*> Lookup::GetFallback() {
   Dict<BigStr*, bool>* a = nullptr;
   completion::UserSpec* b = nullptr;
+  StackRoot _root0(&a);
+  StackRoot _root1(&b);
+
   Tuple2<Dict<BigStr*, bool>*, completion::UserSpec*>* tup7 = this->lookup->at(S_jaj);
   a = tup7->at0();
   b = tup7->at1();
@@ -21783,6 +23546,11 @@ Api::Api(BigStr* line, int begin, int end) {
 }
 
 void Api::Update(BigStr* first, BigStr* to_complete, BigStr* prev, int index, List<BigStr*>* partial_argv) {
+  StackRoot _root0(&first);
+  StackRoot _root1(&to_complete);
+  StackRoot _root2(&prev);
+  StackRoot _root3(&partial_argv);
+
   this->first = first;
   this->to_complete = to_complete;
   this->prev = prev;
@@ -21798,6 +23566,8 @@ CompletionAction::CompletionAction() {
 }
 
 void CompletionAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
+  StackRoot _root0(&comp);
+
   ;  // pass
 }
 
@@ -21806,6 +23576,8 @@ runtime_asdl::comp_action_t CompletionAction::ActionKind() {
 }
 
 void CompletionAction::Print(mylib::BufWriter* f) {
+  StackRoot _root0(&f);
+
   f->write(S_Cyx);
 }
 
@@ -21815,8 +23587,12 @@ UsersAction::UsersAction() {
 
 void UsersAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
   BigStr* name = nullptr;
+  StackRoot _root0(&comp);
+  StackRoot _root1(&name);
+
   for (ListIter<pyos::PasswdEntry*> it(pyos::GetAllUsers()); !it.Done(); it.Next()) {
     pyos::PasswdEntry* u = it.Value();
+    StackRoot _for(&u  );
     name = u->pw_name;
     if (name->startswith(comp->to_complete)) {
       YIELD->append(name);
@@ -21825,6 +23601,8 @@ void UsersAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
 }
 
 void UsersAction::Print(mylib::BufWriter* f) {
+  StackRoot _root0(&f);
+
   f->write(S_oEg);
 }
 
@@ -21834,8 +23612,11 @@ TestAction::TestAction(List<BigStr*>* words, double delay) {
 }
 
 void TestAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
+  StackRoot _root0(&comp);
+
   for (ListIter<BigStr*> it(this->words); !it.Done(); it.Next()) {
     BigStr* w = it.Value();
+    StackRoot _for(&w  );
     if (w->startswith(comp->to_complete)) {
       if (this->delay != 0.0) {
         time_::sleep(this->delay);
@@ -21846,6 +23627,8 @@ void TestAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
 }
 
 void TestAction::Print(mylib::BufWriter* f) {
+  StackRoot _root0(&f);
+
   f->write(S_mAD);
 }
 
@@ -21861,6 +23644,7 @@ void DynamicWordsAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
   List<BigStr*>* candidates = nullptr;
   StackRoot _root0(&comp);
   StackRoot _root1(&val);
+  StackRoot _root2(&candidates);
 
   try {
     val = this->word_ev->EvalWordToString(this->arg_word);
@@ -21872,6 +23656,7 @@ void DynamicWordsAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
   candidates = this->splitter->SplitForWordEval(val->s);
   for (ListIter<BigStr*> it(candidates); !it.Done(); it.Next()) {
     BigStr* c = it.Value();
+    StackRoot _for(&c  );
     if (c->startswith(comp->to_complete)) {
       YIELD->append(c);
     }
@@ -21879,6 +23664,8 @@ void DynamicWordsAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
 }
 
 void DynamicWordsAction::Print(mylib::BufWriter* f) {
+  StackRoot _root0(&f);
+
   f->write(S_Ayq);
 }
 
@@ -21893,6 +23680,8 @@ runtime_asdl::comp_action_t FileSystemAction::ActionKind() {
 }
 
 void FileSystemAction::Print(mylib::BufWriter* f) {
+  StackRoot _root0(&f);
+
   f->write(S_ezz);
 }
 
@@ -21903,6 +23692,14 @@ void FileSystemAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
   BigStr* to_list = nullptr;
   List<BigStr*>* names = nullptr;
   BigStr* path = nullptr;
+  StackRoot _root0(&comp);
+  StackRoot _root1(&to_complete);
+  StackRoot _root2(&dirname);
+  StackRoot _root3(&basename);
+  StackRoot _root4(&to_list);
+  StackRoot _root5(&names);
+  StackRoot _root6(&path);
+
   to_complete = comp->to_complete;
   Tuple2<BigStr*, BigStr*> tup8 = os_path::split(to_complete);
   dirname = tup8.at0();
@@ -21921,6 +23718,7 @@ void FileSystemAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
   }
   for (ListIter<BigStr*> it(names); !it.Done(); it.Next()) {
     BigStr* name = it.Value();
+    StackRoot _for(&name  );
     path = os_path::join(dirname, name);
     if (path->startswith(to_complete)) {
       if (this->dirs_only) {
@@ -21951,8 +23749,11 @@ CommandAction::CommandAction(cmd_eval::CommandEvaluator* cmd_ev, BigStr* command
 }
 
 void CommandAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
+  StackRoot _root0(&comp);
+
   for (ListIter<BigStr*> it(NewList<BigStr*>(std::initializer_list<BigStr*>{S_jpy})); !it.Done(); it.Next()) {
     BigStr* candidate = it.Value();
+    StackRoot _for(&candidate  );
     YIELD->append(candidate);
   }
 }
@@ -21964,6 +23765,8 @@ ShellFuncAction::ShellFuncAction(cmd_eval::CommandEvaluator* cmd_ev, value::Proc
 }
 
 void ShellFuncAction::Print(mylib::BufWriter* f) {
+  StackRoot _root0(&f);
+
   f->write(StrFormat("[ShellFuncAction %s] ", this->func->name));
 }
 
@@ -21972,6 +23775,8 @@ runtime_asdl::comp_action_t ShellFuncAction::ActionKind() {
 }
 
 void ShellFuncAction::debug(BigStr* msg) {
+  StackRoot _root0(&msg);
+
   this->cmd_ev->debug_f->writeln(msg);
 }
 
@@ -21986,12 +23791,20 @@ void ShellFuncAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
   value_asdl::value_t* UP_val = nullptr;
   List<BigStr*>* strs = nullptr;
   StackRoot _root0(&comp);
+  StackRoot _root1(&comp_words);
+  StackRoot _root2(&argv);
+  StackRoot _root3(&commands_changed);
+  StackRoot _root4(&cmd);
+  StackRoot _root5(&val);
+  StackRoot _root6(&UP_val);
+  StackRoot _root7(&strs);
 
   state::SetGlobalArray(this->cmd_ev->mem, S_fot, Alloc<List<BigStr*>>());
   state::SetGlobalArray(this->cmd_ev->mem, S_FiD, comp->partial_argv);
   comp_words = Alloc<List<BigStr*>>();
   for (ListIter<BigStr*> it(comp->partial_argv); !it.Done(); it.Next()) {
     BigStr* a = it.Value();
+    StackRoot _for(&a  );
     AdjustArg(a, NewList<BigStr*>(std::initializer_list<BigStr*>{S_fyj, S_bby}), comp_words);
   }
   if (comp->index == -1) {
@@ -22050,6 +23863,7 @@ void ShellFuncAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
   }
   for (ListIter<BigStr*> it(strs); !it.Done(); it.Next()) {
     BigStr* s = it.Value();
+    StackRoot _for(&s  );
     YIELD->append(s);
   }
 }
@@ -22059,13 +23873,18 @@ VariablesAction::VariablesAction(state::Mem* mem) {
 }
 
 void VariablesAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
+  StackRoot _root0(&comp);
+
   for (ListIter<BigStr*> it(this->mem->VarNames()); !it.Done(); it.Next()) {
     BigStr* var_name = it.Value();
+    StackRoot _for(&var_name  );
     YIELD->append(var_name);
   }
 }
 
 void VariablesAction::Print(mylib::BufWriter* f) {
+  StackRoot _root0(&f);
+
   f->write(S_adr);
 }
 
@@ -22075,9 +23894,13 @@ ExportedVarsAction::ExportedVarsAction(state::Mem* mem) {
 
 void ExportedVarsAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
   Dict<BigStr*, BigStr*>* d = nullptr;
+  StackRoot _root0(&comp);
+  StackRoot _root1(&d);
+
   d = this->mem->GetEnv();
   for (DictIter<BigStr*, BigStr*> it(d); !it.Done(); it.Next()) {
     BigStr* var_name = it.Key();
+    StackRoot _for(&var_name  );
     YIELD->append(var_name);
   }
 }
@@ -22088,6 +23911,8 @@ ExternalCommandAction::ExternalCommandAction(state::Mem* mem) {
 }
 
 void ExternalCommandAction::Print(mylib::BufWriter* f) {
+  StackRoot _root0(&f);
+
   f->write(S_fFs);
 }
 
@@ -22099,6 +23924,15 @@ void ExternalCommandAction::Matches(completion::Api* comp, List<BigStr*>* YIELD)
   List<BigStr*>* dir_exes = nullptr;
   List<BigStr*>* entries = nullptr;
   BigStr* path = nullptr;
+  StackRoot _root0(&comp);
+  StackRoot _root1(&path_str);
+  StackRoot _root2(&path_dirs);
+  StackRoot _root3(&executables);
+  StackRoot _root4(&key);
+  StackRoot _root5(&dir_exes);
+  StackRoot _root6(&entries);
+  StackRoot _root7(&path);
+
   path_str = this->mem->env_config->Get(S_jip);
   if (path_str == nullptr) {
     return ;
@@ -22107,6 +23941,7 @@ void ExternalCommandAction::Matches(completion::Api* comp, List<BigStr*>* YIELD)
   executables = Alloc<List<BigStr*>>();
   for (ListIter<BigStr*> it(path_dirs); !it.Done(); it.Next()) {
     BigStr* d = it.Value();
+    StackRoot _for(&d  );
     try {
       key = pyos::MakeDirCacheKey(d);
     }
@@ -22119,6 +23954,7 @@ void ExternalCommandAction::Matches(completion::Api* comp, List<BigStr*>* YIELD)
       dir_exes = Alloc<List<BigStr*>>();
       for (ListIter<BigStr*> it(entries); !it.Done(); it.Next()) {
         BigStr* name = it.Value();
+        StackRoot _for(&name      );
         path = os_path::join(d, name);
         if (!posix::access(path, X_OK)) {
           continue;
@@ -22131,6 +23967,7 @@ void ExternalCommandAction::Matches(completion::Api* comp, List<BigStr*>* YIELD)
   }
   for (ListIter<BigStr*> it(executables); !it.Done(); it.Next()) {
     BigStr* word = it.Value();
+    StackRoot _for(&word  );
     if (word->startswith(comp->to_complete)) {
       YIELD->append(word);
     }
@@ -22142,10 +23979,14 @@ _Predicate::_Predicate() {
 }
 
 bool _Predicate::Evaluate(BigStr* candidate) {
+  StackRoot _root0(&candidate);
+
   FAIL(kNotImplemented);  // Python NotImplementedError
 }
 
 void _Predicate::Print(mylib::BufWriter* f) {
+  StackRoot _root0(&f);
+
   f->write(S_typ);
 }
 
@@ -22154,10 +23995,14 @@ DefaultPredicate::DefaultPredicate() {
 }
 
 bool DefaultPredicate::Evaluate(BigStr* candidate) {
+  StackRoot _root0(&candidate);
+
   return true;
 }
 
 void DefaultPredicate::Print(mylib::BufWriter* f) {
+  StackRoot _root0(&f);
+
   f->write(S_qAa);
 }
 
@@ -22168,6 +24013,8 @@ GlobPredicate::GlobPredicate(bool include, BigStr* glob_pat) {
 
 bool GlobPredicate::Evaluate(BigStr* candidate) {
   bool matched;
+  StackRoot _root0(&candidate);
+
   matched = libc::fnmatch(this->glob_pat, candidate);
   if (this->include) {
     return !matched;
@@ -22178,6 +24025,8 @@ bool GlobPredicate::Evaluate(BigStr* candidate) {
 }
 
 void GlobPredicate::Print(mylib::BufWriter* f) {
+  StackRoot _root0(&f);
+
   f->write(S_uyp);
 }
 
@@ -22191,21 +24040,26 @@ UserSpec::UserSpec(List<completion::CompletionAction*>* actions, List<completion
 }
 
 void UserSpec::PrintSpec(mylib::BufWriter* f) {
+  StackRoot _root0(&f);
+
   f->write(S_Fev);
   for (ListIter<completion::CompletionAction*> it(this->actions); !it.Done(); it.Next()) {
     completion::CompletionAction* a = it.Value();
+    StackRoot _for(&a  );
     a->Print(f);
   }
   f->write(S_nfs);
   f->write(S_gCB);
   for (ListIter<completion::CompletionAction*> it(this->extra_actions); !it.Done(); it.Next()) {
     completion::CompletionAction* a = it.Value();
+    StackRoot _for(&a  );
     a->Print(f);
   }
   f->write(S_nfs);
   f->write(S_lCD);
   for (ListIter<completion::CompletionAction*> it(this->else_actions); !it.Done(); it.Next()) {
     completion::CompletionAction* a = it.Value();
+    StackRoot _for(&a  );
     a->Print(f);
   }
   f->write(S_nfs);
@@ -22220,14 +24074,18 @@ void UserSpec::AllMatches(completion::Api* comp, List<Tuple2<BigStr*, runtime_as
   int num_matches;
   runtime_asdl::comp_action_t action_kind;
   bool show;
+  StackRoot _root0(&comp);
+
   num_matches = 0;
   for (ListIter<completion::CompletionAction*> it(this->actions); !it.Done(); it.Next()) {
     completion::CompletionAction* a = it.Value();
+    StackRoot _for(&a  );
     action_kind = a->ActionKind();
     List<BigStr*> YIELD_for_9;
     a->Matches(comp, &YIELD_for_9);
     for (ListIter<BigStr*> it(&YIELD_for_9); !it.Done(); it.Next()) {
       BigStr* match = it.Value();
+      StackRoot _for(&match    );
       show = (this->predicate->Evaluate(match) and (match->startswith(comp->to_complete) or action_kind == comp_action_e::BashFunc));
       if (show) {
         YIELD->append((Alloc<Tuple2<BigStr*, runtime_asdl::comp_action_t>>(str_concat(str_concat(this->prefix, match), this->suffix), action_kind)));
@@ -22237,20 +24095,24 @@ void UserSpec::AllMatches(completion::Api* comp, List<Tuple2<BigStr*, runtime_as
   }
   for (ListIter<completion::CompletionAction*> it(this->extra_actions); !it.Done(); it.Next()) {
     completion::CompletionAction* a = it.Value();
+    StackRoot _for(&a  );
     List<BigStr*> YIELD_for_10;
     a->Matches(comp, &YIELD_for_10);
     for (ListIter<BigStr*> it(&YIELD_for_10); !it.Done(); it.Next()) {
       BigStr* match = it.Value();
+      StackRoot _for(&match    );
       YIELD->append((Alloc<Tuple2<BigStr*, runtime_asdl::comp_action_t>>(match, comp_action_e::FileSystem)));
     }
   }
   if (num_matches == 0) {
     for (ListIter<completion::CompletionAction*> it(this->else_actions); !it.Done(); it.Next()) {
       completion::CompletionAction* a = it.Value();
+      StackRoot _for(&a    );
       List<BigStr*> YIELD_for_11;
       a->Matches(comp, &YIELD_for_11);
       for (ListIter<BigStr*> it(&YIELD_for_11); !it.Done(); it.Next()) {
         BigStr* match = it.Value();
+        StackRoot _for(&match      );
         YIELD->append((Alloc<Tuple2<BigStr*, runtime_asdl::comp_action_t>>(match, comp_action_e::FileSystem)));
       }
     }
@@ -22258,16 +24120,24 @@ void UserSpec::AllMatches(completion::Api* comp, List<Tuple2<BigStr*, runtime_as
 }
 
 bool IsDollar(syntax_asdl::Token* t) {
+  StackRoot _root0(&t);
+
   return t->id == Id::Lit_Dollar;
 }
 
 bool IsDummy(syntax_asdl::Token* t) {
+  StackRoot _root0(&t);
+
   return t->id == Id::Lit_CompDummy;
 }
 
 bool WordEndsWithCompDummy(syntax_asdl::CompoundWord* w) {
   syntax_asdl::word_part_t* last_part = nullptr;
   syntax_asdl::word_part_t* UP_part = nullptr;
+  StackRoot _root0(&w);
+  StackRoot _root1(&last_part);
+  StackRoot _root2(&UP_part);
+
   last_part = w->parts->at(-1);
   UP_part = last_part;
   if (last_part->tag() == word_part_e::Literal) {
@@ -22327,17 +24197,35 @@ void RootCompleter::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
   bool done;
   StackRoot _root0(&comp);
   StackRoot _root1(&line_until_tab);
-  StackRoot _root2(&debug_f);
-  StackRoot _root3(&trail);
-  StackRoot _root4(&name);
-  StackRoot _root5(&val);
-  StackRoot _root6(&base_opts);
-  StackRoot _root7(&user_spec);
-  StackRoot _root8(&partial_argv);
-  StackRoot _root9(&first);
-  StackRoot _root10(&trail_words);
-  StackRoot _root11(&words2);
-  StackRoot _root12(&w);
+  StackRoot _root2(&line_reader);
+  StackRoot _root3(&c_parser);
+  StackRoot _root4(&debug_f);
+  StackRoot _root5(&trail);
+  StackRoot _root6(&tokens);
+  StackRoot _root7(&t1);
+  StackRoot _root8(&t2);
+  StackRoot _root9(&to_complete);
+  StackRoot _root10(&parts);
+  StackRoot _root11(&tilde_tok);
+  StackRoot _root12(&name);
+  StackRoot _root13(&s);
+  StackRoot _root14(&chars_tok);
+  StackRoot _root15(&r);
+  StackRoot _root16(&arg_word);
+  StackRoot _root17(&UP_word);
+  StackRoot _root18(&val);
+  StackRoot _root19(&tok);
+  StackRoot _root20(&action);
+  StackRoot _root21(&base_opts);
+  StackRoot _root22(&user_spec);
+  StackRoot _root23(&partial_argv);
+  StackRoot _root24(&first);
+  StackRoot _root25(&trail_words);
+  StackRoot _root26(&words2);
+  StackRoot _root27(&alias_first);
+  StackRoot _root28(&w);
+  StackRoot _root29(&prev);
+  StackRoot _root30(&dynamic_opts);
 
   line_until_tab = comp->line->slice(0, comp->end);
   this->comp_ui_state->line_until_tab = line_until_tab;
@@ -22382,6 +24270,7 @@ void RootCompleter::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
       this->comp_ui_state->display_pos = (t2->col + 1);
       for (ListIter<BigStr*> it(this->mem->VarNames()); !it.Done(); it.Next()) {
         BigStr* name = it.Value();
+        StackRoot _for(&name      );
         YIELD->append(str_concat(line_until_tab, name));
       }
       return ;
@@ -22390,6 +24279,7 @@ void RootCompleter::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
       this->comp_ui_state->display_pos = (t2->col + 2);
       for (ListIter<BigStr*> it(this->mem->VarNames()); !it.Done(); it.Next()) {
         BigStr* name = it.Value();
+        StackRoot _for(&name      );
         YIELD->append(str_concat(line_until_tab, name));
       }
       return ;
@@ -22400,6 +24290,7 @@ void RootCompleter::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
       n = len(to_complete);
       for (ListIter<BigStr*> it(this->mem->VarNames()); !it.Done(); it.Next()) {
         BigStr* name = it.Value();
+        StackRoot _for(&name      );
         if (name->startswith(to_complete)) {
           YIELD->append(str_concat(line_until_tab, name->slice(n)));
         }
@@ -22412,6 +24303,7 @@ void RootCompleter::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
       n = len(to_complete);
       for (ListIter<BigStr*> it(this->mem->VarNames()); !it.Done(); it.Next()) {
         BigStr* name = it.Value();
+        StackRoot _for(&name      );
         if (name->startswith(to_complete)) {
           YIELD->append(str_concat(line_until_tab, name->slice(n)));
         }
@@ -22424,6 +24316,7 @@ void RootCompleter::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
       n = len(to_complete);
       for (ListIter<BigStr*> it(this->mem->VarNames()); !it.Done(); it.Next()) {
         BigStr* name = it.Value();
+        StackRoot _for(&name      );
         if (name->startswith(to_complete)) {
           YIELD->append(str_concat(line_until_tab, name->slice(n)));
         }
@@ -22440,6 +24333,7 @@ void RootCompleter::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
         to_complete = S_Aoo;
         for (ListIter<pyos::PasswdEntry*> it(pyos::GetAllUsers()); !it.Done(); it.Next()) {
           pyos::PasswdEntry* u = it.Value();
+          StackRoot _for(&u        );
           name = u->pw_name;
           s = str_concat(str_concat(line_until_tab, ShellQuoteB(name)), S_ckc);
           YIELD->append(s);
@@ -22453,6 +24347,7 @@ void RootCompleter::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
         n = len(to_complete);
         for (ListIter<pyos::PasswdEntry*> it(pyos::GetAllUsers()); !it.Done(); it.Next()) {
           pyos::PasswdEntry* u = it.Value();
+          StackRoot _for(&u        );
           name = u->pw_name;
           if (name->startswith(to_complete)) {
             s = str_concat(str_concat(line_until_tab, ShellQuoteB(name->slice(n))), S_ckc);
@@ -22491,6 +24386,7 @@ void RootCompleter::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
         action->Matches(comp, &YIELD_for_12);
         for (ListIter<BigStr*> it(&YIELD_for_12); !it.Done(); it.Next()) {
           BigStr* name = it.Value();
+          StackRoot _for(&name        );
           YIELD->append(str_concat(line_until_tab, ShellQuoteB(name->slice(n))));
         }
         return ;
@@ -22513,6 +24409,7 @@ void RootCompleter::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
       words2 = word_::TildeDetectAll(trail_words);
       for (ListIter<syntax_asdl::word_t*> it(words2); !it.Done(); it.Next()) {
         syntax_asdl::word_t* w = it.Value();
+        StackRoot _for(&w      );
         try {
           val = this->word_ev->EvalWordToString(w);
         }
@@ -22597,6 +24494,7 @@ void RootCompleter::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
         this->_PostProcess(base_opts, dynamic_opts, user_spec, comp, &YIELD_for_17);
         for (ListIter<BigStr*> it(&YIELD_for_17); !it.Done(); it.Next()) {
           BigStr* candidate = it.Value();
+          StackRoot _for(&candidate        );
           YIELD->append(candidate);
         }
       }
@@ -22640,6 +24538,17 @@ void RootCompleter::_PostProcess(Dict<BigStr*, bool>* base_opts, Dict<BigStr*, b
   BigStr* cand = nullptr;
   double elapsed_ms;
   BigStr* plural = nullptr;
+  StackRoot _root0(&base_opts);
+  StackRoot _root1(&dynamic_opts);
+  StackRoot _root2(&user_spec);
+  StackRoot _root3(&comp);
+  StackRoot _root4(&line_until_tab);
+  StackRoot _root5(&line_until_word);
+  StackRoot _root6(&s);
+  StackRoot _root7(&sp);
+  StackRoot _root8(&cand);
+  StackRoot _root9(&plural);
+
   this->debug_f->writeln(StrFormat("Completing %r ... (Ctrl-C to cancel)", comp->line));
   start_time = time_::time();
   i = 0;
@@ -22648,6 +24557,7 @@ void RootCompleter::_PostProcess(Dict<BigStr*, bool>* base_opts, Dict<BigStr*, b
   for (ListIter<Tuple2<BigStr*, runtime_asdl::comp_action_t>*> it(&YIELD_for_21); !it.Done(); it.Next()) {
     Tuple2<BigStr*, runtime_asdl::comp_action_t>* tup22 = it.Value();
     BigStr* candidate = tup22->at0();
+    StackRoot _unpack_0(&candidate);
     runtime_asdl::comp_action_t action_kind = tup22->at1();
     line_until_tab = this->comp_ui_state->line_until_tab;
     line_until_word = line_until_tab->slice(0, this->comp_ui_state->display_pos);
@@ -22695,6 +24605,10 @@ BigStr* ReadlineCallback::_GetNextCompletion(int state) {
   int end;
   completion::Api* comp = nullptr;
   BigStr* next_completion = nullptr;
+  StackRoot _root0(&buf);
+  StackRoot _root1(&comp);
+  StackRoot _root2(&next_completion);
+
   if (state == 0) {
     buf = this->readline->get_line_buffer();
     begin = this->readline->get_begidx();
@@ -22795,6 +24709,10 @@ CrashDumper::CrashDumper(BigStr* crash_dump_dir, process::FdState* fd_state) {
 
 void CrashDumper::MaybeRecord(cmd_eval::CommandEvaluator* cmd_ev, error::_ErrorWithLocation* err) {
   syntax_asdl::Token* blame_tok = nullptr;
+  StackRoot _root0(&cmd_ev);
+  StackRoot _root1(&err);
+  StackRoot _root2(&blame_tok);
+
   if (!this->do_collect) {
     return ;
   }
@@ -22820,6 +24738,12 @@ void CrashDumper::MaybeDump(int status) {
   mylib::BufWriter* buf = nullptr;
   BigStr* json_str = nullptr;
   mylib::Writer* f = nullptr;
+  StackRoot _root0(&d);
+  StackRoot _root1(&path);
+  StackRoot _root2(&buf);
+  StackRoot _root3(&json_str);
+  StackRoot _root4(&f);
+
   if (!this->collected) {
     return ;
   }
@@ -22867,6 +24791,11 @@ ctx_Tracer::~ctx_Tracer() {
 void _PrintShValue(value_asdl::value_t* val, mylib::BufWriter* buf) {
   BigStr* result = nullptr;
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&buf);
+  StackRoot _root2(&result);
+  StackRoot _root3(&UP_val);
+
   result = S_BAk;
   UP_val = val;
   switch (val->tag()) {
@@ -22901,9 +24830,13 @@ void _PrintShValue(value_asdl::value_t* val, mylib::BufWriter* buf) {
 
 void PrintShellArgv(List<BigStr*>* argv, mylib::BufWriter* buf) {
   int i;
+  StackRoot _root0(&argv);
+  StackRoot _root1(&buf);
+
   i = 0;
   for (ListIter<BigStr*> it(argv); !it.Done(); it.Next(), ++i) {
     BigStr* arg = it.Value();
+    StackRoot _for(&arg  );
     if (i != 0) {
       buf->write(S_yfw);
     }
@@ -22912,8 +24845,12 @@ void PrintShellArgv(List<BigStr*>* argv, mylib::BufWriter* buf) {
 }
 
 void _PrintYshArgv(List<BigStr*>* argv, mylib::BufWriter* buf) {
+  StackRoot _root0(&argv);
+  StackRoot _root1(&buf);
+
   for (ListIter<BigStr*> it(argv); !it.Done(); it.Next()) {
     BigStr* arg = it.Value();
+    StackRoot _for(&arg  );
     buf->write(S_yfw);
     buf->write(j8_lite::MaybeShellEncode(arg));
   }
@@ -22935,6 +24872,8 @@ void MultiTracer::OnNewProcess(int child_pid) {
 }
 
 void MultiTracer::EmitArgv0(BigStr* argv0) {
+  StackRoot _root0(&argv0);
+
   if (!dict_contains(this->hist_argv0, argv0)) {
     this->hist_argv0->set(argv0, 1);
   }
@@ -22953,6 +24892,16 @@ void MultiTracer::WriteDumps() {
   mylib::BufWriter* buf = nullptr;
   BigStr* json8_str = nullptr;
   mylib::Writer* f = nullptr;
+  StackRoot _root0(&metric_argv0);
+  StackRoot _root1(&a);
+  StackRoot _root2(&c);
+  StackRoot _root3(&d);
+  StackRoot _root4(&j);
+  StackRoot _root5(&path);
+  StackRoot _root6(&buf);
+  StackRoot _root7(&json8_str);
+  StackRoot _root8(&f);
+
   if (len(this->out_dir) == 0) {
     return ;
   }
@@ -23010,8 +24959,11 @@ BigStr* Tracer::_EvalPS4(BigStr* punct) {
   word_parse::WordParser* w_parser = nullptr;
   value::Str* prefix = nullptr;
   StackRoot _root0(&punct);
-  StackRoot _root1(&ps4);
-  StackRoot _root2(&ps4_word);
+  StackRoot _root1(&val);
+  StackRoot _root2(&ps4);
+  StackRoot _root3(&ps4_word);
+  StackRoot _root4(&w_parser);
+  StackRoot _root5(&prefix);
 
   val = this->mem->GetValue(S_zyo);
   if (val->tag() == value_e::Str) {
@@ -23068,8 +25020,9 @@ mylib::BufWriter* Tracer::_ShTraceBegin() {
   BigStr* prefix = nullptr;
   mylib::BufWriter* buf = nullptr;
   StackRoot _root0(&prefix);
+  StackRoot _root1(&buf);
 
-  if ((!this->exec_opts->xtrace() or !this->exec_opts->xtrace_details())) {
+  if ((!this->exec_opts->xtrace() or this->exec_opts->no_xtrace_osh())) {
     return nullptr;
   }
   prefix = this->_EvalPS4(S_jnE);
@@ -23083,6 +25036,7 @@ mylib::BufWriter* Tracer::_RichTraceBegin(BigStr* punct) {
   mylib::BufWriter* buf = nullptr;
   StackRoot _root0(&punct);
   StackRoot _root1(&prefix);
+  StackRoot _root2(&buf);
 
   if ((!this->exec_opts->xtrace() or !this->exec_opts->xtrace_rich())) {
     return nullptr;
@@ -23292,6 +25246,7 @@ void Tracer::OnAssignBuiltin(cmd_value::Assign* cmd_val) {
   i = 0;
   for (ListIter<BigStr*> it(cmd_val->argv); !it.Done(); it.Next(), ++i) {
     BigStr* arg = it.Value();
+    StackRoot _for(&arg  );
     if (i != 0) {
       buf->write(S_yfw);
     }
@@ -23299,6 +25254,7 @@ void Tracer::OnAssignBuiltin(cmd_value::Assign* cmd_val) {
   }
   for (ListIter<runtime_asdl::AssignArg*> it(cmd_val->pairs); !it.Done(); it.Next()) {
     runtime_asdl::AssignArg* pair = it.Value();
+    StackRoot _for(&pair  );
     buf->write(S_yfw);
     buf->write(pair->var_name);
     buf->write(pair->plus_eq ? S_Coy : S_bby);
@@ -23317,6 +25273,8 @@ void Tracer::OnShAssignment(value_asdl::sh_lvalue_t* lval, syntax_asdl::assign_o
   StackRoot _root0(&lval);
   StackRoot _root1(&val);
   StackRoot _root2(&buf);
+  StackRoot _root3(&left);
+  StackRoot _root4(&UP_lval);
 
   buf = this->_ShTraceBegin();
   if (!buf) {
@@ -23353,6 +25311,7 @@ void Tracer::OnControlFlow(BigStr* keyword, int arg) {
   mylib::BufWriter* buf = nullptr;
   StackRoot _root0(&keyword);
   StackRoot _root1(&prefix);
+  StackRoot _root2(&buf);
 
   if (!this->exec_opts->xtrace()) {
     return ;
@@ -23376,6 +25335,7 @@ void Tracer::PrintSourceCode(syntax_asdl::Token* left_tok, syntax_asdl::Token* r
   StackRoot _root1(&right_tok);
   StackRoot _root2(&arena);
   StackRoot _root3(&buf);
+  StackRoot _root4(&line);
 
   buf = this->_ShTraceBegin();
   if (!buf) {
@@ -23408,6 +25368,8 @@ using value_asdl::value_t;
 using value_asdl::value_str;
 
 BigStr* _ValType(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   return value_str(val->tag(), false);
 }
 
@@ -23471,6 +25433,8 @@ Structured::Structured(int status, BigStr* msg, syntax_asdl::loc_t* location, Di
 
 value::Dict* Structured::ToDict() {
   Dict<BigStr*, value_asdl::value_t*>* d = nullptr;
+  StackRoot _root0(&d);
+
   d = Alloc<Dict<BigStr*, value_asdl::value_t*>>();
   if (this->properties != nullptr) {
     d->update(this->properties);
@@ -23509,6 +25473,8 @@ BigStr* Decode::Message() {
   int start;
   int end;
   BigStr* part = nullptr;
+  StackRoot _root0(&part);
+
   start = max(0, (this->start_pos - 4));
   end = min(len(this->s), (this->end_pos + 4));
   part = this->s->slice(start, end);
@@ -23528,22 +25494,37 @@ BigStr* Encode::Message() {
 }
 
 [[noreturn]] void e_usage(BigStr* msg, syntax_asdl::loc_t* location) {
+  StackRoot _root0(&msg);
+  StackRoot _root1(&location);
+
   throw Alloc<Usage>(msg, location);
 }
 
 [[noreturn]] void e_strict(BigStr* msg, syntax_asdl::loc_t* location) {
+  StackRoot _root0(&msg);
+  StackRoot _root1(&location);
+
   throw Alloc<Strict>(msg, location);
 }
 
 [[noreturn]] void p_die(BigStr* msg, syntax_asdl::loc_t* location) {
+  StackRoot _root0(&msg);
+  StackRoot _root1(&location);
+
   throw Alloc<Parse>(msg, location);
 }
 
 [[noreturn]] void e_die(BigStr* msg, syntax_asdl::loc_t* location) {
+  StackRoot _root0(&msg);
+  StackRoot _root1(&location);
+
   throw Alloc<FatalRuntime>(1, msg, location);
 }
 
 [[noreturn]] void e_die_status(int status, BigStr* msg, syntax_asdl::loc_t* location) {
+  StackRoot _root0(&msg);
+  StackRoot _root1(&location);
+
   throw Alloc<FatalRuntime>(status, msg, location);
 }
 
@@ -23570,6 +25551,10 @@ using mylib::print_stderr;
 BigStr* LookupExecutable(BigStr* name, List<BigStr*>* path_dirs, bool exec_required) {
   BigStr* full_path = nullptr;
   bool found;
+  StackRoot _root0(&name);
+  StackRoot _root1(&path_dirs);
+  StackRoot _root2(&full_path);
+
   if (len(name) == 0) {
     return nullptr;
   }
@@ -23578,6 +25563,7 @@ BigStr* LookupExecutable(BigStr* name, List<BigStr*>* path_dirs, bool exec_requi
   }
   for (ListIter<BigStr*> it(path_dirs); !it.Done(); it.Next()) {
     BigStr* path_dir = it.Value();
+    StackRoot _for(&path_dir  );
     full_path = os_path::join(path_dir, name);
     if (exec_required) {
       found = posix::access(full_path, X_OK);
@@ -23597,6 +25583,10 @@ int _RewriteExternToBuiltin(List<BigStr*>* argv) {
   int i;
   int n;
   BigStr* arg = nullptr;
+  StackRoot _root0(&argv);
+  StackRoot _root1(&arg0);
+  StackRoot _root2(&arg);
+
   arg0 = argv->at(0);
   i = 1;
   n = len(argv);
@@ -23658,6 +25648,8 @@ SearchPath::SearchPath(state::Mem* mem, optview::Exec* exec_opts) {
 
 List<BigStr*>* SearchPath::_GetPath() {
   BigStr* s = nullptr;
+  StackRoot _root0(&s);
+
   s = this->mem->env_config->Get(S_jip);
   if (s == nullptr) {
     return Alloc<List<BigStr*>>();
@@ -23666,12 +25658,18 @@ List<BigStr*>* SearchPath::_GetPath() {
 }
 
 BigStr* SearchPath::LookupOne(BigStr* name, bool exec_required) {
+  StackRoot _root0(&name);
+
   return LookupExecutable(name, this->_GetPath(), exec_required);
 }
 
 List<BigStr*>* SearchPath::LookupReflect(BigStr* name, bool do_all) {
   List<BigStr*>* results = nullptr;
   BigStr* full_path = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&results);
+  StackRoot _root2(&full_path);
+
   if (len(name) == 0) {
     return Alloc<List<BigStr*>>();
   }
@@ -23686,6 +25684,7 @@ List<BigStr*>* SearchPath::LookupReflect(BigStr* name, bool do_all) {
   results = Alloc<List<BigStr*>>();
   for (ListIter<BigStr*> it(this->_GetPath()); !it.Done(); it.Next()) {
     BigStr* path_dir = it.Value();
+    StackRoot _for(&path_dir  );
     full_path = os_path::join(path_dir, name);
     if (path_stat::exists(full_path)) {
       results->append(full_path);
@@ -23699,6 +25698,9 @@ List<BigStr*>* SearchPath::LookupReflect(BigStr* name, bool do_all) {
 
 BigStr* SearchPath::CachedLookup(BigStr* name) {
   BigStr* full_path = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&full_path);
+
   if (dict_contains(this->cache, name)) {
     return this->cache->at(name);
   }
@@ -23710,6 +25712,8 @@ BigStr* SearchPath::CachedLookup(BigStr* name) {
 }
 
 void SearchPath::MaybeRemoveEntry(BigStr* name) {
+  StackRoot _root0(&name);
+
   mylib::dict_erase(this->cache, name);
 }
 
@@ -23733,6 +25737,9 @@ bool _ProcessSubFrame::WasModified() {
 }
 
 void _ProcessSubFrame::Append(process::Process* p, int fd, syntax_asdl::loc_t* status_loc) {
+  StackRoot _root0(&p);
+  StackRoot _root1(&status_loc);
+
   this->_modified = true;
   this->_to_wait->append(p);
   this->_to_close->append(fd);
@@ -23744,6 +25751,11 @@ void _ProcessSubFrame::MaybeWaitOnProcessSubs(process::Waiter* waiter, runtime_a
   List<syntax_asdl::loc_t*>* locs = nullptr;
   int i;
   int st;
+  StackRoot _root0(&waiter);
+  StackRoot _root1(&status_array);
+  StackRoot _root2(&codes);
+  StackRoot _root3(&locs);
+
   for (ListIter<int> it(this->_to_close); !it.Done(); it.Next()) {
     int fd = it.Value();
     posix::close(fd);
@@ -23753,6 +25765,7 @@ void _ProcessSubFrame::MaybeWaitOnProcessSubs(process::Waiter* waiter, runtime_a
   i = 0;
   for (ListIter<process::Process*> it(this->_to_wait); !it.Done(); it.Next(), ++i) {
     process::Process* p = it.Value();
+    StackRoot _for(&p  );
     st = p->Wait(waiter);
     codes->append(st);
     locs->append(this->_locs->at(i));
@@ -23773,6 +25786,13 @@ int PureExecutor::_RunSimpleCommand(BigStr* arg0, syntax_asdl::loc_t* arg0_loc, 
   bool call_procs;
   value_asdl::value_t* proc_val = nullptr;
   value_asdl::Obj* self_obj = nullptr;
+  StackRoot _root0(&arg0);
+  StackRoot _root1(&arg0_loc);
+  StackRoot _root2(&cmd_val);
+  StackRoot _root3(&cmd_st);
+  StackRoot _root4(&proc_val);
+  StackRoot _root5(&self_obj);
+
   call_procs = !(run_flags & NO_CALL_PROCS);
   if (call_procs) {
     Tuple2<value_asdl::value_t*, value_asdl::Obj*> tup0 = this->procs->GetInvokable(arg0);
@@ -23790,38 +25810,58 @@ int PureExecutor::_RunSimpleCommand(BigStr* arg0, syntax_asdl::loc_t* arg0_loc, 
 }
 
 int PureExecutor::RunBackgroundJob(syntax_asdl::command_t* node) {
+  StackRoot _root0(&node);
+
   throw Alloc<error::Structured>(_PURITY_STATUS, S_oog, Alloc<loc::Command>(node));
 }
 
 void PureExecutor::RunPipeline(command::Pipeline* node, runtime_asdl::CommandStatus* status_out) {
+  StackRoot _root0(&node);
+  StackRoot _root1(&status_out);
+
   throw Alloc<error::Structured>(_PURITY_STATUS, S_Fek, Alloc<loc::Command>(node));
 }
 
 int PureExecutor::RunSubshell(syntax_asdl::command_t* node) {
+  StackRoot _root0(&node);
+
   throw Alloc<error::Structured>(_PURITY_STATUS, S_tuc, Alloc<loc::Command>(node));
 }
 
 Tuple2<int, BigStr*> PureExecutor::CaptureStdout(syntax_asdl::command_t* node) {
+  StackRoot _root0(&node);
+
   return Tuple2<int, BigStr*>(0, S_Aoo);
 }
 
 Tuple3<int, BigStr*, BigStr*> PureExecutor::Capture3(syntax_asdl::command_t* node) {
+  StackRoot _root0(&node);
+
   return Tuple3<int, BigStr*, BigStr*>(0, S_Aoo, S_Aoo);
 }
 
 BigStr* PureExecutor::RunCommandSub(syntax_asdl::CommandSub* cs_part) {
+  StackRoot _root0(&cs_part);
+
   throw Alloc<error::Structured>(_PURITY_STATUS, S_blF, Alloc<loc::WordPart>(cs_part));
 }
 
 BigStr* PureExecutor::RunProcessSub(syntax_asdl::CommandSub* cs_part) {
+  StackRoot _root0(&cs_part);
+
   throw Alloc<error::Structured>(_PURITY_STATUS, S_wgE, Alloc<loc::WordPart>(cs_part));
 }
 
 void PureExecutor::PushRedirects(List<runtime_asdl::RedirValue*>* redirects, List<IOError_OSError*>* err_out) {
+  StackRoot _root0(&redirects);
+  StackRoot _root1(&err_out);
+
   ;  // pass
 }
 
 void PureExecutor::PopRedirects(int num_redirects, List<IOError_OSError*>* err_out) {
+  StackRoot _root0(&err_out);
+
   ;  // pass
 }
 
@@ -23830,6 +25870,8 @@ void PureExecutor::PushProcessSub() {
 }
 
 void PureExecutor::PopProcessSub(runtime_asdl::StatusArray* compound_st) {
+  StackRoot _root0(&compound_st);
+
   ;  // pass
 }
 
@@ -23854,6 +25896,11 @@ process::Process* ShellExecutor::_MakeProcess(syntax_asdl::command_t* node, bool
   syntax_asdl::command_t* UP_node = nullptr;
   process::SubProgramThunk* thunk = nullptr;
   process::Process* p = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&UP_node);
+  StackRoot _root2(&thunk);
+  StackRoot _root3(&p);
+
   UP_node = node;
   if (node->tag() == command_e::ControlFlow) {
     command::ControlFlow* node = static_cast<command::ControlFlow*>(UP_node);
@@ -23876,6 +25923,8 @@ int ShellExecutor::_RunSimpleCommand(BigStr* arg0, syntax_asdl::loc_t* arg0_loc,
   StackRoot _root1(&arg0_loc);
   StackRoot _root2(&cmd_val);
   StackRoot _root3(&cmd_st);
+  StackRoot _root4(&proc_val);
+  StackRoot _root5(&self_obj);
 
   builtin_id = consts::LookupAssignBuiltin(arg0);
   if (builtin_id != consts::NO_INDEX) {
@@ -23937,6 +25986,9 @@ int ShellExecutor::RunExternal(BigStr* arg0, syntax_asdl::loc_t* arg0_loc, cmd_v
   StackRoot _root3(&cmd_st);
   StackRoot _root4(&environ);
   StackRoot _root5(&argv0_path);
+  StackRoot _root6(&thunk);
+  StackRoot _root7(&p);
+  StackRoot _root8(&change);
 
   environ = this->mem->GetEnv();
   if (cmd_val->proc_args) {
@@ -23990,7 +26042,9 @@ int ShellExecutor::RunBackgroundJob(syntax_asdl::command_t* node) {
   int job_id;
   int pid;
   StackRoot _root0(&node);
-  StackRoot _root1(&p);
+  StackRoot _root1(&UP_node);
+  StackRoot _root2(&pi);
+  StackRoot _root3(&p);
 
   UP_node = node;
   if (UP_node->tag() == command_e::Pipeline) {
@@ -23998,6 +26052,7 @@ int ShellExecutor::RunBackgroundJob(syntax_asdl::command_t* node) {
     pi = Alloc<process::Pipeline>(this->exec_opts->sigpipe_status_ok(), this->job_control, this->job_list, this->tracer);
     for (ListIter<syntax_asdl::command_t*> it(node->children); !it.Done(); it.Next()) {
       syntax_asdl::command_t* child = it.Value();
+      StackRoot _for(&child    );
       p = this->_MakeProcess(child, true, this->exec_opts->errtrace());
       p->Init_ParentPipeline(pi);
       pi->Add(p);
@@ -24032,7 +26087,11 @@ void ShellExecutor::RunPipeline(command::Pipeline* node, runtime_asdl::CommandSt
   syntax_asdl::command_t* last_child = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&status_out);
-  StackRoot _root2(&pipe_locs);
+  StackRoot _root2(&pi);
+  StackRoot _root3(&pipe_locs);
+  StackRoot _root4(&child);
+  StackRoot _root5(&p);
+  StackRoot _root6(&last_child);
 
   pi = Alloc<process::Pipeline>(this->exec_opts->sigpipe_status_ok(), this->job_control, this->job_list, this->tracer);
   pipe_locs = Alloc<List<syntax_asdl::loc_t*>>();
@@ -24061,6 +26120,7 @@ void ShellExecutor::RunPipeline(command::Pipeline* node, runtime_asdl::CommandSt
 int ShellExecutor::RunSubshell(syntax_asdl::command_t* node) {
   process::Process* p = nullptr;
   StackRoot _root0(&node);
+  StackRoot _root1(&p);
 
   p = this->_MakeProcess(node, true, this->exec_opts->errtrace());
   if (this->job_control->Enabled()) {
@@ -24081,6 +26141,7 @@ Tuple2<int, BigStr*> ShellExecutor::CaptureStdout(syntax_asdl::command_t* node) 
   StackRoot _root0(&node);
   StackRoot _root1(&p);
   StackRoot _root2(&chunks);
+  StackRoot _root3(&stdout_str);
 
   p = this->_MakeProcess(node, this->exec_opts->inherit_errexit(), this->exec_opts->errtrace());
   Tuple2<int, int> tup2 = posix::pipe();
@@ -24136,6 +26197,10 @@ Tuple3<int, BigStr*, BigStr*> ShellExecutor::Capture3(syntax_asdl::command_t* no
   StackRoot _root1(&p);
   StackRoot _root2(&stdout_chunks);
   StackRoot _root3(&stderr_chunks);
+  StackRoot _root4(&open_fds);
+  StackRoot _root5(&fds);
+  StackRoot _root6(&stdout_str);
+  StackRoot _root7(&stderr_str);
 
   p = this->_MakeProcess(node, this->exec_opts->inherit_errexit(), this->exec_opts->errtrace());
   Tuple2<int, int> tup4 = posix::pipe();
@@ -24200,12 +26265,16 @@ BigStr* ShellExecutor::RunCommandSub(syntax_asdl::CommandSub* cs_part) {
   syntax_asdl::command_t* node = nullptr;
   command::Redirect* redir_node = nullptr;
   syntax_asdl::Token* blame_tok = nullptr;
-  command::Simple* simple = nullptr;
   int status;
   BigStr* stdout_str = nullptr;
   BigStr* msg = nullptr;
   StackRoot _root0(&cs_part);
-  StackRoot _root1(&stdout_str);
+  StackRoot _root1(&why);
+  StackRoot _root2(&node);
+  StackRoot _root3(&redir_node);
+  StackRoot _root4(&blame_tok);
+  StackRoot _root5(&stdout_str);
+  StackRoot _root6(&msg);
 
   if (!this->exec_opts->_allow_command_sub()) {
     if (!this->exec_opts->_allow_process_sub()) {
@@ -24221,8 +26290,7 @@ BigStr* ShellExecutor::RunCommandSub(syntax_asdl::CommandSub* cs_part) {
     redir_node = static_cast<command::Redirect*>(node);
     if ((len(redir_node->redirects) == 1 and (redir_node->redirects->at(0)->op->id == Id::Redir_Less and redir_node->child->tag() == command_e::NoOp))) {
       blame_tok = redir_node->redirects->at(0)->op;
-      simple = Alloc<command::Simple>(blame_tok, Alloc<List<syntax_asdl::EnvPair*>>(), this->builtin_cat_words, nullptr, nullptr, false);
-      redir_node->child = simple;
+      node = Alloc<command::Simple>(blame_tok, Alloc<List<syntax_asdl::EnvPair*>>(), this->builtin_cat_words, nullptr, nullptr, false, redir_node->redirects);
     }
   }
   Tuple2<int, BigStr*> tup8 = this->CaptureStdout(node);
@@ -24252,6 +26320,8 @@ BigStr* ShellExecutor::RunProcessSub(syntax_asdl::CommandSub* cs_part) {
   StackRoot _root0(&cs_part);
   StackRoot _root1(&cs_loc);
   StackRoot _root2(&p);
+  StackRoot _root3(&redir);
+  StackRoot _root4(&ps_frame);
 
   cs_loc = Alloc<loc::WordPart>(cs_part);
   if (!this->exec_opts->_allow_process_sub()) {
@@ -24316,6 +26386,8 @@ void ShellExecutor::PushRedirects(List<runtime_asdl::RedirValue*>* redirects, Li
 }
 
 void ShellExecutor::PopRedirects(int num_redirects, List<IOError_OSError*>* err_out) {
+  StackRoot _root0(&err_out);
+
   if (num_redirects == 0) {
     return ;
   }
@@ -24324,6 +26396,8 @@ void ShellExecutor::PopRedirects(int num_redirects, List<IOError_OSError*>* err_
 
 void ShellExecutor::PushProcessSub() {
   executor::_ProcessSubFrame* new_frame = nullptr;
+  StackRoot _root0(&new_frame);
+
   if (len(this->clean_frame_pool)) {
     new_frame = this->clean_frame_pool->pop();
   }
@@ -24335,6 +26409,9 @@ void ShellExecutor::PushProcessSub() {
 
 void ShellExecutor::PopProcessSub(runtime_asdl::StatusArray* compound_st) {
   executor::_ProcessSubFrame* frame = nullptr;
+  StackRoot _root0(&compound_st);
+  StackRoot _root1(&frame);
+
   frame = this->process_sub_stack->pop();
   if (frame->WasModified()) {
     frame->MaybeWaitOnProcessSubs(this->waiter, compound_st);
@@ -24380,10 +26457,14 @@ ctx_Descriptors::~ctx_Descriptors() {
 }
 
 void fanos_log(BigStr* msg) {
+  StackRoot _root0(&msg);
+
   print_stderr(StrFormat("[FANOS] %s", msg));
 }
 
 void ShowDescriptorState(BigStr* label) {
+  StackRoot _root0(&label);
+
 }
 
 Headless::Headless(cmd_eval::CommandEvaluator* cmd_ev, parse_lib::ParseContext* parse_ctx, ui::ErrorFormatter* errfmt) {
@@ -24408,6 +26489,8 @@ BigStr* Headless::EVAL(BigStr* arg) {
   int unused_status;
   (void)unused_status;
   StackRoot _root0(&arg);
+  StackRoot _root1(&line_reader);
+  StackRoot _root2(&c_parser);
 
   line_reader = reader::StringLineReader(arg, this->parse_ctx->arena);
   c_parser = this->parse_ctx->MakeOshParser(line_reader);
@@ -24423,7 +26506,11 @@ int Headless::_Loop() {
   BigStr* arg = nullptr;
   BigStr* reply = nullptr;
   StackRoot _root0(&fd_out);
-  StackRoot _root1(&reply);
+  StackRoot _root1(&blob);
+  StackRoot _root2(&bs);
+  StackRoot _root3(&command);
+  StackRoot _root4(&arg);
+  StackRoot _root5(&reply);
 
   fanos_log(S_rgn);
   fd_out = Alloc<List<int>>();
@@ -24499,7 +26586,8 @@ int Interactive(arg_types::main* flag, cmd_eval::CommandEvaluator* cmd_ev, cmd_p
   StackRoot _root5(&waiter);
   StackRoot _root6(&errfmt);
   StackRoot _root7(&result);
-  StackRoot _root8(&node);
+  StackRoot _root8(&UP_result);
+  StackRoot _root9(&node);
 
   status = 0;
   done = false;
@@ -24695,6 +26783,10 @@ Tuple2<bool, int> EvalFile(BigStr* fs_path, process::FdState* fd_state, parse_li
   StackRoot _root2(&parse_ctx);
   StackRoot _root3(&cmd_ev);
   StackRoot _root4(&lang);
+  StackRoot _root5(&f);
+  StackRoot _root6(&line_reader);
+  StackRoot _root7(&c_parser);
+  StackRoot _root8(&src);
 
   try {
     f = fd_state->Open(fs_path);
@@ -24709,17 +26801,21 @@ Tuple2<bool, int> EvalFile(BigStr* fs_path, process::FdState* fd_state, parse_li
     process::ctx_FileCloser ctx{f};
 
     {  // with
-      state::ctx_ThisDir ctx{cmd_ev->mem, fs_path};
+      state::ctx_Eval ctx{cmd_ev->mem, fs_path, nullptr, nullptr};
 
-      src = Alloc<source::MainFile>(fs_path);
       {  // with
-        alloc::ctx_SourceCode ctx{cmd_ev->arena, src};
+        state::ctx_ThisDir ctx{cmd_ev->mem, fs_path};
 
-        Tuple2<bool, int> tup3 = Batch2(cmd_ev, c_parser, cmd_ev->errfmt);
-        was_parsed = tup3.at0();
-        status = tup3.at1();
-        if (!was_parsed) {
-          return Tuple2<bool, int>(false, -1);
+        src = Alloc<source::MainFile>(fs_path);
+        {  // with
+          alloc::ctx_SourceCode ctx{cmd_ev->arena, src};
+
+          Tuple2<bool, int> tup3 = Batch2(cmd_ev, c_parser, cmd_ev->errfmt);
+          was_parsed = tup3.at0();
+          status = tup3.at1();
+          if (!was_parsed) {
+            return Tuple2<bool, int>(false, -1);
+          }
         }
       }
     }
@@ -24789,6 +26885,8 @@ ctx_FileCloser::~ctx_FileCloser() {
 }
 
 void InitInteractiveShell(iolib::SignalSafe* signal_safe) {
+  StackRoot _root0(&signal_safe);
+
   iolib::sigaction(SIGQUIT, SIG_IGN);
   iolib::sigaction(SIGTSTP, SIG_IGN);
   iolib::sigaction(SIGTTOU, SIG_IGN);
@@ -24799,6 +26897,7 @@ void InitInteractiveShell(iolib::SignalSafe* signal_safe) {
 int SaveFd(int fd) {
   int saved;
   saved = fcntl_::fcntl(fd, F_DUPFD, _SHELL_MIN_FD);
+  fcntl_::fcntl(saved, F_SETFD, FD_CLOEXEC);
   return saved;
 }
 
@@ -24816,6 +26915,7 @@ _FdFrame::_FdFrame() {
 void _FdFrame::Forget() {
   for (ReverseListIter<process::_RedirFrame*> it(this->saved); !it.Done(); it.Next()) {
     process::_RedirFrame* rf = it.Value();
+    StackRoot _for(&rf  );
     if ((rf->saved_fd != NO_FD and rf->forget)) {
       posix::close(rf->saved_fd);
     }
@@ -24839,6 +26939,9 @@ FdState::FdState(ui::ErrorFormatter* errfmt, process::JobControl* job_control, p
 mylib::LineReader* FdState::Open(BigStr* path) {
   int fd_mode;
   mylib::File* f = nullptr;
+  StackRoot _root0(&path);
+  StackRoot _root1(&f);
+
   fd_mode = O_RDONLY;
   f = this->_Open(path, S_nAr_1, fd_mode);
   return static_cast<mylib::LineReader*>(f);
@@ -24847,6 +26950,9 @@ mylib::LineReader* FdState::Open(BigStr* path) {
 mylib::Writer* FdState::OpenForWrite(BigStr* path) {
   int fd_mode;
   mylib::File* f = nullptr;
+  StackRoot _root0(&path);
+  StackRoot _root1(&f);
+
   fd_mode = (O_CREAT | O_RDWR);
   f = this->_Open(path, S_pfC, fd_mode);
   return reinterpret_cast<mylib::Writer*>(f);
@@ -24856,6 +26962,10 @@ mylib::File* FdState::_Open(BigStr* path, BigStr* c_mode, int fd_mode) {
   int fd;
   int new_fd;
   mylib::File* f = nullptr;
+  StackRoot _root0(&path);
+  StackRoot _root1(&c_mode);
+  StackRoot _root2(&f);
+
   fd = posix::open(path, fd_mode, 438);
   new_fd = SaveFd(fd);
   posix::close(fd);
@@ -24864,6 +26974,8 @@ mylib::File* FdState::_Open(BigStr* path, BigStr* c_mode, int fd_mode) {
 }
 
 void FdState::_WriteFdToMem(BigStr* fd_name, int fd) {
+  StackRoot _root0(&fd_name);
+
   if (this->mem) {
     state::OshLanguageSetValue(this->mem, location::LName(fd_name), Alloc<value::Str>(str(fd)));
   }
@@ -24871,6 +26983,9 @@ void FdState::_WriteFdToMem(BigStr* fd_name, int fd) {
 
 int FdState::_ReadFdFromMem(BigStr* fd_name) {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&fd_name);
+  StackRoot _root1(&val);
+
   val = this->mem->GetValue(fd_name);
   if (val->tag() == value_e::Str) {
     try {
@@ -24898,7 +27013,6 @@ bool FdState::_PushSave(int fd) {
   }
   if (ok) {
     posix::close(fd);
-    fcntl_::fcntl(new_fd, F_SETFD, FD_CLOEXEC);
     this->cur_frame->saved->append(Alloc<_RedirFrame>(new_fd, fd, true));
   }
   else {
@@ -24914,6 +27028,11 @@ int FdState::_PushDup(int fd1, syntax_asdl::redir_loc_t* blame_loc) {
   int fd2;
   bool need_restore;
   process::_RedirFrame* rf = nullptr;
+  StackRoot _root0(&blame_loc);
+  StackRoot _root1(&UP_loc);
+  StackRoot _root2(&fd2_name);
+  StackRoot _root3(&rf);
+
   UP_loc = blame_loc;
   if (blame_loc->tag() == redir_loc_e::VarName) {
     fd2_name = static_cast<redir_loc::VarName*>(UP_loc)->name;
@@ -24970,6 +27089,10 @@ bool FdState::_PushCloseFd(syntax_asdl::redir_loc_t* blame_loc) {
   syntax_asdl::redir_loc_t* UP_loc = nullptr;
   BigStr* fd_name = nullptr;
   int fd;
+  StackRoot _root0(&blame_loc);
+  StackRoot _root1(&UP_loc);
+  StackRoot _root2(&fd_name);
+
   UP_loc = blame_loc;
   if (blame_loc->tag() == redir_loc_e::VarName) {
     fd_name = static_cast<redir_loc::VarName*>(UP_loc)->name;
@@ -24995,6 +27118,8 @@ void FdState::_PushClose(int fd) {
 }
 
 void FdState::_PushWait(process::Process* proc) {
+  StackRoot _root0(&proc);
+
   this->cur_frame->need_wait->append(proc);
 }
 
@@ -25014,7 +27139,12 @@ void FdState::_ApplyRedirect(runtime_asdl::RedirValue* r) {
   bool start_process;
   process::Process* here_proc = nullptr;
   StackRoot _root0(&r);
-  StackRoot _root1(&here_proc);
+  StackRoot _root1(&arg);
+  StackRoot _root2(&UP_arg);
+  StackRoot _root3(&extra);
+  StackRoot _root4(&UP_loc);
+  StackRoot _root5(&thunk);
+  StackRoot _root6(&here_proc);
 
   arg = r->arg;
   UP_arg = arg;
@@ -25133,12 +27263,14 @@ void FdState::Push(List<runtime_asdl::RedirValue*>* redirects, List<IOError_OSEr
   process::_FdFrame* new_frame = nullptr;
   StackRoot _root0(&redirects);
   StackRoot _root1(&err_out);
+  StackRoot _root2(&new_frame);
 
   new_frame = Alloc<_FdFrame>();
   this->stack->append(new_frame);
   this->cur_frame = new_frame;
   for (ListIter<runtime_asdl::RedirValue*> it(redirects); !it.Done(); it.Next()) {
     runtime_asdl::RedirValue* r = it.Value();
+    StackRoot _for(&r  );
     {  // with
       ui::ctx_Location ctx{this->errfmt, r->op_loc};
 
@@ -25156,6 +27288,8 @@ void FdState::Push(List<runtime_asdl::RedirValue*>* redirects, List<IOError_OSEr
 
 bool FdState::PushStdinFromPipe(int r) {
   process::_FdFrame* new_frame = nullptr;
+  StackRoot _root0(&new_frame);
+
   new_frame = Alloc<_FdFrame>();
   this->stack->append(new_frame);
   this->cur_frame = new_frame;
@@ -25167,9 +27301,13 @@ void FdState::Pop(List<IOError_OSError*>* err_out) {
   process::_FdFrame* frame = nullptr;
   int unused_status;
   (void)unused_status;
+  StackRoot _root0(&err_out);
+  StackRoot _root1(&frame);
+
   frame = this->stack->pop();
   for (ReverseListIter<process::_RedirFrame*> it(frame->saved); !it.Done(); it.Next()) {
     process::_RedirFrame* rf = it.Value();
+    StackRoot _for(&rf  );
     if (rf->saved_fd == NO_FD) {
       try {
         posix::close(rf->orig_fd);
@@ -25194,6 +27332,7 @@ void FdState::Pop(List<IOError_OSError*>* err_out) {
   }
   for (ListIter<process::Process*> it(frame->need_wait); !it.Done(); it.Next()) {
     process::Process* proc = it.Value();
+    StackRoot _for(&proc  );
     unused_status = proc->Wait(this->waiter);
   }
 }
@@ -25284,6 +27423,10 @@ ExternalProgram::ExternalProgram(BigStr* hijack_shebang, process::FdState* fd_st
 }
 
 void ExternalProgram::Exec(BigStr* argv0_path, cmd_value::Argv* cmd_val, Dict<BigStr*, BigStr*>* environ) {
+  StackRoot _root0(&argv0_path);
+  StackRoot _root1(&cmd_val);
+  StackRoot _root2(&environ);
+
   DTRACE_PROBE1(process, ExternalProgram_Exec, argv0_path->data());
   this->_Exec(argv0_path, cmd_val->argv, cmd_val->arg_locs->at(0), environ, true);
 }
@@ -25295,6 +27438,15 @@ void ExternalProgram::_Exec(BigStr* argv0_path, List<BigStr*>* argv, syntax_asdl
   List<BigStr*>* h_argv = nullptr;
   List<BigStr*>* new_argv = nullptr;
   int status;
+  StackRoot _root0(&argv0_path);
+  StackRoot _root1(&argv);
+  StackRoot _root2(&argv0_loc);
+  StackRoot _root3(&environ);
+  StackRoot _root4(&f);
+  StackRoot _root5(&line);
+  StackRoot _root6(&h_argv);
+  StackRoot _root7(&new_argv);
+
   if (len(this->hijack_shebang)) {
     opened = true;
     try {
@@ -25367,6 +27519,8 @@ ExternalThunk::ExternalThunk(process::ExternalProgram* ext_prog, BigStr* argv0_p
 
 BigStr* ExternalThunk::UserString() {
   List<BigStr*>* tmp = nullptr;
+  StackRoot _root0(&tmp);
+
   tmp = Alloc<List<BigStr*>>();
   for (ListIter<BigStr*> it(this->cmd_val->argv); !it.Done(); it.Next()) {
     BigStr* a = it.Value();
@@ -25390,6 +27544,8 @@ SubProgramThunk::SubProgramThunk(cmd_eval::CommandEvaluator* cmd_ev, syntax_asdl
 
 BigStr* SubProgramThunk::UserString() {
   BigStr* thunk_str = nullptr;
+  StackRoot _root0(&thunk_str);
+
   thunk_str = ui::CommandType(this->node);
   return StrFormat("[subprog] %s", thunk_str);
 }
@@ -25444,6 +27600,8 @@ Job::Job() {
 }
 
 void Job::DisplayJob(int job_id, mylib::Writer* f, int style) {
+  StackRoot _root0(&f);
+
   FAIL(kNotImplemented);  // Python NotImplementedError
 }
 
@@ -25488,6 +27646,8 @@ Process::Process(process::Thunk* thunk, process::JobControl* job_control, proces
 }
 
 void Process::Init_ParentPipeline(process::Pipeline* pi) {
+  StackRoot _root0(&pi);
+
   this->parent_pipeline = pi;
 }
 
@@ -25504,6 +27664,9 @@ int Process::PidForWait() {
 
 void Process::DisplayJob(int job_id, mylib::Writer* f, int style) {
   BigStr* job_id_str = nullptr;
+  StackRoot _root0(&f);
+  StackRoot _root1(&job_id_str);
+
   if (job_id == -1) {
     job_id_str = S_jqf;
   }
@@ -25521,6 +27684,8 @@ void Process::DisplayJob(int job_id, mylib::Writer* f, int style) {
 }
 
 void Process::AddStateChange(process::ChildStateChange* s) {
+  StackRoot _root0(&s);
+
   this->state_changes->append(s);
 }
 
@@ -25548,6 +27713,7 @@ int Process::StartProcess(runtime_asdl::trace_t* why) {
     if (pid == 0) {
       for (ListIter<process::ChildStateChange*> it(this->state_changes); !it.Done(); it.Next()) {
         process::ChildStateChange* st = it.Value();
+        StackRoot _for(&st      );
         st->Apply();
       }
       iolib::sigaction(SIGPIPE, SIG_DFL);
@@ -25566,6 +27732,7 @@ int Process::StartProcess(runtime_asdl::trace_t* why) {
   this->pid = pid;
   for (ListIter<process::ChildStateChange*> it(this->state_changes); !it.Done(); it.Next()) {
     process::ChildStateChange* st = it.Value();
+    StackRoot _for(&st  );
     st->ApplyFromParent(this);
   }
   this->job_list->AddChildProcess(pid, this);
@@ -25709,6 +27876,9 @@ int Pipeline::PidForWait() {
 void Pipeline::DisplayJob(int job_id, mylib::Writer* f, int style) {
   int i;
   BigStr* job_id_str = nullptr;
+  StackRoot _root0(&f);
+  StackRoot _root1(&job_id_str);
+
   if (style == STYLE_PID_ONLY) {
     f->write(StrFormat("%d\n", this->procs->at(0)->pid));
   }
@@ -25716,6 +27886,7 @@ void Pipeline::DisplayJob(int job_id, mylib::Writer* f, int style) {
     i = 0;
     for (ListIter<process::Process*> it(this->procs); !it.Done(); it.Next(), ++i) {
       process::Process* proc = it.Value();
+      StackRoot _for(&proc    );
       if (i == 0) {
         job_id_str = StrFormat("%%%d", job_id);
       }
@@ -25737,6 +27908,9 @@ void Pipeline::Add(process::Process* p) {
   int r;
   int w;
   process::Process* prev = nullptr;
+  StackRoot _root0(&p);
+  StackRoot _root1(&prev);
+
   if (len(this->procs) == 0) {
     this->procs->append(p);
     return ;
@@ -25755,6 +27929,9 @@ void Pipeline::AddLast(Tuple2<cmd_eval::CommandEvaluator*, syntax_asdl::command_
   int r;
   int w;
   process::Process* prev = nullptr;
+  StackRoot _root0(&thunk);
+  StackRoot _root1(&prev);
+
   this->last_thunk = thunk;
   Tuple2<int, int> tup4 = posix::pipe();
   r = tup4.at0();
@@ -25767,12 +27944,15 @@ void Pipeline::AddLast(Tuple2<cmd_eval::CommandEvaluator*, syntax_asdl::command_
 void Pipeline::StartPipeline(process::Waiter* waiter) {
   int i;
   int pid;
+  StackRoot _root0(&waiter);
+
   if (this->job_control->Enabled()) {
     this->pgid = OWN_LEADER;
   }
   i = 0;
   for (ListIter<process::Process*> it(this->procs); !it.Done(); it.Next(), ++i) {
     process::Process* proc = it.Value();
+    StackRoot _for(&proc  );
     if (this->pgid != INVALID_PGID) {
       proc->AddStateChange(Alloc<SetPgid>(this->pgid, this->tracer));
     }
@@ -25832,7 +28012,8 @@ List<int>* Pipeline::RunLastPart(process::Waiter* waiter, process::FdState* fd_s
   StackRoot _root0(&waiter);
   StackRoot _root1(&fd_state);
   StackRoot _root2(&cmd_ev);
-  StackRoot _root3(&io_errors);
+  StackRoot _root3(&last_node);
+  StackRoot _root4(&io_errors);
 
   this->job_control->MaybeGiveTerminal(this->pgid);
   Tuple2<cmd_eval::CommandEvaluator*, syntax_asdl::command_t*>* tup7 = this->last_thunk;
@@ -25994,6 +28175,8 @@ JobList::JobList() {
 
 int JobList::RegisterJob(process::Job* job) {
   int job_id;
+  StackRoot _root0(&job);
+
   job_id = this->next_job_id;
   this->next_job_id += 1;
   this->jobs->set(job_id, job);
@@ -26013,6 +28196,8 @@ void JobList::_MaybeResetCounter() {
 }
 
 void JobList::CleanupWhenJobExits(process::Job* job) {
+  StackRoot _root0(&job);
+
   mylib::dict_erase(this->jobs, job->job_id);
   mylib::dict_erase(this->pid_to_job, job->PidForWait());
   this->_MaybeResetCounter();
@@ -26020,6 +28205,8 @@ void JobList::CleanupWhenJobExits(process::Job* job) {
 
 void JobList::CleanupWhenProcessExits(int pid) {
   process::Job* job = nullptr;
+  StackRoot _root0(&job);
+
   job = this->pid_to_job->get(pid);
   if ((job and job->state == job_state_e::Exited)) {
     mylib::dict_erase(this->pid_to_job, pid);
@@ -26029,11 +28216,15 @@ void JobList::CleanupWhenProcessExits(int pid) {
 }
 
 void JobList::AddChildProcess(int pid, process::Process* proc) {
+  StackRoot _root0(&proc);
+
   this->child_procs->set(pid, proc);
 }
 
 process::Process* JobList::PopChildProcess(int pid) {
   process::Process* pr = nullptr;
+  StackRoot _root0(&pr);
+
   pr = this->child_procs->get(pid);
   if (pr != nullptr) {
     mylib::dict_erase(this->child_procs, pid);
@@ -26047,6 +28238,12 @@ Tuple2<process::Job*, process::Job*> JobList::GetCurrentAndPreviousJobs() {
   process::Job* job = nullptr;
   process::Job* current = nullptr;
   process::Job* previous = nullptr;
+  StackRoot _root0(&stopped_jobs);
+  StackRoot _root1(&running_jobs);
+  StackRoot _root2(&job);
+  StackRoot _root3(&current);
+  StackRoot _root4(&previous);
+
   stopped_jobs = Alloc<List<process::Job*>>();
   running_jobs = Alloc<List<process::Job*>>();
   for (int i = 0; i < this->next_job_id; ++i) {
@@ -26088,6 +28285,11 @@ process::Job* JobList::JobFromSpec(BigStr* job_spec) {
   process::Job* previous = nullptr;
   List<BigStr*>* m = nullptr;
   int job_id;
+  StackRoot _root0(&job_spec);
+  StackRoot _root1(&current);
+  StackRoot _root2(&previous);
+  StackRoot _root3(&m);
+
   if (list_contains(CURRENT_JOB_SPECS, job_spec)) {
     Tuple2<process::Job*, process::Job*> tup9 = this->GetCurrentAndPreviousJobs();
     current = tup9.at0();
@@ -26110,6 +28312,8 @@ process::Job* JobList::JobFromSpec(BigStr* job_spec) {
 
 void JobList::DisplayJobs(int style) {
   mylib::Writer* f = nullptr;
+  StackRoot _root0(&f);
+
   f = mylib::Stdout();
   for (DictIter<int, process::Job*> it(this->jobs); !it.Done(); it.Next()) {
     int job_id = it.Key();
@@ -26120,6 +28324,8 @@ void JobList::DisplayJobs(int style) {
 
 void JobList::DebugPrint() {
   mylib::Writer* f = nullptr;
+  StackRoot _root0(&f);
+
   f = mylib::Stdout();
   f->write(S_nfs);
   f->write(S_xfq);
@@ -26133,6 +28339,7 @@ void JobList::DebugPrint() {
     f->write(S_zxF);
     for (ListIter<process::Pipeline*> it(this->debug_pipelines); !it.Done(); it.Next()) {
       process::Pipeline* pi = it.Value();
+      StackRoot _for(&pi    );
       pi->DebugPrint();
     }
   }
@@ -26182,6 +28389,8 @@ Tuple2<int, int> Waiter::WaitForOne(int waitpid_options) {
   bool was_stopped;
   int term_sig;
   int stop_sig;
+  StackRoot _root0(&proc);
+
   Tuple2<int, int> tup11 = pyos::WaitPid(waitpid_options);
   pid = tup11.at0();
   status = tup11.at1();
@@ -26281,6 +28490,9 @@ EnvConfig::EnvConfig(state::Mem* mem, Dict<BigStr*, value_asdl::value_t*>* defau
 
 value_asdl::value_t* EnvConfig::GetVal(BigStr* var_name) {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&var_name);
+  StackRoot _root1(&val);
+
   if (this->mem->exec_opts->env_obj()) {
     val = this->mem->env_dict->get(var_name);
     if (val == nullptr) {
@@ -26298,6 +28510,9 @@ value_asdl::value_t* EnvConfig::GetVal(BigStr* var_name) {
 
 BigStr* EnvConfig::Get(BigStr* var_name) {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&var_name);
+  StackRoot _root1(&val);
+
   val = this->GetVal(var_name);
   if (val->tag() != value_e::Str) {
     return nullptr;
@@ -26306,6 +28521,9 @@ BigStr* EnvConfig::Get(BigStr* var_name) {
 }
 
 void EnvConfig::SetDefault(BigStr* var_name, BigStr* s) {
+  StackRoot _root0(&var_name);
+  StackRoot _root1(&s);
+
   if (this->mem->exec_opts->env_obj()) {
     this->mem->defaults->set(var_name, Alloc<value::Str>(s));
   }
@@ -26345,6 +28563,9 @@ BigStr* GetWorkingDir() {
 BigStr* _READLINE_DELIMS = S_ubu;
 
 void InitDefaultVars(state::Mem* mem, List<BigStr*>* argv) {
+  StackRoot _root0(&mem);
+  StackRoot _root1(&argv);
+
   if (mem->exec_opts->init_ysh_globals()) {
     mem->var_stack->at(0)->set(S_wjA, state::_MakeArgvCell(argv));
   }
@@ -26360,6 +28581,10 @@ void InitDefaultVars(state::Mem* mem, List<BigStr*>* argv) {
 }
 
 void CopyVarsFromEnv(optview::Exec* exec_opts, Dict<BigStr*, BigStr*>* environ, state::Mem* mem) {
+  StackRoot _root0(&exec_opts);
+  StackRoot _root1(&environ);
+  StackRoot _root2(&mem);
+
   if (!exec_opts->no_exported()) {
     for (DictIter<BigStr*, BigStr*> it(environ); !it.Done(); it.Next()) {
       BigStr* n = it.Key();
@@ -26379,6 +28604,15 @@ void InitVarsAfterEnv(state::Mem* mem, state::MutableOpts* mutable_opts) {
   BigStr* our_pwd = nullptr;
   value_asdl::value_t* val = nullptr;
   BigStr* env_pwd = nullptr;
+  StackRoot _root0(&mem);
+  StackRoot _root1(&mutable_opts);
+  StackRoot _root2(&s);
+  StackRoot _root3(&shellopts);
+  StackRoot _root4(&UP_shellopts);
+  StackRoot _root5(&our_pwd);
+  StackRoot _root6(&val);
+  StackRoot _root7(&env_pwd);
+
   s = mem->env_config->Get(S_jip);
   if (s == nullptr) {
     mem->env_config->SetDefault(S_jip, S_kAx);
@@ -26424,6 +28658,13 @@ void InitInteractive(state::Mem* mem, sh_init::ShellFiles* sh_files, BigStr* lan
   BigStr* ps1_str = nullptr;
   BigStr* hist_var = nullptr;
   BigStr* hist_str = nullptr;
+  StackRoot _root0(&mem);
+  StackRoot _root1(&sh_files);
+  StackRoot _root2(&lang);
+  StackRoot _root3(&ps1_str);
+  StackRoot _root4(&hist_var);
+  StackRoot _root5(&hist_str);
+
   ps1_str = mem->env_config->Get(S_Eni);
   if (ps1_str == nullptr) {
     mem->env_config->SetDefault(S_Eni, S_bxh);
@@ -26442,6 +28683,10 @@ void InitInteractive(state::Mem* mem, sh_init::ShellFiles* sh_files, BigStr* lan
 }
 
 void InitBuiltins(state::Mem* mem, BigStr* version_str, Dict<BigStr*, value_asdl::value_t*>* defaults) {
+  StackRoot _root0(&mem);
+  StackRoot _root1(&version_str);
+  StackRoot _root2(&defaults);
+
   mem->builtins->set(S_iCt, Alloc<value::Str>(version_str));
   mem->builtins->set(S_knB, Alloc<value::Str>(version_str));
   mem->builtins->set(S_avA_2, Alloc<value::Dict>(defaults));
@@ -26624,11 +28869,16 @@ OptHook::OptHook() {
 }
 
 bool OptHook::OnChange(List<bool>* opt0_array, BigStr* opt_name, bool b) {
+  StackRoot _root0(&opt0_array);
+  StackRoot _root1(&opt_name);
+
   return true;
 }
 
 List<bool>* InitOpts() {
   List<bool>* opt0_array = nullptr;
+  StackRoot _root0(&opt0_array);
+
   opt0_array = list_repeat(false, option_i::ARRAY_SIZE);
   for (ListIter<int> it(consts::DEFAULT_TRUE); !it.Done(); it.Next()) {
     int opt_num = it.Value();
@@ -26644,6 +28894,16 @@ Tuple3<optview::Parse*, optview::Exec*, state::MutableOpts*> MakeOpts(state::Mem
   optview::Parse* parse_opts = nullptr;
   optview::Exec* exec_opts = nullptr;
   state::MutableOpts* mutable_opts = nullptr;
+  StackRoot _root0(&mem);
+  StackRoot _root1(&environ);
+  StackRoot _root2(&opt_hook);
+  StackRoot _root3(&opt0_array);
+  StackRoot _root4(&no_stack);
+  StackRoot _root5(&opt_stacks);
+  StackRoot _root6(&parse_opts);
+  StackRoot _root7(&exec_opts);
+  StackRoot _root8(&mutable_opts);
+
   opt0_array = InitOpts();
   no_stack = nullptr;
   opt_stacks = list_repeat(no_stack, option_i::ARRAY_SIZE);
@@ -26655,6 +28915,9 @@ Tuple3<optview::Parse*, optview::Exec*, state::MutableOpts*> MakeOpts(state::Mem
 
 void _SetGroup(List<bool>* opt0_array, List<int>* opt_nums, bool b) {
   bool b2;
+  StackRoot _root0(&opt0_array);
+  StackRoot _root1(&opt_nums);
+
   for (ListIter<int> it(opt_nums); !it.Done(); it.Next()) {
     int opt_num = it.Value();
     b2 = list_contains(consts::DEFAULT_TRUE, opt_num) ? !b : b;
@@ -26667,6 +28930,11 @@ optview::Parse* MakeYshParseOpts() {
   List<bool>* no_stack = nullptr;
   List<List<bool>*>* opt_stacks = nullptr;
   optview::Parse* parse_opts = nullptr;
+  StackRoot _root0(&opt0_array);
+  StackRoot _root1(&no_stack);
+  StackRoot _root2(&opt_stacks);
+  StackRoot _root3(&parse_opts);
+
   opt0_array = InitOpts();
   _SetGroup(opt0_array, consts::YSH_ALL, true);
   no_stack = nullptr;
@@ -26677,6 +28945,8 @@ optview::Parse* MakeYshParseOpts() {
 
 int _AnyOptionNum(BigStr* opt_name, bool ignore_shopt_not_impl) {
   int opt_num;
+  StackRoot _root0(&opt_name);
+
   opt_num = consts::OptionNum(opt_name);
   if (opt_num == 0) {
     if (ignore_shopt_not_impl) {
@@ -26691,6 +28961,8 @@ int _AnyOptionNum(BigStr* opt_name, bool ignore_shopt_not_impl) {
 
 int _SetOptionNum(BigStr* opt_name) {
   int opt_num;
+  StackRoot _root0(&opt_name);
+
   opt_num = consts::OptionNum(opt_name);
   if (opt_num == 0) {
     e_usage(StrFormat("got invalid option %r", opt_name), loc::Missing);
@@ -26719,6 +28991,10 @@ MutableOpts::MutableOpts(state::Mem* mem, Dict<BigStr*, BigStr*>* environ, List<
 void MutableOpts::InitFromEnv(BigStr* shellopts) {
   List<BigStr*>* lookup = nullptr;
   BigStr* name = nullptr;
+  StackRoot _root0(&shellopts);
+  StackRoot _root1(&lookup);
+  StackRoot _root2(&name);
+
   lookup = shellopts->split(S_fyj);
   for (ListIter<int> it(consts::SET_OPTION_NUMS); !it.Done(); it.Next()) {
     int opt_num = it.Value();
@@ -26732,6 +29008,9 @@ void MutableOpts::InitFromEnv(BigStr* shellopts) {
 BigStr* MutableOpts::ShelloptsString() {
   List<BigStr*>* names = nullptr;
   BigStr* name = nullptr;
+  StackRoot _root0(&names);
+  StackRoot _root1(&name);
+
   names = Alloc<List<BigStr*>>();
   for (ListIter<int> it(consts::SET_OPTION_NUMS); !it.Done(); it.Next()) {
     int opt_num = it.Value();
@@ -26745,6 +29024,8 @@ BigStr* MutableOpts::ShelloptsString() {
 
 void MutableOpts::Push(int opt_num, bool b) {
   List<bool>* overlay = nullptr;
+  StackRoot _root0(&overlay);
+
   if (opt_num == option_i::dotglob) {
     _MaybeWarnDotglob();
   }
@@ -26759,6 +29040,8 @@ void MutableOpts::Push(int opt_num, bool b) {
 
 bool MutableOpts::Pop(int opt_num) {
   List<bool>* overlay = nullptr;
+  StackRoot _root0(&overlay);
+
   overlay = this->opt_stacks->at(opt_num);
   return overlay->pop();
 }
@@ -26776,6 +29059,8 @@ void MutableOpts::PopDynamicScope() {
 
 bool MutableOpts::Get(int opt_num) {
   List<bool>* overlay = nullptr;
+  StackRoot _root0(&overlay);
+
   overlay = this->opt_stacks->at(opt_num);
   if ((overlay == nullptr or len(overlay) == 0)) {
     return this->opt0_array->at(opt_num);
@@ -26787,6 +29072,8 @@ bool MutableOpts::Get(int opt_num) {
 
 void MutableOpts::_Set(int opt_num, bool b) {
   List<bool>* overlay = nullptr;
+  StackRoot _root0(&overlay);
+
   if (opt_num == option_i::dotglob) {
     _MaybeWarnDotglob();
   }
@@ -26813,6 +29100,11 @@ void MutableOpts::set_redefine_source() {
 
 void MutableOpts::set_emacs() {
   this->_Set(option_i::emacs, true);
+}
+
+void MutableOpts::DoSingleDash() {
+  this->_Set(option_i::verbose, false);
+  this->_Set(option_i::xtrace, false);
 }
 
 void MutableOpts::_SetArrayByNum(int opt_num, bool b) {
@@ -26847,6 +29139,8 @@ bool MutableOpts::ErrExitIsDisabled() {
 void MutableOpts::_SetOldOption(BigStr* opt_name, bool b) {
   int opt_num;
   bool success;
+  StackRoot _root0(&opt_name);
+
   opt_num = consts::OptionNum(opt_name);
   if (opt_num == option_i::errexit) {
     this->SetDeferredErrExit(b);
@@ -26867,35 +29161,45 @@ void MutableOpts::SetOldOption(BigStr* opt_name, bool b) {
   BigStr* shellopts = nullptr;
   BigStr* new_val = nullptr;
   List<BigStr*>* names = nullptr;
+  StackRoot _root0(&opt_name);
+  StackRoot _root1(&UP_val);
+  StackRoot _root2(&shellopts);
+  StackRoot _root3(&new_val);
+  StackRoot _root4(&names);
+
   unused = _SetOptionNum(opt_name);
   this->_SetOldOption(opt_name, b);
-  if (!this->Get(option_i::no_init_globals)) {
-    UP_val = this->mem->GetValue(S_cvm);
-    value::Str* val = static_cast<value::Str*>(UP_val);
-    shellopts = val->s;
-    if (b) {
-      if (!str_contains(shellopts, opt_name)) {
-        if (len(shellopts) == 0) {
-          new_val = opt_name;
-        }
-        else {
-          new_val = StrFormat("%s:%s", shellopts, opt_name);
-        }
-        this->mem->InternalSetGlobal(S_cvm, Alloc<value::Str>(new_val));
+  if (this->Get(option_i::no_init_globals)) {
+    return ;
+  }
+  UP_val = this->mem->GetValue(S_cvm);
+  if (UP_val->tag() != value_e::Str) {
+    return ;
+  }
+  value::Str* val = static_cast<value::Str*>(UP_val);
+  shellopts = val->s;
+  if (b) {
+    if (!str_contains(shellopts, opt_name)) {
+      if (len(shellopts) == 0) {
+        new_val = opt_name;
       }
+      else {
+        new_val = StrFormat("%s:%s", shellopts, opt_name);
+      }
+      this->mem->InternalSetGlobal(S_cvm, Alloc<value::Str>(new_val));
     }
-    else {
-      if (str_contains(shellopts, opt_name)) {
-        names = Alloc<List<BigStr*>>();
-        for (ListIter<BigStr*> it(shellopts->split(S_fyj)); !it.Done(); it.Next()) {
-          BigStr* n = it.Value();
-          if (!(str_equals(n, opt_name))) {
-            names->append(n);
-          }
+  }
+  else {
+    if (str_contains(shellopts, opt_name)) {
+      names = Alloc<List<BigStr*>>();
+      for (ListIter<BigStr*> it(shellopts->split(S_fyj)); !it.Done(); it.Next()) {
+        BigStr* n = it.Value();
+        if (!(str_equals(n, opt_name))) {
+          names->append(n);
         }
-        new_val = S_fyj->join(names);
-        this->mem->InternalSetGlobal(S_cvm, Alloc<value::Str>(new_val));
       }
+      new_val = S_fyj->join(names);
+      this->mem->InternalSetGlobal(S_cvm, Alloc<value::Str>(new_val));
     }
   }
 }
@@ -26903,6 +29207,8 @@ void MutableOpts::SetOldOption(BigStr* opt_name, bool b) {
 void MutableOpts::SetAnyOption(BigStr* opt_name, bool b, bool ignore_shopt_not_impl) {
   int opt_group;
   int opt_num;
+  StackRoot _root0(&opt_name);
+
   opt_group = consts::OptionGroupNum(opt_name);
   if (opt_group == opt_group_i::YshUpgrade) {
     _SetGroup(this->opt0_array, consts::YSH_UPGRADE, b);
@@ -26940,6 +29246,9 @@ _ArgFrame::_ArgFrame(List<BigStr*>* argv) {
 Dict<BigStr*, value_asdl::value_t*>* _ArgFrame::Dump() {
   List<value_asdl::value_t*>* items = nullptr;
   value::List* argv = nullptr;
+  StackRoot _root0(&items);
+  StackRoot _root1(&argv);
+
   items = Alloc<List<value_asdl::value_t*>>();
   for (ListIter<BigStr*> it(this->argv); !it.Done(); it.Next()) {
     BigStr* s = it.Value();
@@ -26967,6 +29276,8 @@ int _ArgFrame::GetNumArgs() {
 }
 
 void _ArgFrame::SetArgv(List<BigStr*>* argv) {
+  StackRoot _root0(&argv);
+
   this->argv = argv;
   this->num_shifted = 0;
 }
@@ -26976,6 +29287,12 @@ Dict<BigStr*, value_asdl::value_t*>* _DumpVarFrame(Dict<BigStr*, runtime_asdl::C
   Dict<BigStr*, value_asdl::value_t*>* cell_json = nullptr;
   mylib::BufWriter* buf = nullptr;
   BigStr* flags = nullptr;
+  StackRoot _root0(&frame);
+  StackRoot _root1(&vars_json);
+  StackRoot _root2(&cell_json);
+  StackRoot _root3(&buf);
+  StackRoot _root4(&flags);
+
   vars_json = Alloc<Dict<BigStr*, value_asdl::value_t*>>();
   for (DictIter<BigStr*, runtime_asdl::Cell*> it(frame); !it.Done(); it.Next()) {
     BigStr* name = it.Key();
@@ -27014,6 +29331,8 @@ Dict<BigStr*, value_asdl::value_t*>* _DumpVarFrame(Dict<BigStr*, runtime_asdl::C
 }
 
 BigStr* _LineNumber(syntax_asdl::Token* tok) {
+  StackRoot _root0(&tok);
+
   if (tok == nullptr) {
     return S_zdb;
   }
@@ -27021,6 +29340,9 @@ BigStr* _LineNumber(syntax_asdl::Token* tok) {
 }
 
 void _AddCallToken(Dict<BigStr*, value_asdl::value_t*>* d, syntax_asdl::Token* token) {
+  StackRoot _root0(&d);
+  StackRoot _root1(&token);
+
   if (token == nullptr) {
     return ;
   }
@@ -27162,6 +29484,9 @@ ctx_ThisDir::~ctx_ThisDir() {
 
 runtime_asdl::Cell* _MakeArgvCell(List<BigStr*>* argv) {
   List<value_asdl::value_t*>* items = nullptr;
+  StackRoot _root0(&argv);
+  StackRoot _root1(&items);
+
   items = Alloc<List<value_asdl::value_t*>>();
   for (ListIter<BigStr*> it(argv); !it.Done(); it.Next()) {
     BigStr* a = it.Value();
@@ -27300,6 +29625,7 @@ void ctx_ModuleEval::ctx_EXIT() {
     case value_e::List: {
       for (ListIter<value_asdl::value_t*> it(static_cast<value::List*>(provide_val)->items); !it.Done(); it.Next()) {
         value_asdl::value_t* val = it.Value();
+        StackRoot _for(&val      );
         if (val->tag() == value_e::Str) {
           BigStr* name = static_cast<value::Str*>(val)->s;
           runtime_asdl::Cell* cell = this->new_frame->get(name);
@@ -27375,8 +29701,13 @@ ctx_Eval::~ctx_Eval() {
 void ctx_Eval::_Push(Dict<BigStr*, value_asdl::value_t*>* vars) {
   value_asdl::LeftName* lval = nullptr;
   value_asdl::value_t* old_val = nullptr;
+  StackRoot _root0(&vars);
+  StackRoot _root1(&lval);
+  StackRoot _root2(&old_val);
+
   for (DictIter<BigStr*, value_asdl::value_t*> it(vars); !it.Done(); it.Next()) {
     BigStr* name = it.Key();
+    StackRoot _for(&name  );
     lval = location::LName(name);
     old_val = this->mem->GetValue(name, scope_e::LocalOnly);
     this->restore->append((Alloc<Tuple2<value_asdl::LeftName*, value_asdl::value_t*>>(lval, old_val)));
@@ -27388,7 +29719,9 @@ void ctx_Eval::_Pop() {
   for (ListIter<Tuple2<value_asdl::LeftName*, value_asdl::value_t*>*> it(this->restore); !it.Done(); it.Next()) {
     Tuple2<value_asdl::LeftName*, value_asdl::value_t*>* tup0 = it.Value();
     value_asdl::LeftName* lval = tup0->at0();
+    StackRoot _unpack_0(&lval);
     value_asdl::value_t* old_val = tup0->at1();
+    StackRoot _unpack_1(&old_val);
     if (old_val->tag() == value_e::Undef) {
       this->mem->Unset(lval, scope_e::LocalOnly);
     }
@@ -27403,6 +29736,13 @@ Tuple2<runtime_asdl::Cell*, Dict<BigStr*, runtime_asdl::Cell*>*> _FrameLookup(Di
   runtime_asdl::Cell* rear_cell = nullptr;
   value_asdl::value_t* rear_val = nullptr;
   Dict<BigStr*, runtime_asdl::Cell*>* to_enclose = nullptr;
+  StackRoot _root0(&frame);
+  StackRoot _root1(&name);
+  StackRoot _root2(&cell);
+  StackRoot _root3(&rear_cell);
+  StackRoot _root4(&rear_val);
+  StackRoot _root5(&to_enclose);
+
   cell = frame->get(name);
   if (cell) {
     return Tuple2<runtime_asdl::Cell*, Dict<BigStr*, runtime_asdl::Cell*>*>(cell, frame);
@@ -27464,10 +29804,15 @@ Mem::Mem(BigStr* dollar0, List<BigStr*>* argv, alloc::Arena* arena, List<syntax_
 }
 
 void Mem::AddBuiltin(BigStr* name, value_asdl::value_t* val) {
+  StackRoot _root0(&name);
+  StackRoot _root1(&val);
+
   this->builtins->set(name, val);
 }
 
 void Mem::SetPwd(BigStr* pwd) {
+  StackRoot _root0(&pwd);
+
   this->pwd = pwd;
 }
 
@@ -27480,6 +29825,15 @@ Tuple3<List<value_asdl::value_t*>*, List<value_asdl::value_t*>*, List<value_asdl
   syntax_asdl::debug_frame_t* UP_frame = nullptr;
   Dict<BigStr*, value_asdl::value_t*>* d = nullptr;
   syntax_asdl::Token* invoke_token = nullptr;
+  StackRoot _root0(&var_stack);
+  StackRoot _root1(&argv_stack);
+  StackRoot _root2(&debug_stack);
+  StackRoot _root3(&t_call);
+  StackRoot _root4(&t_source);
+  StackRoot _root5(&UP_frame);
+  StackRoot _root6(&d);
+  StackRoot _root7(&invoke_token);
+
   var_stack = Alloc<List<value_asdl::value_t*>>();
   for (ListIter<Dict<BigStr*, runtime_asdl::Cell*>*> it(this->var_stack); !it.Done(); it.Next()) {
     Dict<BigStr*, runtime_asdl::Cell*>* frame = it.Value();
@@ -27495,6 +29849,7 @@ Tuple3<List<value_asdl::value_t*>*, List<value_asdl::value_t*>*, List<value_asdl
   t_source = Alloc<value::Str>(S_nli);
   for (ReverseListIter<syntax_asdl::debug_frame_t*> it(this->debug_stack); !it.Done(); it.Next()) {
     syntax_asdl::debug_frame_t* frame = it.Value();
+    StackRoot _for(&frame  );
     UP_frame = frame;
     d = nullptr;
     switch (frame->tag()) {
@@ -27529,10 +29884,14 @@ Tuple3<List<value_asdl::value_t*>*, List<value_asdl::value_t*>*, List<value_asdl
 }
 
 void Mem::SetLastArgument(BigStr* s) {
+  StackRoot _root0(&s);
+
   this->last_arg = s;
 }
 
 void Mem::SetTokenForLine(syntax_asdl::Token* tok) {
+  StackRoot _root0(&tok);
+
   if ((this->running_debug_trap or this->running_err_trap)) {
     return ;
   }
@@ -27541,6 +29900,8 @@ void Mem::SetTokenForLine(syntax_asdl::Token* tok) {
 }
 
 void Mem::SetLocationForExpr(syntax_asdl::loc_t* blame_loc) {
+  StackRoot _root0(&blame_loc);
+
   this->loc_for_expr = blame_loc;
 }
 
@@ -27579,15 +29940,21 @@ void Mem::SetTryStatus(int x) {
 }
 
 void Mem::SetTryError(value::Dict* x) {
+  StackRoot _root0(&x);
+
   this->try_error->set(-1, x);
 }
 
 void Mem::SetPipeStatus(List<int>* x) {
+  StackRoot _root0(&x);
+
   this->pipe_status->set(-1, x);
 }
 
 void Mem::SetSimplePipeStatus(int status) {
   List<int>* top = nullptr;
+  StackRoot _root0(&top);
+
   top = this->pipe_status->at(-1);
   if (len(top) == 1) {
     top->set(0, status);
@@ -27598,6 +29965,8 @@ void Mem::SetSimplePipeStatus(int status) {
 }
 
 void Mem::SetProcessSubStatus(List<int>* x) {
+  StackRoot _root0(&x);
+
   this->process_sub_status->set(-1, x);
 }
 
@@ -27628,6 +29997,10 @@ Dict<BigStr*, runtime_asdl::Cell*>* Mem::CurrentFrame() {
 }
 
 void Mem::PushSource(BigStr* source_name, List<BigStr*>* argv, syntax_asdl::CompoundWord* source_loc) {
+  StackRoot _root0(&source_name);
+  StackRoot _root1(&argv);
+  StackRoot _root2(&source_loc);
+
   if (len(argv)) {
     this->argv_stack->append(Alloc<_ArgFrame>(argv));
   }
@@ -27635,6 +30008,8 @@ void Mem::PushSource(BigStr* source_name, List<BigStr*>* argv, syntax_asdl::Comp
 }
 
 void Mem::PopSource(List<BigStr*>* argv) {
+  StackRoot _root0(&argv);
+
   this->debug_stack->pop();
   if (len(argv)) {
     this->argv_stack->pop();
@@ -27643,6 +30018,8 @@ void Mem::PopSource(List<BigStr*>* argv) {
 
 void Mem::PushTemp() {
   Dict<BigStr*, runtime_asdl::Cell*>* frame = nullptr;
+  StackRoot _root0(&frame);
+
   frame = Alloc<Dict<BigStr*, runtime_asdl::Cell*>>();
   this->var_stack->append(frame);
 }
@@ -27656,6 +30033,8 @@ void Mem::_BindEnvObj() {
 }
 
 void Mem::MaybeInitEnvDict(Dict<BigStr*, BigStr*>* environ) {
+  StackRoot _root0(&environ);
+
   if (this->did_ysh_env) {
     return ;
   }
@@ -27669,6 +30048,8 @@ void Mem::MaybeInitEnvDict(Dict<BigStr*, BigStr*>* environ) {
 }
 
 void Mem::PushEnvObj(Dict<BigStr*, value_asdl::value_t*>* bindings) {
+  StackRoot _root0(&bindings);
+
   this->env_object = Alloc<Obj>(this->env_object, bindings);
   this->_BindEnvObj();
 }
@@ -27684,6 +30065,8 @@ void Mem::PopEnvObj() {
 int Mem::Shift(int n) {
   state::_ArgFrame* frame = nullptr;
   int num_args;
+  StackRoot _root0(&frame);
+
   frame = this->argv_stack->at(-1);
   num_args = len(frame->argv);
   if ((frame->num_shifted + n) <= num_args) {
@@ -27711,6 +30094,8 @@ List<BigStr*>* Mem::GetArgv() {
 }
 
 void Mem::SetArgv(List<BigStr*>* argv) {
+  StackRoot _root0(&argv);
+
   this->argv_stack->at(-1)->SetArgv(argv);
 }
 
@@ -27747,6 +30132,11 @@ Tuple2<runtime_asdl::Cell*, Dict<BigStr*, runtime_asdl::Cell*>*> Mem::_ResolveNa
   Dict<BigStr*, runtime_asdl::Cell*>* var_frame = nullptr;
   runtime_asdl::Cell* cell = nullptr;
   Dict<BigStr*, runtime_asdl::Cell*>* result_frame = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&var_frame);
+  StackRoot _root2(&cell);
+  StackRoot _root3(&result_frame);
+
   if (which_scopes == scope_e::LocalOnly) {
     var_frame = this->var_stack->at(-1);
     Tuple2<runtime_asdl::Cell*, Dict<BigStr*, runtime_asdl::Cell*>*> tup1 = _FrameLookup(var_frame, name, ysh_decl);
@@ -27774,6 +30164,11 @@ Tuple2<runtime_asdl::Cell*, Dict<BigStr*, runtime_asdl::Cell*>*> Mem::_ResolveNa
   Dict<BigStr*, runtime_asdl::Cell*>* var_frame = nullptr;
   runtime_asdl::Cell* cell = nullptr;
   Dict<BigStr*, runtime_asdl::Cell*>* result_frame = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&var_frame);
+  StackRoot _root2(&cell);
+  StackRoot _root3(&result_frame);
+
   if (which_scopes == scope_e::Dynamic) {
     for (int i = (len(this->var_stack) - 1); i > -1; i += -1) {
       var_frame = this->var_stack->at(i);
@@ -27833,6 +30228,15 @@ Tuple3<runtime_asdl::Cell*, Dict<BigStr*, runtime_asdl::Cell*>*, BigStr*> Mem::_
   value_asdl::value_t* UP_val = nullptr;
   BigStr* new_name = nullptr;
   BigStr* cell_name = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&ref_trail);
+  StackRoot _root2(&cell);
+  StackRoot _root3(&var_frame);
+  StackRoot _root4(&val);
+  StackRoot _root5(&UP_val);
+  StackRoot _root6(&new_name);
+  StackRoot _root7(&cell_name);
+
   Tuple2<runtime_asdl::Cell*, Dict<BigStr*, runtime_asdl::Cell*>*> tup8 = this->_ResolveNameOnly(name, which_scopes);
   cell = tup8.at0();
   var_frame = tup8.at1();
@@ -27887,6 +30291,9 @@ Tuple3<runtime_asdl::Cell*, Dict<BigStr*, runtime_asdl::Cell*>*, BigStr*> Mem::_
 
 bool Mem::IsBashAssoc(BigStr* name) {
   runtime_asdl::Cell* cell = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&cell);
+
   Tuple3<runtime_asdl::Cell*, Dict<BigStr*, runtime_asdl::Cell*>*, BigStr*> tup10 = this->_ResolveNameOrRef(name, this->ScopesForReading());
   cell = tup10.at0();
   return (cell != nullptr and cell->val->tag() == value_e::BashAssoc);
@@ -27897,6 +30304,14 @@ void Mem::SetPlace(value::Place* place, value_asdl::value_t* val, syntax_asdl::l
   value_asdl::y_lvalue_t* UP_yval = nullptr;
   Dict<BigStr*, runtime_asdl::Cell*>* frame = nullptr;
   runtime_asdl::Cell* cell = nullptr;
+  StackRoot _root0(&place);
+  StackRoot _root1(&val);
+  StackRoot _root2(&blame_loc);
+  StackRoot _root3(&yval);
+  StackRoot _root4(&UP_yval);
+  StackRoot _root5(&frame);
+  StackRoot _root6(&cell);
+
   yval = place->lval;
   UP_yval = yval;
   switch (yval->tag()) {
@@ -27926,6 +30341,11 @@ void Mem::SetPlace(value::Place* place, value_asdl::value_t* val, syntax_asdl::l
 void Mem::SetLocalName(value_asdl::LeftName* lval, value_asdl::value_t* val) {
   Dict<BigStr*, runtime_asdl::Cell*>* var_frame = nullptr;
   runtime_asdl::Cell* cell = nullptr;
+  StackRoot _root0(&lval);
+  StackRoot _root1(&val);
+  StackRoot _root2(&var_frame);
+  StackRoot _root3(&cell);
+
   var_frame = this->var_stack->at(-1);
   cell = var_frame->get(lval->name);
   if (cell) {
@@ -27943,6 +30363,11 @@ void Mem::SetLocalName(value_asdl::LeftName* lval, value_asdl::value_t* val) {
 void Mem::SetNamedYsh(value_asdl::LeftName* lval, value_asdl::value_t* val, runtime_asdl::scope_t which_scopes, int flags) {
   runtime_asdl::Cell* cell = nullptr;
   Dict<BigStr*, runtime_asdl::Cell*>* var_frame = nullptr;
+  StackRoot _root0(&lval);
+  StackRoot _root1(&val);
+  StackRoot _root2(&cell);
+  StackRoot _root3(&var_frame);
+
   Tuple2<runtime_asdl::Cell*, Dict<BigStr*, runtime_asdl::Cell*>*> tup11 = this->_ResolveNameForYshMutation(lval->name, which_scopes, to_bool((flags & YshDecl)));
   cell = tup11.at0();
   var_frame = tup11.at1();
@@ -27965,6 +30390,12 @@ void Mem::SetNamed(value_asdl::LeftName* lval, value_asdl::value_t* val, runtime
   runtime_asdl::Cell* cell = nullptr;
   Dict<BigStr*, runtime_asdl::Cell*>* var_frame = nullptr;
   BigStr* cell_name = nullptr;
+  StackRoot _root0(&lval);
+  StackRoot _root1(&val);
+  StackRoot _root2(&cell);
+  StackRoot _root3(&var_frame);
+  StackRoot _root4(&cell_name);
+
   if (((flags & SetNameref) or (flags & ClearNameref))) {
     Tuple2<runtime_asdl::Cell*, Dict<BigStr*, runtime_asdl::Cell*>*> tup12 = this->_ResolveNameOnly(lval->name, which_scopes);
     cell = tup12.at0();
@@ -28033,6 +30464,16 @@ void Mem::SetValue(value_asdl::sh_lvalue_t* lval, value_asdl::value_t* val, runt
   int n;
   mops::BigInt n_big;
   value::BashAssoc* cell_val2 = nullptr;
+  StackRoot _root0(&lval);
+  StackRoot _root1(&val);
+  StackRoot _root2(&UP_lval);
+  StackRoot _root3(&rval);
+  StackRoot _root4(&left_loc);
+  StackRoot _root5(&cell);
+  StackRoot _root6(&var_frame);
+  StackRoot _root7(&UP_cell_val);
+  StackRoot _root8(&cell_val2);
+
   UP_lval = lval;
   switch (lval->tag()) {
     case sh_lvalue_e::Var: {
@@ -28113,10 +30554,16 @@ void Mem::_BindNewArrayWithEntry(Dict<BigStr*, runtime_asdl::Cell*>* var_frame, 
   value::BashArray* new_value = nullptr;
   runtime_asdl::error_code_t error_code;
   bool readonly;
+  StackRoot _root0(&var_frame);
+  StackRoot _root1(&lval);
+  StackRoot _root2(&val);
+  StackRoot _root3(&blame_loc);
+  StackRoot _root4(&new_value);
+
   new_value = bash_impl::BashArray_New();
   error_code = bash_impl::BashArray_SetElement(new_value, mops::IntWiden(lval->index), val->s);
   if (error_code == error_code_e::IndexOutOfRange) {
-    e_die(S_Aam, blame_loc);
+    e_die(StrFormat("Index %d is out of bounds for array of length 0", lval->index), blame_loc);
   }
   readonly = to_bool((flags & SetReadOnly));
   var_frame->set(lval->name, Alloc<Cell>(false, readonly, false, new_value));
@@ -28124,6 +30571,10 @@ void Mem::_BindNewArrayWithEntry(Dict<BigStr*, runtime_asdl::Cell*>* var_frame, 
 
 void Mem::InternalSetGlobal(BigStr* name, value_asdl::value_t* new_val) {
   runtime_asdl::Cell* cell = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&new_val);
+  StackRoot _root2(&cell);
+
   cell = this->var_stack->at(0)->at(name);
   cell->val = new_val;
 }
@@ -28143,6 +30594,19 @@ value_asdl::value_t* Mem::GetValue(BigStr* name, runtime_asdl::scope_t which_sco
   mops::BigInt big_int;
   runtime_asdl::Cell* cell = nullptr;
   value_asdl::value_t* builtin_val = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&strs2);
+  StackRoot _root2(&items);
+  StackRoot _root3(&top_match);
+  StackRoot _root4(&groups);
+  StackRoot _root5(&m);
+  StackRoot _root6(&strs);
+  StackRoot _root7(&UP_frame);
+  StackRoot _root8(&source_str);
+  StackRoot _root9(&invoke_token);
+  StackRoot _root10(&cell);
+  StackRoot _root11(&builtin_val);
+
   if (which_scopes == scope_e::Shopt) {
     which_scopes = this->ScopesForReading();
   }
@@ -28193,6 +30657,7 @@ value_asdl::value_t* Mem::GetValue(BigStr* name, runtime_asdl::scope_t which_sco
         strs = Alloc<List<BigStr*>>();
         for (ReverseListIter<syntax_asdl::debug_frame_t*> it(this->debug_stack); !it.Done(); it.Next()) {
           syntax_asdl::debug_frame_t* frame = it.Value();
+          StackRoot _for(&frame        );
           UP_frame = frame;
           switch (frame->tag()) {
             case debug_frame_e::ProcLike: {
@@ -28253,6 +30718,7 @@ value_asdl::value_t* Mem::GetValue(BigStr* name, runtime_asdl::scope_t which_sco
         strs = Alloc<List<BigStr*>>();
         for (ReverseListIter<syntax_asdl::debug_frame_t*> it(this->debug_stack); !it.Done(); it.Next()) {
           syntax_asdl::debug_frame_t* frame = it.Value();
+          StackRoot _for(&frame        );
           UP_frame = frame;
           switch (frame->tag()) {
             case debug_frame_e::ProcLike: {
@@ -28282,6 +30748,7 @@ value_asdl::value_t* Mem::GetValue(BigStr* name, runtime_asdl::scope_t which_sco
         strs = Alloc<List<BigStr*>>();
         for (ReverseListIter<syntax_asdl::debug_frame_t*> it(this->debug_stack); !it.Done(); it.Next()) {
           syntax_asdl::debug_frame_t* frame = it.Value();
+          StackRoot _for(&frame        );
           UP_frame = frame;
           switch (frame->tag()) {
             case debug_frame_e::ProcLike: {
@@ -28380,6 +30847,9 @@ value_asdl::value_t* Mem::GetValue(BigStr* name, runtime_asdl::scope_t which_sco
 
 runtime_asdl::Cell* Mem::GetCell(BigStr* name, runtime_asdl::scope_t which_scopes) {
   runtime_asdl::Cell* cell = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&cell);
+
   if (which_scopes == scope_e::Shopt) {
     which_scopes = this->ScopesForReading();
   }
@@ -28390,6 +30860,9 @@ runtime_asdl::Cell* Mem::GetCell(BigStr* name, runtime_asdl::scope_t which_scope
 
 runtime_asdl::Cell* Mem::GetCellDeref(BigStr* name, runtime_asdl::scope_t which_scopes) {
   runtime_asdl::Cell* cell = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&cell);
+
   if (which_scopes == scope_e::Shopt) {
     which_scopes = this->ScopesForReading();
   }
@@ -28409,6 +30882,15 @@ bool Mem::Unset(value_asdl::sh_lvalue_t* lval, runtime_asdl::scope_t which_scope
   runtime_asdl::error_code_t error_code;
   int n;
   mops::BigInt big_length;
+  StackRoot _root0(&lval);
+  StackRoot _root1(&UP_lval);
+  StackRoot _root2(&var_name);
+  StackRoot _root3(&cell);
+  StackRoot _root4(&var_frame);
+  StackRoot _root5(&cell_name);
+  StackRoot _root6(&val);
+  StackRoot _root7(&UP_val);
+
   UP_lval = lval;
   switch (lval->tag()) {
     case sh_lvalue_e::Var: {
@@ -28501,6 +30983,10 @@ runtime_asdl::scope_t Mem::ScopesForWriting() {
 bool Mem::ClearFlag(BigStr* name, int flag) {
   runtime_asdl::Cell* cell = nullptr;
   Dict<BigStr*, runtime_asdl::Cell*>* var_frame = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&cell);
+  StackRoot _root2(&var_frame);
+
   Tuple2<runtime_asdl::Cell*, Dict<BigStr*, runtime_asdl::Cell*>*> tup21 = this->_ResolveNameOnly(name, this->ScopesForReading());
   cell = tup21.at0();
   var_frame = tup21.at1();
@@ -28520,8 +31006,12 @@ bool Mem::ClearFlag(BigStr* name, int flag) {
 
 void Mem::_FillWithExported(Dict<BigStr*, BigStr*>* new_env) {
   value::Str* val = nullptr;
+  StackRoot _root0(&new_env);
+  StackRoot _root1(&val);
+
   for (ListIter<Dict<BigStr*, runtime_asdl::Cell*>*> it(this->var_stack); !it.Done(); it.Next()) {
     Dict<BigStr*, runtime_asdl::Cell*>* scope = it.Value();
+    StackRoot _for(&scope  );
     for (DictIter<BigStr*, runtime_asdl::Cell*> it(scope); !it.Done(); it.Next()) {
       BigStr* name = it.Key();
       runtime_asdl::Cell* cell = it.Value();
@@ -28534,6 +31024,9 @@ void Mem::_FillWithExported(Dict<BigStr*, BigStr*>* new_env) {
 }
 
 void Mem::_FillEnvObj(Dict<BigStr*, BigStr*>* new_env, value_asdl::Obj* env_object) {
+  StackRoot _root0(&new_env);
+  StackRoot _root1(&env_object);
+
   if (env_object->prototype != nullptr) {
     this->_FillEnvObj(new_env, env_object->prototype);
   }
@@ -28549,6 +31042,8 @@ void Mem::_FillEnvObj(Dict<BigStr*, BigStr*>* new_env, value_asdl::Obj* env_obje
 
 Dict<BigStr*, BigStr*>* Mem::GetEnv() {
   Dict<BigStr*, BigStr*>* new_env = nullptr;
+  StackRoot _root0(&new_env);
+
   new_env = Alloc<Dict<BigStr*, BigStr*>>();
   if (!this->exec_opts->no_exported()) {
     this->_FillWithExported(new_env);
@@ -28561,11 +31056,15 @@ Dict<BigStr*, BigStr*>* Mem::GetEnv() {
 
 List<BigStr*>* Mem::VarNames() {
   List<BigStr*>* ret = nullptr;
+  StackRoot _root0(&ret);
+
   ret = Alloc<List<BigStr*>>();
   for (ListIter<Dict<BigStr*, runtime_asdl::Cell*>*> it(this->var_stack); !it.Done(); it.Next()) {
     Dict<BigStr*, runtime_asdl::Cell*>* scope = it.Value();
+    StackRoot _for(&scope  );
     for (DictIter<BigStr*, runtime_asdl::Cell*> it(scope); !it.Done(); it.Next()) {
       BigStr* name = it.Key();
+      StackRoot _for(&name    );
       ret->append(name);
     }
   }
@@ -28574,11 +31073,16 @@ List<BigStr*>* Mem::VarNames() {
 
 List<BigStr*>* Mem::VarNamesStartingWith(BigStr* prefix) {
   List<BigStr*>* names = nullptr;
+  StackRoot _root0(&prefix);
+  StackRoot _root1(&names);
+
   names = Alloc<List<BigStr*>>();
   for (ListIter<Dict<BigStr*, runtime_asdl::Cell*>*> it(this->var_stack); !it.Done(); it.Next()) {
     Dict<BigStr*, runtime_asdl::Cell*>* scope = it.Value();
+    StackRoot _for(&scope  );
     for (DictIter<BigStr*, runtime_asdl::Cell*> it(scope); !it.Done(); it.Next()) {
       BigStr* name = it.Key();
+      StackRoot _for(&name    );
       if (name->startswith(prefix)) {
         names->append(name);
       }
@@ -28587,29 +31091,12 @@ List<BigStr*>* Mem::VarNamesStartingWith(BigStr* prefix) {
   return names;
 }
 
-Dict<BigStr*, BigStr*>* Mem::GetAllVars() {
-  Dict<BigStr*, BigStr*>* result = nullptr;
-  value_asdl::value_t* val = nullptr;
-  value::Str* str_val = nullptr;
-  result = Alloc<Dict<BigStr*, BigStr*>>();
-  for (ListIter<Dict<BigStr*, runtime_asdl::Cell*>*> it(this->var_stack); !it.Done(); it.Next()) {
-    Dict<BigStr*, runtime_asdl::Cell*>* scope = it.Value();
-    for (DictIter<BigStr*, runtime_asdl::Cell*> it(scope); !it.Done(); it.Next()) {
-      BigStr* name = it.Key();
-      runtime_asdl::Cell* cell = it.Value();
-      val = cell->val;
-      if (val->tag() == value_e::Str) {
-        str_val = static_cast<value::Str*>(val);
-        result->set(name, str_val->s);
-      }
-    }
-  }
-  return result;
-}
-
 Dict<BigStr*, runtime_asdl::Cell*>* Mem::GetAllCells(runtime_asdl::scope_t which_scopes) {
   Dict<BigStr*, runtime_asdl::Cell*>* result = nullptr;
   List<Dict<BigStr*, runtime_asdl::Cell*>*>* scopes = nullptr;
+  StackRoot _root0(&result);
+  StackRoot _root1(&scopes);
+
   result = Alloc<Dict<BigStr*, runtime_asdl::Cell*>>();
   if (which_scopes == scope_e::Dynamic) {
     scopes = this->var_stack;
@@ -28637,6 +31124,7 @@ Dict<BigStr*, runtime_asdl::Cell*>* Mem::GetAllCells(runtime_asdl::scope_t which
   }
   for (ListIter<Dict<BigStr*, runtime_asdl::Cell*>*> it(scopes); !it.Done(); it.Next()) {
     Dict<BigStr*, runtime_asdl::Cell*>* scope = it.Value();
+    StackRoot _for(&scope  );
     for (DictIter<BigStr*, runtime_asdl::Cell*> it(scope); !it.Done(); it.Next()) {
       BigStr* name = it.Key();
       runtime_asdl::Cell* cell = it.Value();
@@ -28647,6 +31135,8 @@ Dict<BigStr*, runtime_asdl::Cell*>* Mem::GetAllCells(runtime_asdl::scope_t which
 }
 
 void Mem::SetRegexMatch(value_asdl::regex_match_t* match) {
+  StackRoot _root0(&match);
+
   this->regex_match->set(-1, match);
 }
 
@@ -28655,6 +31145,8 @@ value_asdl::regex_match_t* Mem::GetRegexMatch() {
 }
 
 void Mem::PushContextStack(Dict<BigStr*, value_asdl::value_t*>* context) {
+  StackRoot _root0(&context);
+
   this->ctx_stack->append(context);
 }
 
@@ -28670,6 +31162,8 @@ Dict<BigStr*, value_asdl::value_t*>* Mem::PopContextStack() {
 }
 
 bool ObjIsReadOnly(value_asdl::Obj* obj) {
+  StackRoot _root0(&obj);
+
   if (!obj->prototype) {
     return false;
   }
@@ -28679,6 +31173,10 @@ bool ObjIsReadOnly(value_asdl::Obj* obj) {
 Tuple2<value_asdl::value_t*, value_asdl::Obj*> ValueIsInvokableObj(value_asdl::value_t* val) {
   value_asdl::Obj* obj = nullptr;
   value_asdl::value_t* invoke_val = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&obj);
+  StackRoot _root2(&invoke_val);
+
   if (val->tag() != value_e::Obj) {
     return Tuple2<value_asdl::value_t*, value_asdl::Obj*>(nullptr, nullptr);
   }
@@ -28699,8 +31197,14 @@ Tuple2<value_asdl::value_t*, value_asdl::Obj*> ValueIsInvokableObj(value_asdl::v
 void _AddNames(Dict<BigStr*, bool>* unique, Dict<BigStr*, runtime_asdl::Cell*>* frame) {
   value_asdl::value_t* val = nullptr;
   value_asdl::value_t* proc = nullptr;
+  StackRoot _root0(&unique);
+  StackRoot _root1(&frame);
+  StackRoot _root2(&val);
+  StackRoot _root3(&proc);
+
   for (DictIter<BigStr*, runtime_asdl::Cell*> it(frame); !it.Done(); it.Next()) {
     BigStr* name = it.Key();
+    StackRoot _for(&name  );
     val = frame->at(name)->val;
     if (val->tag() == value_e::Proc) {
       unique->set(name, true);
@@ -28719,15 +31223,23 @@ Procs::Procs(state::Mem* mem) {
 }
 
 void Procs::DefineShellFunc(BigStr* name, value::Proc* proc) {
+  StackRoot _root0(&name);
+  StackRoot _root1(&proc);
+
   this->sh_funcs->set(name, proc);
 }
 
 bool Procs::IsShellFunc(BigStr* name) {
+  StackRoot _root0(&name);
+
   return dict_contains(this->sh_funcs, name);
 }
 
 value::Proc* Procs::GetShellFunc(BigStr* name) {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&val);
+
   val = this->sh_funcs->get(name);
   if (val == nullptr) {
     return nullptr;
@@ -28739,22 +31251,32 @@ value::Proc* Procs::GetShellFunc(BigStr* name) {
 }
 
 void Procs::EraseShellFunc(BigStr* to_del) {
+  StackRoot _root0(&to_del);
+
   mylib::dict_erase(this->sh_funcs, to_del);
 }
 
 List<BigStr*>* Procs::ShellFuncNames() {
   List<BigStr*>* names = nullptr;
+  StackRoot _root0(&names);
+
   names = this->sh_funcs->keys();
   names->sort();
   return names;
 }
 
 void Procs::DefineProc(BigStr* name, value::Proc* proc) {
+  StackRoot _root0(&name);
+  StackRoot _root1(&proc);
+
   this->mem->var_stack->at(-1)->set(name, Alloc<Cell>(false, false, false, proc));
 }
 
 bool Procs::IsProc(BigStr* name) {
   value_asdl::value_t* maybe_proc = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&maybe_proc);
+
   maybe_proc = this->mem->GetValue(name);
   return maybe_proc->tag() == value_e::Proc;
 }
@@ -28762,6 +31284,10 @@ bool Procs::IsProc(BigStr* name) {
 bool Procs::IsInvokableObj(BigStr* name) {
   value_asdl::value_t* val = nullptr;
   value_asdl::value_t* proc = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&val);
+  StackRoot _root2(&proc);
+
   val = this->mem->GetValue(name);
   Tuple2<value_asdl::value_t*, value_asdl::Obj*> tup23 = ValueIsInvokableObj(val);
   proc = tup23.at0();
@@ -28773,9 +31299,15 @@ List<BigStr*>* Procs::InvokableNames() {
   Dict<BigStr*, runtime_asdl::Cell*>* top_frame = nullptr;
   Dict<BigStr*, runtime_asdl::Cell*>* global_frame = nullptr;
   List<BigStr*>* names = nullptr;
+  StackRoot _root0(&unique);
+  StackRoot _root1(&top_frame);
+  StackRoot _root2(&global_frame);
+  StackRoot _root3(&names);
+
   unique = Alloc<Dict<BigStr*, bool>>();
   for (DictIter<BigStr*, value_asdl::value_t*> it(this->sh_funcs); !it.Done(); it.Next()) {
     BigStr* name = it.Key();
+    StackRoot _for(&name  );
     unique->set(name, true);
   }
   top_frame = this->mem->var_stack->at(-1);
@@ -28793,6 +31325,11 @@ Tuple2<value_asdl::value_t*, value_asdl::Obj*> Procs::GetProc(BigStr* name) {
   value_asdl::value_t* val = nullptr;
   value_asdl::value_t* proc = nullptr;
   value_asdl::Obj* self_val = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&val);
+  StackRoot _root2(&proc);
+  StackRoot _root3(&self_val);
+
   val = this->mem->GetValue(name);
   if (val->tag() == value_e::Proc) {
     return Tuple2<value_asdl::value_t*, value_asdl::Obj*>(static_cast<value::Proc*>(val), nullptr);
@@ -28809,6 +31346,10 @@ Tuple2<value_asdl::value_t*, value_asdl::Obj*> Procs::GetProc(BigStr* name) {
 Tuple2<value_asdl::value_t*, value_asdl::Obj*> Procs::GetInvokable(BigStr* name) {
   value_asdl::value_t* proc = nullptr;
   value_asdl::Obj* self_val = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&proc);
+  StackRoot _root2(&self_val);
+
   Tuple2<value_asdl::value_t*, value_asdl::Obj*> tup25 = this->GetProc(name);
   proc = tup25.at0();
   self_val = tup25.at1();
@@ -28823,47 +31364,89 @@ Tuple2<value_asdl::value_t*, value_asdl::Obj*> Procs::GetInvokable(BigStr* name)
 
 void OshLanguageSetValue(state::Mem* mem, value_asdl::sh_lvalue_t* lval, value_asdl::value_t* val, int flags) {
   runtime_asdl::scope_t which_scopes;
+  StackRoot _root0(&mem);
+  StackRoot _root1(&lval);
+  StackRoot _root2(&val);
+
   which_scopes = mem->ScopesForWriting();
   mem->SetValue(lval, val, which_scopes, flags);
 }
 
 void BuiltinSetValue(state::Mem* mem, value_asdl::sh_lvalue_t* lval, value_asdl::value_t* val) {
+  StackRoot _root0(&mem);
+  StackRoot _root1(&lval);
+  StackRoot _root2(&val);
+
   mem->SetValue(lval, val, mem->ScopesForWriting());
 }
 
 void BuiltinSetString(state::Mem* mem, BigStr* name, BigStr* s) {
+  StackRoot _root0(&mem);
+  StackRoot _root1(&name);
+  StackRoot _root2(&s);
+
   BuiltinSetValue(mem, location::LName(name), Alloc<value::Str>(s));
 }
 
 void BuiltinSetArray(state::Mem* mem, BigStr* name, List<BigStr*>* a) {
+  StackRoot _root0(&mem);
+  StackRoot _root1(&name);
+  StackRoot _root2(&a);
+
   BuiltinSetValue(mem, location::LName(name), bash_impl::BashArray_FromList(a));
 }
 
 void SetGlobalString(state::Mem* mem, BigStr* name, BigStr* s) {
   value::Str* val = nullptr;
+  StackRoot _root0(&mem);
+  StackRoot _root1(&name);
+  StackRoot _root2(&s);
+  StackRoot _root3(&val);
+
   val = Alloc<value::Str>(s);
   mem->SetNamed(location::LName(name), val, scope_e::GlobalOnly);
 }
 
 void SetGlobalArray(state::Mem* mem, BigStr* name, List<BigStr*>* a) {
+  StackRoot _root0(&mem);
+  StackRoot _root1(&name);
+  StackRoot _root2(&a);
+
   mem->SetNamed(location::LName(name), bash_impl::BashArray_FromList(a), scope_e::GlobalOnly);
 }
 
 void SetGlobalValue(state::Mem* mem, BigStr* name, value_asdl::value_t* val) {
+  StackRoot _root0(&mem);
+  StackRoot _root1(&name);
+  StackRoot _root2(&val);
+
   mem->SetNamed(location::LName(name), val, scope_e::GlobalOnly);
 }
 
 void SetLocalValue(state::Mem* mem, BigStr* name, value_asdl::value_t* val) {
+  StackRoot _root0(&mem);
+  StackRoot _root1(&name);
+  StackRoot _root2(&val);
+
   mem->SetNamed(location::LName(name), val, scope_e::LocalOnly);
 }
 
 void ExportGlobalString(state::Mem* mem, BigStr* name, BigStr* s) {
   value::Str* val = nullptr;
+  StackRoot _root0(&mem);
+  StackRoot _root1(&name);
+  StackRoot _root2(&s);
+  StackRoot _root3(&val);
+
   val = Alloc<value::Str>(s);
   mem->SetNamed(location::LName(name), val, scope_e::GlobalOnly, SetExport);
 }
 
 void SetStringInEnv(state::Mem* mem, BigStr* var_name, BigStr* s) {
+  StackRoot _root0(&mem);
+  StackRoot _root1(&var_name);
+  StackRoot _root2(&s);
+
   if (mem->exec_opts->env_obj()) {
     mem->env_dict->set(var_name, Alloc<value::Str>(s));
   }
@@ -28874,6 +31457,10 @@ void SetStringInEnv(state::Mem* mem, BigStr* var_name, BigStr* s) {
 
 value_asdl::value_t* DynamicGetVar(state::Mem* mem, BigStr* name, runtime_asdl::scope_t which_scopes) {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&mem);
+  StackRoot _root1(&name);
+  StackRoot _root2(&val);
+
   val = mem->GetValue(name, which_scopes);
   if (val->tag() == value_e::Undef) {
     return value::Null;
@@ -28884,6 +31471,11 @@ value_asdl::value_t* DynamicGetVar(state::Mem* mem, BigStr* name, runtime_asdl::
 BigStr* GetString(state::Mem* mem, BigStr* name) {
   value_asdl::value_t* val = nullptr;
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&mem);
+  StackRoot _root1(&name);
+  StackRoot _root2(&val);
+  StackRoot _root3(&UP_val);
+
   val = mem->GetValue(name);
   UP_val = val;
   switch (val->tag()) {
@@ -28902,6 +31494,9 @@ BigStr* GetString(state::Mem* mem, BigStr* name) {
 }
 
 BigStr* MaybeString(state::Mem* mem, BigStr* name) {
+  StackRoot _root0(&mem);
+  StackRoot _root1(&name);
+
   try {
     return GetString(mem, name);
   }
@@ -28914,6 +31509,11 @@ int GetInteger(state::Mem* mem, BigStr* name) {
   value_asdl::value_t* val = nullptr;
   BigStr* s = nullptr;
   int i;
+  StackRoot _root0(&mem);
+  StackRoot _root1(&name);
+  StackRoot _root2(&val);
+  StackRoot _root3(&s);
+
   val = mem->GetValue(name);
   if (val->tag() != value_e::Str) {
     throw Alloc<error::Runtime>(StrFormat("$%s should be a string, got %s", name, ui::ValType(val)));
@@ -28938,6 +31538,10 @@ List<BigStr*>* RegexGroupStrings(BigStr* s, List<int>* indices) {
   int n;
   int start;
   int end;
+  StackRoot _root0(&s);
+  StackRoot _root1(&indices);
+  StackRoot _root2(&groups);
+
   groups = Alloc<List<BigStr*>>();
   n = len(indices);
   for (int i = 0; i < (n / 2); ++i) {
@@ -28955,6 +31559,10 @@ List<BigStr*>* RegexGroupStrings(BigStr* s, List<int>* indices) {
 
 List<BigStr*>* RegexSearch(BigStr* pat, BigStr* s) {
   List<int>* indices = nullptr;
+  StackRoot _root0(&pat);
+  StackRoot _root1(&s);
+  StackRoot _root2(&indices);
+
   indices = libc::regex_search(pat, 0, s, 0);
   if (indices == nullptr) {
     return nullptr;
@@ -28979,10 +31587,14 @@ _DebugFile::_DebugFile() {
 }
 
 void _DebugFile::write(BigStr* s) {
+  StackRoot _root0(&s);
+
   ;  // pass
 }
 
 void _DebugFile::writeln(BigStr* s) {
+  StackRoot _root0(&s);
+
   ;  // pass
 }
 
@@ -28998,10 +31610,14 @@ DebugFile::DebugFile(mylib::Writer* f) : ::util::_DebugFile() {
 }
 
 void DebugFile::write(BigStr* s) {
+  StackRoot _root0(&s);
+
   this->f->write(s);
 }
 
 void DebugFile::writeln(BigStr* s) {
+  StackRoot _root0(&s);
+
   this->write(str_concat(s, S_nfs));
   this->f->flush();
 }
@@ -29011,6 +31627,9 @@ bool DebugFile::isatty() {
 }
 
 void PrintTopicHeader(BigStr* topic_id, mylib::Writer* f) {
+  StackRoot _root0(&topic_id);
+  StackRoot _root1(&f);
+
   if (f->isatty()) {
     f->write(StrFormat("%s %s %s\n", ansi::REVERSE, topic_id, ansi::RESET));
   }
@@ -29022,6 +31641,11 @@ void PrintTopicHeader(BigStr* topic_id, mylib::Writer* f) {
 
 bool PrintEmbeddedHelp(pyutil::_ResourceLoader* loader, BigStr* topic_id, mylib::Writer* f) {
   BigStr* contents = nullptr;
+  StackRoot _root0(&loader);
+  StackRoot _root1(&topic_id);
+  StackRoot _root2(&f);
+  StackRoot _root3(&contents);
+
   try {
     contents = loader->Get(StrFormat("_devbuild/help/%s", topic_id));
   }
@@ -29036,12 +31660,20 @@ bool PrintEmbeddedHelp(pyutil::_ResourceLoader* loader, BigStr* topic_id, mylib:
 
 void _PrintVersionLine(pyutil::_ResourceLoader* loader, mylib::Writer* f) {
   BigStr* v = nullptr;
+  StackRoot _root0(&loader);
+  StackRoot _root1(&f);
+  StackRoot _root2(&v);
+
   v = pyutil::GetVersion(loader);
   f->write(StrFormat("Oils %s\t\thttps://oils.pub/\n", v));
 }
 
 void HelpFlag(pyutil::_ResourceLoader* loader, BigStr* topic_id, mylib::Writer* f) {
   bool found;
+  StackRoot _root0(&loader);
+  StackRoot _root1(&topic_id);
+  StackRoot _root2(&f);
+
   _PrintVersionLine(loader, f);
   f->write(S_nfs);
   found = PrintEmbeddedHelp(loader, topic_id, f);
@@ -29049,6 +31681,9 @@ void HelpFlag(pyutil::_ResourceLoader* loader, BigStr* topic_id, mylib::Writer* 
 }
 
 void VersionFlag(pyutil::_ResourceLoader* loader, mylib::Writer* f) {
+  StackRoot _root0(&loader);
+  StackRoot _root1(&f);
+
   _PrintVersionLine(loader, f);
   f->write(S_nfs);
   pyutil::PrintVersionDetails(loader);
@@ -29073,10 +31708,14 @@ using mylib::isinf_;
 using mylib::isnan_;
 
 BigStr* ValType(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   return value_str(val->tag(), false);
 }
 
 int ValueId(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   switch (val->tag()) {
     case value_e::Null: 
     case value_e::Bool: 
@@ -29094,6 +31733,8 @@ int ValueId(value_asdl::value_t* val) {
 
 BigStr* ValueIdString(value_asdl::value_t* val) {
   int heap_id;
+  StackRoot _root0(&val);
+
   heap_id = ValueId(val);
   if (heap_id == -1) {
     return S_Aoo;
@@ -29108,6 +31749,9 @@ BigStr* Utf8Encode(int code) {
   List<int>* bytes_ = nullptr;
   int b;
   List<BigStr*>* tmp = nullptr;
+  StackRoot _root0(&bytes_);
+  StackRoot _root1(&tmp);
+
   num_cont_bytes = 0;
   if (code <= 127) {
     return chr((code & 127));
@@ -29148,12 +31792,19 @@ int NON_DATA_IS_ERROR = (1 << 7);
 
 void _Print(value_asdl::value_t* val, mylib::BufWriter* buf, int indent, int options) {
   j8::InstancePrinter* p = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&buf);
+  StackRoot _root2(&p);
+
   p = Alloc<InstancePrinter>(buf, indent, options);
   p->Print(val);
 }
 
 void PrintMessage(value_asdl::value_t* val, mylib::BufWriter* buf, int indent, bool type_errors) {
   int options;
+  StackRoot _root0(&val);
+  StackRoot _root1(&buf);
+
   options = 0;
   if (type_errors) {
     options |= NON_DATA_IS_ERROR;
@@ -29166,6 +31817,9 @@ void PrintMessage(value_asdl::value_t* val, mylib::BufWriter* buf, int indent, b
 
 void PrintJsonMessage(value_asdl::value_t* val, mylib::BufWriter* buf, int indent, bool type_errors) {
   int options;
+  StackRoot _root0(&val);
+  StackRoot _root1(&buf);
+
   options = (LOSSY_JSON_STRINGS | INF_NAN_ARE_NULL);
   if (type_errors) {
     options |= NON_DATA_IS_ERROR;
@@ -29178,6 +31832,10 @@ void PrintJsonMessage(value_asdl::value_t* val, mylib::BufWriter* buf, int inden
 
 void PrintLine(value_asdl::value_t* val, mylib::Writer* f) {
   mylib::BufWriter* buf = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&f);
+  StackRoot _root2(&buf);
+
   buf = Alloc<mylib::BufWriter>();
   _Print(val, buf, -1, SHOW_CYCLES);
   f->write(buf->getvalue());
@@ -29185,6 +31843,9 @@ void PrintLine(value_asdl::value_t* val, mylib::Writer* f) {
 }
 
 void EncodeString(BigStr* s, mylib::BufWriter* buf, bool unquoted_ok) {
+  StackRoot _root0(&s);
+  StackRoot _root1(&buf);
+
   if ((unquoted_ok and fastfunc::CanOmitQuotes(s))) {
     buf->write(s);
     return ;
@@ -29194,6 +31855,9 @@ void EncodeString(BigStr* s, mylib::BufWriter* buf, bool unquoted_ok) {
 
 BigStr* MaybeEncodeString(BigStr* s) {
   mylib::BufWriter* buf = nullptr;
+  StackRoot _root0(&s);
+  StackRoot _root1(&buf);
+
   buf = Alloc<mylib::BufWriter>();
   _Print(Alloc<value::Str>(s), buf, -1);
   return buf->getvalue();
@@ -29201,6 +31865,9 @@ BigStr* MaybeEncodeString(BigStr* s) {
 
 BigStr* MaybeEncodeJsonString(BigStr* s) {
   mylib::BufWriter* buf = nullptr;
+  StackRoot _root0(&s);
+  StackRoot _root1(&buf);
+
   buf = Alloc<mylib::BufWriter>();
   _Print(Alloc<value::Str>(s), buf, -1, LOSSY_JSON_STRINGS);
   return buf->getvalue();
@@ -29243,6 +31910,8 @@ void InstancePrinter::_MaybeSpace() {
 
 void InstancePrinter::_PrintList(value::List* val, int level) {
   int i;
+  StackRoot _root0(&val);
+
   if (len(val->items) == 0) {
     this->buf->write(S_xmu);
   }
@@ -29252,6 +31921,7 @@ void InstancePrinter::_PrintList(value::List* val, int level) {
     i = 0;
     for (ListIter<value_asdl::value_t*> it(val->items); !it.Done(); it.Next(), ++i) {
       value_asdl::value_t* item = it.Value();
+      StackRoot _for(&item    );
       if (i != 0) {
         this->buf->write(S_Cce);
         this->_MaybeNewline();
@@ -29267,6 +31937,10 @@ void InstancePrinter::_PrintList(value::List* val, int level) {
 
 void InstancePrinter::_PrintMapping(Dict<BigStr*, value_asdl::value_t*>* d, BigStr* left, BigStr* right, int level) {
   int i;
+  StackRoot _root0(&d);
+  StackRoot _root1(&left);
+  StackRoot _root2(&right);
+
   if (len(d) == 0) {
     this->buf->write(left);
     this->buf->write(right);
@@ -29296,10 +31970,14 @@ void InstancePrinter::_PrintMapping(Dict<BigStr*, value_asdl::value_t*>* d, BigS
 }
 
 void InstancePrinter::_PrintDict(value::Dict* val, int level) {
+  StackRoot _root0(&val);
+
   this->_PrintMapping(val->d, S_ato, S_cEn, level);
 }
 
 void InstancePrinter::_PrintObj(value_asdl::Obj* val, int level) {
+  StackRoot _root0(&val);
+
   this->_PrintMapping(val->d, S_ijB, S_hxb, level);
   if (val->prototype) {
     this->buf->write(S_dtA);
@@ -29308,6 +31986,8 @@ void InstancePrinter::_PrintObj(value_asdl::Obj* val, int level) {
 }
 
 void InstancePrinter::_PrintBashPrefix(BigStr* type_str, int level) {
+  StackRoot _root0(&type_str);
+
   this->buf->write(S_ato);
   this->_MaybeNewline();
   this->_ItemIndent(level);
@@ -29330,6 +32010,9 @@ void InstancePrinter::_PrintBashArray(value::BashArray* val, int level) {
   int i;
   BigStr* v = nullptr;
   runtime_asdl::error_code_t error_code;
+  StackRoot _root0(&val);
+  StackRoot _root1(&v);
+
   this->_PrintBashPrefix(S_xbi, level);
   if (bash_impl::BashArray_Count(val) == 0) {
     this->buf->write(S_Fni);
@@ -29364,6 +32047,8 @@ void InstancePrinter::_PrintBashArray(value::BashArray* val, int level) {
 void InstancePrinter::_PrintInternalStringArray(value::InternalStringArray* val, int level) {
   bool first;
   int i;
+  StackRoot _root0(&val);
+
   this->_PrintBashPrefix(S_Aav, level);
   if (bash_impl::InternalStringArray_Count(val) == 0) {
     this->buf->write(S_Fni);
@@ -29375,6 +32060,7 @@ void InstancePrinter::_PrintInternalStringArray(value::InternalStringArray* val,
     i = 0;
     for (ListIter<BigStr*> it(bash_impl::InternalStringArray_GetValues(val)); !it.Done(); it.Next(), ++i) {
       BigStr* s = it.Value();
+      StackRoot _for(&s    );
       if (s == nullptr) {
         continue;
       }
@@ -29398,6 +32084,8 @@ void InstancePrinter::_PrintInternalStringArray(value::InternalStringArray* val,
 
 void InstancePrinter::_PrintBashAssoc(value::BashAssoc* val, int level) {
   int i;
+  StackRoot _root0(&val);
+
   this->_PrintBashPrefix(S_ojw, level);
   if (bash_impl::BashAssoc_Count(val) == 0) {
     this->buf->write(S_Fni);
@@ -29433,6 +32121,11 @@ void InstancePrinter::Print(value_asdl::value_t* val, int level) {
   BigStr* s = nullptr;
   int heap_id;
   BigStr* ysh_type = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&UP_val);
+  StackRoot _root2(&s);
+  StackRoot _root3(&ysh_type);
+
   UP_val = val;
   switch (val->tag()) {
     case value_e::Null: {
@@ -29593,6 +32286,8 @@ LexerDecoder::LexerDecoder(BigStr* s, bool is_j8, BigStr* lang_str) {
 }
 
 error::Decode* LexerDecoder::_Error(BigStr* msg, int end_pos) {
+  StackRoot _root0(&msg);
+
   return Alloc<error::Decode>(msg, this->s, this->pos, end_pos, this->cur_line_num);
 }
 
@@ -29663,6 +32358,13 @@ Tuple3<int, int, BigStr*> LexerDecoder::_DecodeString(int left_id, int str_pos) 
   int i1;
   int i2;
   int code_point;
+  StackRoot _root0(&s);
+  StackRoot _root1(&part);
+  StackRoot _root2(&ch);
+  StackRoot _root3(&h);
+  StackRoot _root4(&h1);
+  StackRoot _root5(&h2);
+
   while (true) {
     if ((left_id == Id::Left_DoubleQuote || left_id == Id::Left_JDoubleQuote)) {
       Tuple2<int, int> tup3 = match::MatchJsonStrToken(this->s, str_pos);
@@ -29789,6 +32491,8 @@ void _Parser::_NextForLines() {
 }
 
 error::Decode* _Parser::_ParseError(BigStr* msg) {
+  StackRoot _root0(&msg);
+
   return Alloc<error::Decode>(msg, this->s, this->start_pos, this->end_pos, this->lexer->cur_line_num);
 }
 
@@ -29798,6 +32502,9 @@ Parser::Parser(BigStr* s, bool is_j8) : ::j8::_Parser(s, is_j8) {
 Tuple2<BigStr*, value_asdl::value_t*> Parser::_ParsePair() {
   BigStr* k = nullptr;
   value_asdl::value_t* v = nullptr;
+  StackRoot _root0(&k);
+  StackRoot _root1(&v);
+
   k = this->decoded;
   this->_Eat(Id::J8_String);
   this->_Eat(Id::J8_Colon);
@@ -29809,6 +32516,10 @@ value_asdl::value_t* Parser::_ParseDict() {
   Dict<BigStr*, value_asdl::value_t*>* d = nullptr;
   BigStr* k = nullptr;
   value_asdl::value_t* v = nullptr;
+  StackRoot _root0(&d);
+  StackRoot _root1(&k);
+  StackRoot _root2(&v);
+
   d = Alloc<Dict<BigStr*, value_asdl::value_t*>>();
   this->_Next();
   if (this->tok_id == Id::J8_RBrace) {
@@ -29832,6 +32543,8 @@ value_asdl::value_t* Parser::_ParseDict() {
 
 value_asdl::value_t* Parser::_ParseList() {
   List<value_asdl::value_t*>* items = nullptr;
+  StackRoot _root0(&items);
+
   items = Alloc<List<value_asdl::value_t*>>();
   this->_Next();
   if (this->tok_id == Id::J8_RBracket) {
@@ -29853,6 +32566,10 @@ value_asdl::value_t* Parser::_ParseValue() {
   bool ok;
   mops::BigInt big;
   value::Str* str_val = nullptr;
+  StackRoot _root0(&b);
+  StackRoot _root1(&part);
+  StackRoot _root2(&str_val);
+
   if (this->tok_id == Id::J8_LBrace) {
     return this->_ParseDict();
   }
@@ -29915,6 +32632,8 @@ value_asdl::value_t* Parser::ParseValue() {
   value_asdl::value_t* obj = nullptr;
   int n;
   int extra;
+  StackRoot _root0(&obj);
+
   this->_Next();
   obj = this->_ParseValue();
   n = len(this->s);
@@ -29930,6 +32649,8 @@ Nil8Parser::Nil8Parser(BigStr* s, bool is_j8) : ::j8::_Parser(s, is_j8) {
 
 nil8_asdl::nvalue_t* Nil8Parser::_ParseRecord() {
   List<nil8_asdl::nvalue_t*>* items = nullptr;
+  StackRoot _root0(&items);
+
   items = Alloc<List<nil8_asdl::nvalue_t*>>();
   this->_Next();
   if (this->tok_id == Id::J8_RParen) {
@@ -29945,6 +32666,8 @@ nil8_asdl::nvalue_t* Nil8Parser::_ParseRecord() {
 
 nil8_asdl::nvalue_t* Nil8Parser::_ParseList8() {
   List<nil8_asdl::nvalue_t*>* items = nullptr;
+  StackRoot _root0(&items);
+
   items = Alloc<List<nil8_asdl::nvalue_t*>>();
   this->_Next();
   if (this->tok_id == Id::J8_RBracket) {
@@ -29966,6 +32689,14 @@ nil8_asdl::nvalue_t* Nil8Parser::_ParseNil8() {
   nvalue::Symbol* op = nullptr;
   nil8_asdl::nvalue_t* operand2 = nullptr;
   nil8_asdl::nvalue_t* infix = nullptr;
+  StackRoot _root0(&obj);
+  StackRoot _root1(&b);
+  StackRoot _root2(&part);
+  StackRoot _root3(&str_val);
+  StackRoot _root4(&op);
+  StackRoot _root5(&operand2);
+  StackRoot _root6(&infix);
+
   if (this->tok_id == Id::J8_LParen) {
     obj = this->_ParseRecord();
   }
@@ -30036,6 +32767,8 @@ nil8_asdl::nvalue_t* Nil8Parser::_ParseNil8() {
 
 nil8_asdl::nvalue_t* Nil8Parser::ParseNil8() {
   nil8_asdl::nvalue_t* obj = nullptr;
+  StackRoot _root0(&obj);
+
   this->_Next();
   obj = this->_ParseNil8();
   if (this->tok_id != Id::Eol_Tok) {
@@ -30048,6 +32781,8 @@ J8LinesParser::J8LinesParser(BigStr* s) : ::j8::_Parser(s, true) {
 }
 
 void J8LinesParser::_Show(BigStr* s) {
+  StackRoot _root0(&s);
+
   mylib::print_stderr(StrFormat("%s tok_id %s %d-%d", s, Id_str(this->tok_id), this->start_pos, this->end_pos));
 }
 
@@ -30056,6 +32791,8 @@ void J8LinesParser::_ParseLine(List<BigStr*>* out) {
   int prev_id;
   int prev_start;
   int string_end;
+  StackRoot _root0(&out);
+
   if (this->tok_id == Id::WS_Space) {
     this->_NextForLines();
   }
@@ -30100,6 +32837,8 @@ void J8LinesParser::_ParseLine(List<BigStr*>* out) {
 
 List<BigStr*>* J8LinesParser::Parse() {
   List<BigStr*>* lines = nullptr;
+  StackRoot _root0(&lines);
+
   this->_NextForLines();
   lines = Alloc<List<BigStr*>>();
   while (this->tok_id != Id::Eol_Tok) {
@@ -30113,6 +32852,9 @@ List<BigStr*>* J8LinesParser::Parse() {
 
 List<BigStr*>* SplitJ8Lines(BigStr* s) {
   j8::J8LinesParser* p = nullptr;
+  StackRoot _root0(&s);
+  StackRoot _root1(&p);
+
   p = Alloc<J8LinesParser>(s);
   return p->Parse();
 }
@@ -30123,6 +32865,8 @@ namespace j8_lite {  // define
 
 
 BigStr* EncodeString(BigStr* s, bool unquoted_ok) {
+  StackRoot _root0(&s);
+
   if ((unquoted_ok and fastfunc::CanOmitQuotes(s))) {
     return s;
   }
@@ -30130,10 +32874,14 @@ BigStr* EncodeString(BigStr* s, bool unquoted_ok) {
 }
 
 BigStr* YshEncodeString(BigStr* s) {
+  StackRoot _root0(&s);
+
   return fastfunc::ShellEncodeString(s, 1);
 }
 
 BigStr* MaybeShellEncode(BigStr* s) {
+  StackRoot _root0(&s);
+
   if (fastfunc::CanOmitQuotes(s)) {
     return s;
   }
@@ -30141,10 +32889,14 @@ BigStr* MaybeShellEncode(BigStr* s) {
 }
 
 BigStr* ShellEncode(BigStr* s) {
+  StackRoot _root0(&s);
+
   return fastfunc::ShellEncodeString(s, 0);
 }
 
 BigStr* YshEncode(BigStr* s, bool unquoted_ok) {
+  StackRoot _root0(&s);
+
   if ((unquoted_ok and fastfunc::CanOmitQuotes(s))) {
     return s;
   }
@@ -30208,6 +32960,9 @@ void BaseEncoder::SetMaxTabularWidth(int max_tabular_width) {
 }
 
 pretty_asdl::MeasuredDoc* BaseEncoder::_Styled(BigStr* style, pretty_asdl::MeasuredDoc* mdoc) {
+  StackRoot _root0(&style);
+  StackRoot _root1(&mdoc);
+
   if (this->use_styles) {
     return _Concat(NewList<pretty_asdl::MeasuredDoc*>(std::initializer_list<pretty_asdl::MeasuredDoc*>{Alloc<MeasuredDoc>(Alloc<doc::Text>(style), _EmptyMeasure()), mdoc, Alloc<MeasuredDoc>(Alloc<doc::Text>(ansi::RESET), _EmptyMeasure())}));
   }
@@ -30218,6 +32973,10 @@ pretty_asdl::MeasuredDoc* BaseEncoder::_Styled(BigStr* style, pretty_asdl::Measu
 
 pretty_asdl::MeasuredDoc* BaseEncoder::_StyledAscii(BigStr* style, BigStr* s) {
   pretty_asdl::Measure* measure = nullptr;
+  StackRoot _root0(&style);
+  StackRoot _root1(&s);
+  StackRoot _root2(&measure);
+
   measure = Alloc<Measure>(len(s), -1);
   if (this->use_styles) {
     s = StrFormat("%s%s%s", style, s, ansi::RESET);
@@ -30226,20 +32985,36 @@ pretty_asdl::MeasuredDoc* BaseEncoder::_StyledAscii(BigStr* style, BigStr* s) {
 }
 
 pretty_asdl::MeasuredDoc* BaseEncoder::_Surrounded(BigStr* left, pretty_asdl::MeasuredDoc* mdoc, BigStr* right) {
+  StackRoot _root0(&left);
+  StackRoot _root1(&mdoc);
+  StackRoot _root2(&right);
+
   return _Group(_Concat(NewList<pretty_asdl::MeasuredDoc*>(std::initializer_list<pretty_asdl::MeasuredDoc*>{AsciiText(left), _Indent(this->indent, _Concat(NewList<pretty_asdl::MeasuredDoc*>(std::initializer_list<pretty_asdl::MeasuredDoc*>{_Break(S_Aoo), mdoc}))), _Break(S_Aoo), AsciiText(right)})));
 }
 
 pretty_asdl::MeasuredDoc* BaseEncoder::_SurroundedAndPrefixed(BigStr* left, pretty_asdl::MeasuredDoc* prefix, BigStr* sep, pretty_asdl::MeasuredDoc* mdoc, BigStr* right) {
+  StackRoot _root0(&left);
+  StackRoot _root1(&prefix);
+  StackRoot _root2(&sep);
+  StackRoot _root3(&mdoc);
+  StackRoot _root4(&right);
+
   return _Group(_Concat(NewList<pretty_asdl::MeasuredDoc*>(std::initializer_list<pretty_asdl::MeasuredDoc*>{AsciiText(left), prefix, _Indent(this->indent, _Concat(NewList<pretty_asdl::MeasuredDoc*>(std::initializer_list<pretty_asdl::MeasuredDoc*>{_Break(sep), mdoc}))), _Break(S_Aoo), AsciiText(right)})));
 }
 
 pretty_asdl::MeasuredDoc* BaseEncoder::_Join(List<pretty_asdl::MeasuredDoc*>* items, BigStr* sep, BigStr* space) {
   List<pretty_asdl::MeasuredDoc*>* seq = nullptr;
   int i;
+  StackRoot _root0(&items);
+  StackRoot _root1(&sep);
+  StackRoot _root2(&space);
+  StackRoot _root3(&seq);
+
   seq = Alloc<List<pretty_asdl::MeasuredDoc*>>();
   i = 0;
   for (ListIter<pretty_asdl::MeasuredDoc*> it(items); !it.Done(); it.Next(), ++i) {
     pretty_asdl::MeasuredDoc* item = it.Value();
+    StackRoot _for(&item  );
     if (i != 0) {
       seq->append(AsciiText(sep));
       seq->append(_Break(space));
@@ -30258,6 +33033,13 @@ pretty_asdl::MeasuredDoc* BaseEncoder::_Tabular(List<pretty_asdl::MeasuredDoc*>*
   List<pretty_asdl::MeasuredDoc*>* tabular_seq = nullptr;
   int padding;
   pretty_asdl::MeasuredDoc* tabular = nullptr;
+  StackRoot _root0(&items);
+  StackRoot _root1(&sep);
+  StackRoot _root2(&seq);
+  StackRoot _root3(&non_tabular);
+  StackRoot _root4(&tabular_seq);
+  StackRoot _root5(&tabular);
+
   if (len(items) == 0) {
     return AsciiText(S_Aoo);
   }
@@ -30266,6 +33048,7 @@ pretty_asdl::MeasuredDoc* BaseEncoder::_Tabular(List<pretty_asdl::MeasuredDoc*>*
   i = 0;
   for (ListIter<pretty_asdl::MeasuredDoc*> it(items); !it.Done(); it.Next(), ++i) {
     pretty_asdl::MeasuredDoc* item = it.Value();
+    StackRoot _for(&item  );
     if (i != 0) {
       seq->append(AsciiText(sep));
       seq->append(_Break(S_yfw));
@@ -30280,6 +33063,7 @@ pretty_asdl::MeasuredDoc* BaseEncoder::_Tabular(List<pretty_asdl::MeasuredDoc*>*
     i = 0;
     for (ListIter<pretty_asdl::MeasuredDoc*> it(items); !it.Done(); it.Next(), ++i) {
       pretty_asdl::MeasuredDoc* item = it.Value();
+      StackRoot _for(&item    );
       tabular_seq->append(_Flat(item));
       if (i != (len(items) - 1)) {
         padding = ((max_flat_len - item->measure->flat) + 1);
@@ -30310,6 +33094,7 @@ pretty_asdl::MeasuredDoc* HNodeEncoder::HNode(hnode_asdl::hnode_t* h) {
 pretty_asdl::MeasuredDoc* HNodeEncoder::_Field(hnode_asdl::Field* field) {
   pretty_asdl::MeasuredDoc* name = nullptr;
   StackRoot _root0(&field);
+  StackRoot _root1(&name);
 
   name = AsciiText(str_concat(field->name, S_fyj));
   return _Concat(NewList<pretty_asdl::MeasuredDoc*>(std::initializer_list<pretty_asdl::MeasuredDoc*>{name, this->_HNode(field->val)}));
@@ -30325,9 +33110,14 @@ pretty_asdl::MeasuredDoc* HNodeEncoder::_HNode(hnode_asdl::hnode_t* h) {
   List<pretty_asdl::MeasuredDoc*>* m = nullptr;
   pretty_asdl::MeasuredDoc* child = nullptr;
   StackRoot _root0(&h);
-  StackRoot _root1(&children);
-  StackRoot _root2(&type_name);
-  StackRoot _root3(&mdocs);
+  StackRoot _root1(&UP_h);
+  StackRoot _root2(&color);
+  StackRoot _root3(&s);
+  StackRoot _root4(&children);
+  StackRoot _root5(&type_name);
+  StackRoot _root6(&mdocs);
+  StackRoot _root7(&m);
+  StackRoot _root8(&child);
 
   UP_h = h;
   switch (h->tag()) {
@@ -30447,11 +33237,15 @@ using mylib::isinf_;
 using mylib::isnan_;
 
 BigStr* ValType(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   return value_str(val->tag(), false);
 }
 
 BigStr* FloatString(double fl) {
   BigStr* s = nullptr;
+  StackRoot _root0(&s);
+
   if (isinf_(fl)) {
     s = S_BvB;
     if (fl < 0) {
@@ -30471,6 +33265,8 @@ BigStr* FloatString(double fl) {
 
 int TryUnicodeWidth(BigStr* s) {
   int width;
+  StackRoot _root0(&s);
+
   try {
     width = libc::wcswidth(s);
   }
@@ -30484,6 +33280,8 @@ int TryUnicodeWidth(BigStr* s) {
 }
 
 pretty_asdl::MeasuredDoc* UText(BigStr* string) {
+  StackRoot _root0(&string);
+
   return Alloc<MeasuredDoc>(Alloc<doc::Text>(string), Alloc<Measure>(TryUnicodeWidth(string), -1));
 }
 
@@ -30503,6 +33301,11 @@ List<pretty_asdl::MeasuredDoc*>* ValueEncoder::TypePrefix(BigStr* type_str) {
   int n;
   BigStr* spaces = nullptr;
   List<pretty_asdl::MeasuredDoc*>* mdocs = nullptr;
+  StackRoot _root0(&type_str);
+  StackRoot _root1(&type_name);
+  StackRoot _root2(&spaces);
+  StackRoot _root3(&mdocs);
+
   type_name = this->_Styled(this->type_style, AsciiText(type_str));
   n = len(type_str);
   spaces = str_repeat(S_yfw, (6 - n));
@@ -30511,12 +33314,17 @@ List<pretty_asdl::MeasuredDoc*>* ValueEncoder::TypePrefix(BigStr* type_str) {
 }
 
 pretty_asdl::MeasuredDoc* ValueEncoder::Value(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   this->visiting->clear();
   return this->_Value(val);
 }
 
 pretty_asdl::MeasuredDoc* ValueEncoder::_DictKey(BigStr* s) {
   BigStr* encoded = nullptr;
+  StackRoot _root0(&s);
+  StackRoot _root1(&encoded);
+
   if (match::IsValidVarName(s)) {
     encoded = s;
   }
@@ -30533,6 +33341,9 @@ pretty_asdl::MeasuredDoc* ValueEncoder::_DictKey(BigStr* s) {
 
 pretty_asdl::MeasuredDoc* ValueEncoder::_StringLiteral(BigStr* s) {
   BigStr* encoded = nullptr;
+  StackRoot _root0(&s);
+  StackRoot _root1(&encoded);
+
   if (this->ysh_style) {
     encoded = j8_lite::YshEncodeString(s);
   }
@@ -30544,12 +33355,18 @@ pretty_asdl::MeasuredDoc* ValueEncoder::_StringLiteral(BigStr* s) {
 
 pretty_asdl::MeasuredDoc* ValueEncoder::_BashStringLiteral(BigStr* s) {
   BigStr* encoded = nullptr;
+  StackRoot _root0(&s);
+  StackRoot _root1(&encoded);
+
   encoded = j8_lite::ShellEncode(s);
   return this->_Styled(this->string_style, UText(encoded));
 }
 
 pretty_asdl::MeasuredDoc* ValueEncoder::_YshList(value::List* vlist) {
   List<pretty_asdl::MeasuredDoc*>* mdocs = nullptr;
+  StackRoot _root0(&vlist);
+  StackRoot _root1(&mdocs);
+
   if (len(vlist->items) == 0) {
     return AsciiText(S_xmu);
   }
@@ -30563,6 +33380,9 @@ pretty_asdl::MeasuredDoc* ValueEncoder::_YshList(value::List* vlist) {
 
 List<pretty_asdl::MeasuredDoc*>* ValueEncoder::_DictMdocs(Dict<BigStr*, value_asdl::value_t*>* d) {
   List<pretty_asdl::MeasuredDoc*>* mdocs = nullptr;
+  StackRoot _root0(&d);
+  StackRoot _root1(&mdocs);
+
   mdocs = Alloc<List<pretty_asdl::MeasuredDoc*>>();
   for (DictIter<BigStr*, value_asdl::value_t*> it(d); !it.Done(); it.Next()) {
     BigStr* k = it.Key();
@@ -30574,6 +33394,9 @@ List<pretty_asdl::MeasuredDoc*>* ValueEncoder::_DictMdocs(Dict<BigStr*, value_as
 
 pretty_asdl::MeasuredDoc* ValueEncoder::_YshDict(value::Dict* vdict) {
   List<pretty_asdl::MeasuredDoc*>* mdocs = nullptr;
+  StackRoot _root0(&vdict);
+  StackRoot _root1(&mdocs);
+
   if (len(vdict->d) == 0) {
     return AsciiText(S_Fni);
   }
@@ -30584,6 +33407,10 @@ pretty_asdl::MeasuredDoc* ValueEncoder::_YshDict(value::Dict* vdict) {
 pretty_asdl::MeasuredDoc* ValueEncoder::_InternalStringArray(value::InternalStringArray* varray) {
   pretty_asdl::MeasuredDoc* type_name = nullptr;
   List<pretty_asdl::MeasuredDoc*>* mdocs = nullptr;
+  StackRoot _root0(&varray);
+  StackRoot _root1(&type_name);
+  StackRoot _root2(&mdocs);
+
   type_name = this->_Styled(this->type_style, AsciiText(S_Fcv));
   if (bash_impl::InternalStringArray_Count(varray) == 0) {
     return _Concat(NewList<pretty_asdl::MeasuredDoc*>(std::initializer_list<pretty_asdl::MeasuredDoc*>{AsciiText(S_ijB), type_name, AsciiText(S_hxb)}));
@@ -30591,6 +33418,7 @@ pretty_asdl::MeasuredDoc* ValueEncoder::_InternalStringArray(value::InternalStri
   mdocs = Alloc<List<pretty_asdl::MeasuredDoc*>>();
   for (ListIter<BigStr*> it(bash_impl::InternalStringArray_GetValues(varray)); !it.Done(); it.Next()) {
     BigStr* s = it.Value();
+    StackRoot _for(&s  );
     if (s == nullptr) {
       mdocs->append(AsciiText(S_lbA));
     }
@@ -30604,6 +33432,10 @@ pretty_asdl::MeasuredDoc* ValueEncoder::_InternalStringArray(value::InternalStri
 pretty_asdl::MeasuredDoc* ValueEncoder::_BashAssoc(value::BashAssoc* vassoc) {
   pretty_asdl::MeasuredDoc* type_name = nullptr;
   List<pretty_asdl::MeasuredDoc*>* mdocs = nullptr;
+  StackRoot _root0(&vassoc);
+  StackRoot _root1(&type_name);
+  StackRoot _root2(&mdocs);
+
   type_name = this->_Styled(this->type_style, AsciiText(S_Agv));
   if (bash_impl::BashAssoc_Count(vassoc) == 0) {
     return _Concat(NewList<pretty_asdl::MeasuredDoc*>(std::initializer_list<pretty_asdl::MeasuredDoc*>{AsciiText(S_ijB), type_name, AsciiText(S_hxb)}));
@@ -30622,6 +33454,11 @@ pretty_asdl::MeasuredDoc* ValueEncoder::_BashArray(value::BashArray* val) {
   List<pretty_asdl::MeasuredDoc*>* mdocs = nullptr;
   BigStr* v2 = nullptr;
   runtime_asdl::error_code_t error_code;
+  StackRoot _root0(&val);
+  StackRoot _root1(&type_name);
+  StackRoot _root2(&mdocs);
+  StackRoot _root3(&v2);
+
   type_name = this->_Styled(this->type_style, AsciiText(S_tDu));
   if (bash_impl::BashArray_Count(val) == 0) {
     return _Concat(NewList<pretty_asdl::MeasuredDoc*>(std::initializer_list<pretty_asdl::MeasuredDoc*>{AsciiText(S_ijB), type_name, AsciiText(S_hxb)}));
@@ -30641,6 +33478,11 @@ pretty_asdl::MeasuredDoc* ValueEncoder::_Obj(value_asdl::Obj* obj) {
   List<pretty_asdl::MeasuredDoc*>* chain = nullptr;
   value_asdl::Obj* cur = nullptr;
   List<pretty_asdl::MeasuredDoc*>* mdocs = nullptr;
+  StackRoot _root0(&obj);
+  StackRoot _root1(&chain);
+  StackRoot _root2(&cur);
+  StackRoot _root3(&mdocs);
+
   chain = Alloc<List<pretty_asdl::MeasuredDoc*>>();
   cur = obj;
   while (cur != nullptr) {
@@ -30671,6 +33513,20 @@ pretty_asdl::MeasuredDoc* ValueEncoder::_Value(value_asdl::value_t* val) {
   value::BashAssoc* vassoc = nullptr;
   value_asdl::Obj* vaobj = nullptr;
   BigStr* id_str = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&s);
+  StackRoot _root2(&r);
+  StackRoot _root3(&type_name);
+  StackRoot _root4(&mdocs);
+  StackRoot _root5(&vlist);
+  StackRoot _root6(&result);
+  StackRoot _root7(&vdict);
+  StackRoot _root8(&sparse);
+  StackRoot _root9(&varray);
+  StackRoot _root10(&vassoc);
+  StackRoot _root11(&vaobj);
+  StackRoot _root12(&id_str);
+
   switch (val->tag()) {
     case value_e::Null: {
       return this->_Styled(this->null_style, AsciiText(S_lbA));
@@ -30791,10 +33647,15 @@ pretty_asdl::Measure* _EmptyMeasure() {
 }
 
 pretty_asdl::Measure* _FlattenMeasure(pretty_asdl::Measure* measure) {
+  StackRoot _root0(&measure);
+
   return Alloc<Measure>(measure->flat, -1);
 }
 
 pretty_asdl::Measure* _ConcatMeasure(pretty_asdl::Measure* m1, pretty_asdl::Measure* m2) {
+  StackRoot _root0(&m1);
+  StackRoot _root1(&m2);
+
   if (m1->nonflat != -1) {
     return Alloc<Measure>((m1->flat + m2->flat), m1->nonflat);
   }
@@ -30809,6 +33670,8 @@ pretty_asdl::Measure* _ConcatMeasure(pretty_asdl::Measure* m1, pretty_asdl::Meas
 }
 
 int _SuffixLen(pretty_asdl::Measure* measure) {
+  StackRoot _root0(&measure);
+
   if (measure->nonflat != -1) {
     return measure->nonflat;
   }
@@ -30818,23 +33681,35 @@ int _SuffixLen(pretty_asdl::Measure* measure) {
 }
 
 pretty_asdl::MeasuredDoc* AsciiText(BigStr* string) {
+  StackRoot _root0(&string);
+
   return Alloc<MeasuredDoc>(Alloc<doc::Text>(string), Alloc<Measure>(len(string), -1));
 }
 
 pretty_asdl::MeasuredDoc* _Break(BigStr* string) {
+  StackRoot _root0(&string);
+
   return Alloc<MeasuredDoc>(Alloc<doc::Break>(string), Alloc<Measure>(len(string), 0));
 }
 
 pretty_asdl::MeasuredDoc* _Indent(int indent, pretty_asdl::MeasuredDoc* mdoc) {
+  StackRoot _root0(&mdoc);
+
   return Alloc<MeasuredDoc>(Alloc<doc::Indent>(indent, mdoc), mdoc->measure);
 }
 
 pretty_asdl::Measure* _Splice(List<pretty_asdl::MeasuredDoc*>* out, List<pretty_asdl::MeasuredDoc*>* mdocs) {
   pretty_asdl::Measure* measure = nullptr;
   pretty_asdl::List_Measured* child = nullptr;
+  StackRoot _root0(&out);
+  StackRoot _root1(&mdocs);
+  StackRoot _root2(&measure);
+  StackRoot _root3(&child);
+
   measure = _EmptyMeasure();
   for (ListIter<pretty_asdl::MeasuredDoc*> it(mdocs); !it.Done(); it.Next()) {
     pretty_asdl::MeasuredDoc* mdoc = it.Value();
+    StackRoot _for(&mdoc  );
     switch (mdoc->doc->tag()) {
       case doc_e::Concat: {
         child = static_cast<List_Measured*>(mdoc->doc);
@@ -30853,20 +33728,31 @@ pretty_asdl::Measure* _Splice(List<pretty_asdl::MeasuredDoc*>* out, List<pretty_
 pretty_asdl::MeasuredDoc* _Concat(List<pretty_asdl::MeasuredDoc*>* mdocs) {
   pretty_asdl::List_Measured* flattened = nullptr;
   pretty_asdl::Measure* measure = nullptr;
+  StackRoot _root0(&mdocs);
+  StackRoot _root1(&flattened);
+  StackRoot _root2(&measure);
+
   flattened = List_Measured::New();
   measure = _Splice(flattened, mdocs);
   return Alloc<MeasuredDoc>(flattened, measure);
 }
 
 pretty_asdl::MeasuredDoc* _Group(pretty_asdl::MeasuredDoc* mdoc) {
+  StackRoot _root0(&mdoc);
+
   return Alloc<MeasuredDoc>(mdoc, mdoc->measure);
 }
 
 pretty_asdl::MeasuredDoc* _IfFlat(pretty_asdl::MeasuredDoc* flat_mdoc, pretty_asdl::MeasuredDoc* nonflat_mdoc) {
+  StackRoot _root0(&flat_mdoc);
+  StackRoot _root1(&nonflat_mdoc);
+
   return Alloc<MeasuredDoc>(Alloc<doc::IfFlat>(flat_mdoc, nonflat_mdoc), Alloc<Measure>(flat_mdoc->measure->flat, nonflat_mdoc->measure->nonflat));
 }
 
 pretty_asdl::MeasuredDoc* _Flat(pretty_asdl::MeasuredDoc* mdoc) {
+  StackRoot _root0(&mdoc);
+
   return Alloc<MeasuredDoc>(Alloc<doc::Flat>(mdoc), _FlattenMeasure(mdoc->measure));
 }
 
@@ -30876,6 +33762,10 @@ PrettyPrinter::PrettyPrinter(int max_width) {
 
 bool PrettyPrinter::_Fits(int prefix_len, pretty_asdl::MeasuredDoc* group, pretty_asdl::Measure* suffix_measure) {
   pretty_asdl::Measure* measure = nullptr;
+  StackRoot _root0(&group);
+  StackRoot _root1(&suffix_measure);
+  StackRoot _root2(&measure);
+
   measure = _ConcatMeasure(_FlattenMeasure(group->measure), suffix_measure);
   return (prefix_len + _SuffixLen(measure)) <= this->max_width;
 }
@@ -30889,6 +33779,14 @@ void PrettyPrinter::PrintDoc(pretty_asdl::MeasuredDoc* document, mylib::BufWrite
   pretty_asdl::Measure* measure = nullptr;
   bool is_flat;
   pretty_asdl::MeasuredDoc* subdoc = nullptr;
+  StackRoot _root0(&document);
+  StackRoot _root1(&buf);
+  StackRoot _root2(&fragments);
+  StackRoot _root3(&frag);
+  StackRoot _root4(&UP_doc);
+  StackRoot _root5(&measure);
+  StackRoot _root6(&subdoc);
+
   prefix_len = 0;
   fragments = NewList<pretty_asdl::DocFragment*>(std::initializer_list<pretty_asdl::DocFragment*>{Alloc<DocFragment>(_Group(document), 0, false, _EmptyMeasure())});
   max_stack = len(fragments);
@@ -30926,6 +33824,7 @@ void PrettyPrinter::PrintDoc(pretty_asdl::MeasuredDoc* document, mylib::BufWrite
         measure = frag->measure;
         for (ReverseListIter<pretty_asdl::MeasuredDoc*> it(concat); !it.Done(); it.Next()) {
           pretty_asdl::MeasuredDoc* mdoc = it.Value();
+          StackRoot _for(&mdoc        );
           fragments->append(Alloc<DocFragment>(mdoc, frag->indent, frag->is_flat, measure));
           measure = _ConcatMeasure(mdoc->measure, measure);
         }
@@ -30980,10 +33879,14 @@ namespace fmt = format;
 using mylib::print_stderr;
 
 BigStr* ValType(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   return pp_value::ValType(val);
 }
 
 BigStr* CommandType(syntax_asdl::command_t* cmd) {
+  StackRoot _root0(&cmd);
+
   return command_str(cmd->tag(), false);
 }
 
@@ -30993,6 +33896,9 @@ BigStr* PrettyId(int id_) {
 
 BigStr* PrettyToken(syntax_asdl::Token* tok) {
   BigStr* val = nullptr;
+  StackRoot _root0(&tok);
+  StackRoot _root1(&val);
+
   if (tok->id == Id::Eof_Real) {
     return S_ngj;
   }
@@ -31001,6 +33907,9 @@ BigStr* PrettyToken(syntax_asdl::Token* tok) {
 }
 
 BigStr* PrettyDir(BigStr* dir_name, BigStr* home_dir) {
+  StackRoot _root0(&dir_name);
+  StackRoot _root1(&home_dir);
+
   if (home_dir != nullptr) {
     if ((str_equals(dir_name, home_dir) or dir_name->startswith(str_concat(home_dir, S_ckc)))) {
       return str_concat(S_Bhp, dir_name->slice(len(home_dir)));
@@ -31010,8 +33919,12 @@ BigStr* PrettyDir(BigStr* dir_name, BigStr* home_dir) {
 }
 
 void PrintCaretLine(BigStr* line, int col, int length, mylib::Writer* f) {
+  StackRoot _root0(&line);
+  StackRoot _root1(&f);
+
   for (StrIter it(line->slice(0, col)); !it.Done(); it.Next()) {
     BigStr* c = it.Value();
+    StackRoot _for(&c  );
     f->write(str_equals(c, S_mve) ? S_mve : S_yfw);
   }
   f->write(S_EAB);
@@ -31021,6 +33934,10 @@ void PrintCaretLine(BigStr* line, int col, int length, mylib::Writer* f) {
 
 void _PrintCodeExcerpt(BigStr* line, int col, int length, mylib::Writer* f) {
   mylib::BufWriter* buf = nullptr;
+  StackRoot _root0(&line);
+  StackRoot _root1(&f);
+  StackRoot _root2(&buf);
+
   buf = Alloc<mylib::BufWriter>();
   buf->write(S_jqf);
   buf->write(line->rstrip());
@@ -31034,6 +33951,12 @@ void _PrintTokenTooLong(loc::TokenTooLong* loc_tok, mylib::Writer* f) {
   int col;
   mylib::BufWriter* buf = nullptr;
   BigStr* source_str = nullptr;
+  StackRoot _root0(&loc_tok);
+  StackRoot _root1(&f);
+  StackRoot _root2(&line);
+  StackRoot _root3(&buf);
+  StackRoot _root4(&source_str);
+
   line = loc_tok->line;
   col = loc_tok->col;
   buf = Alloc<mylib::BufWriter>();
@@ -31042,6 +33965,7 @@ void _PrintTokenTooLong(loc::TokenTooLong* loc_tok, mylib::Writer* f) {
   buf->write(S_sEF);
   for (StrIter it(line->content->slice(0, col)); !it.Done(); it.Next()) {
     BigStr* c = it.Value();
+    StackRoot _for(&c  );
     buf->write(str_equals(c, S_mve) ? S_mve : S_yfw);
   }
   buf->write(S_neq);
@@ -31054,6 +33978,11 @@ BigStr* GetFilenameString(syntax_asdl::SourceLine* line) {
   syntax_asdl::source_t* src = nullptr;
   syntax_asdl::source_t* UP_src = nullptr;
   BigStr* filename_str = nullptr;
+  StackRoot _root0(&line);
+  StackRoot _root1(&src);
+  StackRoot _root2(&UP_src);
+  StackRoot _root3(&filename_str);
+
   src = line->src;
   UP_src = src;
   filename_str = S_BAk;
@@ -31094,6 +34023,17 @@ BigStr* GetLineSourceString(syntax_asdl::SourceLine* line, bool quote_filename) 
   BigStr* where = nullptr;
   syntax_asdl::Token* orig_tok = nullptr;
   syntax_asdl::Token* span2 = nullptr;
+  StackRoot _root0(&line);
+  StackRoot _root1(&src);
+  StackRoot _root2(&UP_src);
+  StackRoot _root3(&s);
+  StackRoot _root4(&blame_tok);
+  StackRoot _root5(&outer_source);
+  StackRoot _root6(&var_name);
+  StackRoot _root7(&where);
+  StackRoot _root8(&orig_tok);
+  StackRoot _root9(&span2);
+
   src = line->src;
   UP_src = src;
   switch (src->tag()) {
@@ -31210,6 +34150,18 @@ void _PrintWithLocation(BigStr* prefix, BigStr* msg, syntax_asdl::loc_t* blame_l
   BigStr* line2 = nullptr;
   int lbracket_col;
   BigStr* source_str = nullptr;
+  StackRoot _root0(&prefix);
+  StackRoot _root1(&msg);
+  StackRoot _root2(&blame_loc);
+  StackRoot _root3(&f);
+  StackRoot _root4(&blame_tok);
+  StackRoot _root5(&src);
+  StackRoot _root6(&line);
+  StackRoot _root7(&UP_src);
+  StackRoot _root8(&tok2);
+  StackRoot _root9(&line2);
+  StackRoot _root10(&source_str);
+
   f = mylib::Stderr();
   if (blame_loc->tag() == loc_e::TokenTooLong) {
     _PrintTokenTooLong(static_cast<loc::TokenTooLong*>(blame_loc), f);
@@ -31260,6 +34212,12 @@ Tuple2<BigStr*, BigStr*> CodeExcerptAndPrefix(syntax_asdl::Token* blame_tok) {
   mylib::BufWriter* buf = nullptr;
   BigStr* source_str = nullptr;
   BigStr* prefix = nullptr;
+  StackRoot _root0(&blame_tok);
+  StackRoot _root1(&line);
+  StackRoot _root2(&buf);
+  StackRoot _root3(&source_str);
+  StackRoot _root4(&prefix);
+
   line = blame_tok->line;
   buf = Alloc<mylib::BufWriter>();
   _PrintCodeExcerpt(line->content, blame_tok->col, blame_tok->length, buf);
@@ -31289,6 +34247,8 @@ void ErrorFormatter::OneLineErrExit() {
 }
 
 syntax_asdl::loc_t* ErrorFormatter::_FallbackLocation(syntax_asdl::loc_t* blame_loc) {
+  StackRoot _root0(&blame_loc);
+
   if ((blame_loc == nullptr or blame_loc->tag() == loc_e::Missing)) {
     if (len(this->loc_stack)) {
       return this->loc_stack->at(-1);
@@ -31299,27 +34259,45 @@ syntax_asdl::loc_t* ErrorFormatter::_FallbackLocation(syntax_asdl::loc_t* blame_
 }
 
 void ErrorFormatter::PrefixPrint(BigStr* msg, BigStr* prefix, syntax_asdl::loc_t* blame_loc) {
+  StackRoot _root0(&msg);
+  StackRoot _root1(&prefix);
+  StackRoot _root2(&blame_loc);
+
   _PrintWithLocation(prefix, msg, this->_FallbackLocation(blame_loc), true);
 }
 
 void ErrorFormatter::Print_(BigStr* msg, syntax_asdl::loc_t* blame_loc) {
+  StackRoot _root0(&msg);
+  StackRoot _root1(&blame_loc);
+
   _PrintWithLocation(S_Aoo, msg, this->_FallbackLocation(blame_loc), true);
 }
 
 void ErrorFormatter::PrintMessage(BigStr* msg, syntax_asdl::loc_t* blame_loc) {
+  StackRoot _root0(&msg);
+  StackRoot _root1(&blame_loc);
+
   _PrintWithLocation(S_Aoo, msg, this->_FallbackLocation(blame_loc), false);
 }
 
 void ErrorFormatter::StderrLine(BigStr* msg) {
+  StackRoot _root0(&msg);
+
   print_stderr(msg);
 }
 
 void ErrorFormatter::PrettyPrintError(error::_ErrorWithLocation* err, BigStr* prefix) {
+  StackRoot _root0(&err);
+  StackRoot _root1(&prefix);
+
   _PrintWithLocation(prefix, err->UserErrorString(), err->location, true);
 }
 
 void ErrorFormatter::PrintErrExit(error::ErrExit* err, int pid) {
   BigStr* prefix = nullptr;
+  StackRoot _root0(&err);
+  StackRoot _root1(&prefix);
+
   prefix = StrFormat("errexit PID %d: ", pid);
   _PrintWithLocation(prefix, err->UserErrorString(), err->location, err->show_code);
 }
@@ -31331,6 +34309,8 @@ void PrintAst(syntax_asdl::command_t* node, arg_types::main* flag) {
   hnode_asdl::hnode_t* tree = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&flag);
+  StackRoot _root2(&f);
+  StackRoot _root3(&tree);
 
   if (maybe_str_equals(flag->ast_format, S_rdE_1)) {
     print_stderr(S_ztv);
@@ -31356,6 +34336,8 @@ void PrintAst(syntax_asdl::command_t* node, arg_types::main* flag) {
 }
 
 bool TypeNotPrinted(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   return (val->tag() == value_e::Null || val->tag() == value_e::Bool || val->tag() == value_e::Int || val->tag() == value_e::Float || val->tag() == value_e::Str || val->tag() == value_e::List || val->tag() == value_e::Dict || val->tag() == value_e::Obj);
 }
 
@@ -31381,6 +34363,15 @@ void PrettyPrintValue(BigStr* prefix, value_asdl::value_t* val, mylib::Writer* f
   pretty_asdl::MeasuredDoc* doc = nullptr;
   pretty::PrettyPrinter* printer = nullptr;
   mylib::BufWriter* buf = nullptr;
+  StackRoot _root0(&prefix);
+  StackRoot _root1(&val);
+  StackRoot _root2(&f);
+  StackRoot _root3(&encoder);
+  StackRoot _root4(&mdocs);
+  StackRoot _root5(&doc);
+  StackRoot _root6(&printer);
+  StackRoot _root7(&buf);
+
   encoder = Alloc<pp_value::ValueEncoder>();
   encoder->SetUseStyles(f->isatty());
   if (TypeNotPrinted(val)) {
@@ -31405,6 +34396,8 @@ void PrettyPrintValue(BigStr* prefix, value_asdl::value_t* val, mylib::Writer* f
 }
 
 void PrintShFunction(value::Proc* proc_val) {
+  StackRoot _root0(&proc_val);
+
   if (proc_val->code_str != nullptr) {
     print(proc_val->code_str);
   }
@@ -31436,6 +34429,7 @@ _Attributes::_Attributes(Dict<BigStr*, value_asdl::value_t*>* defaults) {
   this->show_options = false;
   this->actions = Alloc<List<BigStr*>>();
   this->saw_double_dash = false;
+  this->saw_single_dash = false;
   for (DictIter<BigStr*, value_asdl::value_t*> it(defaults); !it.Done(); it.Next()) {
     BigStr* name = it.Key();
     value_asdl::value_t* v = it.Value();
@@ -31444,10 +34438,15 @@ _Attributes::_Attributes(Dict<BigStr*, value_asdl::value_t*>* defaults) {
 }
 
 void _Attributes::SetTrue(BigStr* name) {
+  StackRoot _root0(&name);
+
   this->Set(name, Alloc<value::Bool>(true));
 }
 
 void _Attributes::Set(BigStr* name, value_asdl::value_t* val) {
+  StackRoot _root0(&name);
+  StackRoot _root1(&val);
+
   name = name->replace(S_Bjq, S_tci);
   if (str_equals(name, S_Fvh)) {
     name = S_xaw;
@@ -31491,6 +34490,9 @@ Tuple2<BigStr*, syntax_asdl::loc_t*> Reader::Peek2() {
 
 BigStr* Reader::ReadRequired(BigStr* error_msg) {
   BigStr* arg = nullptr;
+  StackRoot _root0(&error_msg);
+  StackRoot _root1(&arg);
+
   arg = this->Peek();
   if (arg == nullptr) {
     e_usage(error_msg, this->_FirstLocation());
@@ -31502,6 +34504,10 @@ BigStr* Reader::ReadRequired(BigStr* error_msg) {
 Tuple2<BigStr*, syntax_asdl::CompoundWord*> Reader::ReadRequired2(BigStr* error_msg) {
   BigStr* arg = nullptr;
   syntax_asdl::CompoundWord* location = nullptr;
+  StackRoot _root0(&error_msg);
+  StackRoot _root1(&arg);
+  StackRoot _root2(&location);
+
   arg = this->Peek();
   if (arg == nullptr) {
     e_usage(error_msg, this->_FirstLocation());
@@ -31564,6 +34570,10 @@ _Action::_Action() {
 }
 
 bool _Action::OnMatch(BigStr* attached_arg, args::Reader* arg_r, args::_Attributes* out) {
+  StackRoot _root0(&attached_arg);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&out);
+
   FAIL(kNotImplemented);  // Python NotImplementedError
 }
 
@@ -31574,6 +34584,11 @@ AppendEvalFlag::AppendEvalFlag(BigStr* name) : ::args::_Action() {
 
 bool AppendEvalFlag::OnMatch(BigStr* attached_arg, args::Reader* arg_r, args::_Attributes* out) {
   BigStr* arg = nullptr;
+  StackRoot _root0(&attached_arg);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&out);
+  StackRoot _root3(&arg);
+
   arg_r->Next();
   arg = arg_r->Peek();
   if (arg == nullptr) {
@@ -31590,12 +34605,21 @@ _ArgAction::_ArgAction(BigStr* name, bool quit_parsing_flags, List<BigStr*>* val
 }
 
 value_asdl::value_t* _ArgAction::_Value(BigStr* arg, syntax_asdl::loc_t* location) {
+  StackRoot _root0(&arg);
+  StackRoot _root1(&location);
+
   FAIL(kNotImplemented);  // Python NotImplementedError
 }
 
 bool _ArgAction::OnMatch(BigStr* attached_arg, args::Reader* arg_r, args::_Attributes* out) {
   BigStr* arg = nullptr;
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&attached_arg);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&out);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&val);
+
   if (attached_arg != nullptr) {
     arg = attached_arg;
   }
@@ -31617,6 +34641,9 @@ SetToInt::SetToInt(BigStr* name) : ::args::_ArgAction(name, false, nullptr) {
 value_asdl::value_t* SetToInt::_Value(BigStr* arg, syntax_asdl::loc_t* location) {
   bool ok;
   mops::BigInt i;
+  StackRoot _root0(&arg);
+  StackRoot _root1(&location);
+
   if (true) {
     Tuple2<bool, mops::BigInt> tup0 = mops::FromStr2(arg);
     ok = tup0.at0();
@@ -31639,6 +34666,9 @@ SetToFloat::SetToFloat(BigStr* name) : ::args::_ArgAction(name, false, nullptr) 
 
 value_asdl::value_t* SetToFloat::_Value(BigStr* arg, syntax_asdl::loc_t* location) {
   double f;
+  StackRoot _root0(&arg);
+  StackRoot _root1(&location);
+
   try {
     f = to_float(arg);
   }
@@ -31655,6 +34685,9 @@ SetToString::SetToString(BigStr* name, bool quit_parsing_flags, List<BigStr*>* v
 }
 
 value_asdl::value_t* SetToString::_Value(BigStr* arg, syntax_asdl::loc_t* location) {
+  StackRoot _root0(&arg);
+  StackRoot _root1(&location);
+
   if ((this->valid != nullptr and !list_contains(this->valid, arg))) {
     e_usage(StrFormat("got invalid argument %r to %r, expected one of: %s", arg, str_concat(S_Bjq, this->name), S_Ebn->join(this->valid)), location);
   }
@@ -31667,6 +34700,10 @@ SetAttachedBool::SetAttachedBool(BigStr* name) {
 
 bool SetAttachedBool::OnMatch(BigStr* attached_arg, args::Reader* arg_r, args::_Attributes* out) {
   bool b;
+  StackRoot _root0(&attached_arg);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&out);
+
   if (attached_arg != nullptr) {
     if ((str_equals(attached_arg, S_wfw) || str_equals(attached_arg, S_gFh) || str_equals(attached_arg, S_Ctn) || str_equals(attached_arg, S_xmt))) {
       b = false;
@@ -31692,6 +34729,10 @@ SetToTrue::SetToTrue(BigStr* name) {
 }
 
 bool SetToTrue::OnMatch(BigStr* attached_arg, args::Reader* arg_r, args::_Attributes* out) {
+  StackRoot _root0(&attached_arg);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&out);
+
   out->SetTrue(this->name);
   return false;
 }
@@ -31702,6 +34743,10 @@ SetOption::SetOption(BigStr* name) {
 
 bool SetOption::OnMatch(BigStr* attached_arg, args::Reader* arg_r, args::_Attributes* out) {
   bool b;
+  StackRoot _root0(&attached_arg);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&out);
+
   b = maybe_str_equals(attached_arg, S_Bjq);
   out->opt_changes->append((Alloc<Tuple2<BigStr*, bool>>(this->name, b)));
   return false;
@@ -31713,6 +34758,8 @@ SetNamedOption::SetNamedOption(bool shopt) {
 }
 
 void SetNamedOption::ArgName(BigStr* name) {
+  StackRoot _root0(&name);
+
   this->names->append(name);
 }
 
@@ -31721,6 +34768,13 @@ bool SetNamedOption::OnMatch(BigStr* attached_arg, args::Reader* arg_r, args::_A
   BigStr* arg = nullptr;
   BigStr* attr_name = nullptr;
   List<Tuple2<BigStr*, bool>*>* changes = nullptr;
+  StackRoot _root0(&attached_arg);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&out);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&attr_name);
+  StackRoot _root5(&changes);
+
   b = maybe_str_equals(attached_arg, S_Bjq);
   arg_r->Next();
   arg = arg_r->Peek();
@@ -31742,6 +34796,10 @@ SetAction::SetAction(BigStr* name) {
 }
 
 bool SetAction::OnMatch(BigStr* attached_arg, args::Reader* arg_r, args::_Attributes* out) {
+  StackRoot _root0(&attached_arg);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&out);
+
   out->actions->append(this->name);
   return false;
 }
@@ -31751,12 +34809,20 @@ SetNamedAction::SetNamedAction() {
 }
 
 void SetNamedAction::ArgName(BigStr* name) {
+  StackRoot _root0(&name);
+
   this->names->append(name);
 }
 
 bool SetNamedAction::OnMatch(BigStr* attached_arg, args::Reader* arg_r, args::_Attributes* out) {
   BigStr* arg = nullptr;
   BigStr* attr_name = nullptr;
+  StackRoot _root0(&attached_arg);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&out);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&attr_name);
+
   arg_r->Next();
   arg = arg_r->Peek();
   if (arg == nullptr) {
@@ -31780,6 +34846,16 @@ args::_Attributes* Parse(flag_spec::_FlagSpec* spec, args::Reader* arg_r) {
   int n;
   BigStr* ch = nullptr;
   BigStr* attached_arg = nullptr;
+  StackRoot _root0(&spec);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&out);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&suffix);
+  StackRoot _root5(&flag_name);
+  StackRoot _root6(&action);
+  StackRoot _root7(&ch);
+  StackRoot _root8(&attached_arg);
+
   out = Alloc<_Attributes>(spec->defaults);
   while (!arg_r->AtEnd()) {
     arg = arg_r->Peek();
@@ -31859,6 +34935,12 @@ args::_Attributes* ParseLikeEcho(flag_spec::_FlagSpec* spec, args::Reader* arg_r
   BigStr* arg = nullptr;
   BigStr* chars = nullptr;
   bool done;
+  StackRoot _root0(&spec);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&out);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&chars);
+
   out = Alloc<_Attributes>(spec->defaults);
   while (!arg_r->AtEnd()) {
     arg = arg_r->Peek();
@@ -31867,6 +34949,7 @@ args::_Attributes* ParseLikeEcho(flag_spec::_FlagSpec* spec, args::Reader* arg_r
       done = false;
       for (StrIter it(chars); !it.Done(); it.Next()) {
         BigStr* c = it.Value();
+        StackRoot _for(&c      );
         if (!list_contains(spec->arity0, c)) {
           done = true;
           break;
@@ -31877,6 +34960,7 @@ args::_Attributes* ParseLikeEcho(flag_spec::_FlagSpec* spec, args::Reader* arg_r
       }
       for (StrIter it(chars); !it.Done(); it.Next()) {
         BigStr* ch = it.Value();
+        StackRoot _for(&ch      );
         out->SetTrue(ch);
       }
     }
@@ -31895,6 +34979,14 @@ args::_Attributes* ParseMore(flag_spec::_FlagSpecAndMore* spec, args::Reader* ar
   args::_Action* action = nullptr;
   BigStr* char0 = nullptr;
   BigStr* attached_arg = nullptr;
+  StackRoot _root0(&spec);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&out);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&action);
+  StackRoot _root5(&char0);
+  StackRoot _root6(&attached_arg);
+
   out = Alloc<_Attributes>(spec->defaults);
   quit = false;
   while (!arg_r->AtEnd()) {
@@ -31903,6 +34995,15 @@ args::_Attributes* ParseMore(flag_spec::_FlagSpecAndMore* spec, args::Reader* ar
       out->saw_double_dash = true;
       arg_r->Next();
       break;
+    }
+    if (maybe_str_equals(arg, S_Bjq)) {
+      out->saw_single_dash = true;
+      arg_r->Next();
+      break;
+    }
+    if (maybe_str_equals(arg, S_jnE)) {
+      arg_r->Next();
+      continue;
     }
     if (arg->startswith(S_gpk)) {
       action = spec->actions_long->get(arg->slice(2));
@@ -31917,6 +35018,7 @@ args::_Attributes* ParseMore(flag_spec::_FlagSpecAndMore* spec, args::Reader* ar
       char0 = arg->at(0);
       for (StrIter it(arg->slice(1)); !it.Done(); it.Next()) {
         BigStr* ch = it.Value();
+        StackRoot _for(&ch      );
         action = spec->actions_short->get(ch);
         if (action == nullptr) {
           e_usage(StrFormat("got invalid flag %r", str_concat(S_Bjq, ch)), arg_r->Location());
@@ -31946,6 +35048,8 @@ using runtime_asdl::ProcArgs;
 using error::e_usage;
 
 void _DoesNotAccept(runtime_asdl::ProcArgs* proc_args) {
+  StackRoot _root0(&proc_args);
+
   if (proc_args != nullptr) {
     e_usage(S_rDq, proc_args->typed_args->left);
   }
@@ -31954,6 +35058,11 @@ void _DoesNotAccept(runtime_asdl::ProcArgs* proc_args) {
 Tuple2<args::_Attributes*, args::Reader*> ParseCmdVal(BigStr* spec_name, cmd_value::Argv* cmd_val, bool accept_typed_args) {
   args::Reader* arg_r = nullptr;
   flag_spec::_FlagSpec* spec = nullptr;
+  StackRoot _root0(&spec_name);
+  StackRoot _root1(&cmd_val);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&spec);
+
   if (!accept_typed_args) {
     _DoesNotAccept(cmd_val->proc_args);
   }
@@ -31966,6 +35075,11 @@ Tuple2<args::_Attributes*, args::Reader*> ParseCmdVal(BigStr* spec_name, cmd_val
 Tuple2<args::_Attributes*, args::Reader*> ParseLikeEcho(BigStr* spec_name, cmd_value::Argv* cmd_val) {
   args::Reader* arg_r = nullptr;
   flag_spec::_FlagSpec* spec = nullptr;
+  StackRoot _root0(&spec_name);
+  StackRoot _root1(&cmd_val);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&spec);
+
   _DoesNotAccept(cmd_val->proc_args);
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
@@ -31975,12 +35089,20 @@ Tuple2<args::_Attributes*, args::Reader*> ParseLikeEcho(BigStr* spec_name, cmd_v
 
 args::_Attributes* Parse(BigStr* spec_name, args::Reader* arg_r) {
   flag_spec::_FlagSpec* spec = nullptr;
+  StackRoot _root0(&spec_name);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&spec);
+
   spec = LookupFlagSpec(spec_name);
   return args::Parse(spec, arg_r);
 }
 
 args::_Attributes* ParseMore(BigStr* spec_name, args::Reader* arg_r) {
   flag_spec::_FlagSpecAndMore* spec = nullptr;
+  StackRoot _root0(&spec_name);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&spec);
+
   spec = LookupFlagSpec2(spec_name);
   return args::ParseMore(spec, arg_r);
 }
@@ -31999,15 +35121,23 @@ using id_kind_asdl::Id_str;
 
 bool IsPlusEquals(syntax_asdl::Token* tok) {
   int i;
+  StackRoot _root0(&tok);
+
   i = ((tok->col + tok->length) - 2);
   return tok->line->content->find(S_jnE, i, (i + 1)) != -1;
 }
 
 bool TokenContains(syntax_asdl::Token* tok, BigStr* substr) {
+  StackRoot _root0(&tok);
+  StackRoot _root1(&substr);
+
   return tok->line->content->find(substr, tok->col, (tok->col + tok->length)) != -1;
 }
 
 bool TokenEquals(syntax_asdl::Token* tok, BigStr* s) {
+  StackRoot _root0(&tok);
+  StackRoot _root1(&s);
+
   if (len(s) != tok->length) {
     return false;
   }
@@ -32015,27 +35145,39 @@ bool TokenEquals(syntax_asdl::Token* tok, BigStr* s) {
 }
 
 bool TokenStartsWith(syntax_asdl::Token* tok, BigStr* s) {
+  StackRoot _root0(&tok);
+  StackRoot _root1(&s);
+
   return tok->line->content->find(s, tok->col, (tok->col + len(s))) != -1;
 }
 
 bool TokenEndsWith(syntax_asdl::Token* tok, BigStr* s) {
   int end;
+  StackRoot _root0(&tok);
+  StackRoot _root1(&s);
+
   end = (tok->col + tok->length);
   return tok->line->content->find(s, (end - len(s)), end) != -1;
 }
 
 BigStr* TokenVal(syntax_asdl::Token* tok) {
+  StackRoot _root0(&tok);
+
   return tok->line->content->slice(tok->col, (tok->col + tok->length));
 }
 
 BigStr* TokenSliceLeft(syntax_asdl::Token* tok, int left_index) {
   int start;
+  StackRoot _root0(&tok);
+
   start = (tok->col + left_index);
   return tok->line->content->slice(start, (tok->col + tok->length));
 }
 
 BigStr* TokenSliceRight(syntax_asdl::Token* tok, int right_index) {
   int end;
+  StackRoot _root0(&tok);
+
   end = ((tok->col + tok->length) + right_index);
   return tok->line->content->slice(tok->col, end);
 }
@@ -32043,12 +35185,16 @@ BigStr* TokenSliceRight(syntax_asdl::Token* tok, int right_index) {
 BigStr* TokenSlice(syntax_asdl::Token* tok, int left, int right) {
   int start;
   int end;
+  StackRoot _root0(&tok);
+
   start = (tok->col + left);
   end = ((tok->col + tok->length) + right);
   return tok->line->content->slice(start, end);
 }
 
 BigStr* LazyStr(syntax_asdl::Token* tok) {
+  StackRoot _root0(&tok);
+
   if (tok->tval == nullptr) {
     if ((tok->id == Id::VSub_DollarName || tok->id == Id::VSub_Number)) {
       tok->tval = TokenSliceLeft(tok, 1);
@@ -32063,6 +35209,8 @@ BigStr* LazyStr(syntax_asdl::Token* tok) {
 syntax_asdl::Token* DummyToken(int id_, BigStr* val) {
   int col;
   int length;
+  StackRoot _root0(&val);
+
   col = -1;
   length = -1;
   return Alloc<Token>(id_, length, col, nullptr, val);
@@ -32076,6 +35224,8 @@ LineLexer::LineLexer(alloc::Arena* arena) {
 }
 
 void LineLexer::Reset(syntax_asdl::SourceLine* src_line, int line_pos) {
+  StackRoot _root0(&src_line);
+
   this->src_line = src_line;
   this->line_pos = line_pos;
 }
@@ -32093,6 +35243,8 @@ bool LineLexer::MaybeUnreadOne() {
 
 syntax_asdl::Token* LineLexer::GetEofToken(int id_) {
   syntax_asdl::SourceLine* src_line = nullptr;
+  StackRoot _root0(&src_line);
+
   if (this->src_line == nullptr) {
     src_line = this->arena->AddLine(S_Aoo, 0);
   }
@@ -32107,6 +35259,8 @@ int LineLexer::LookAheadOne(types_asdl::lex_mode_t lex_mode) {
   BigStr* line_str = nullptr;
   int n;
   int tok_type;
+  StackRoot _root0(&line_str);
+
   pos = this->line_pos;
   line_str = this->src_line->content;
   n = len(line_str);
@@ -32129,6 +35283,8 @@ int LineLexer::LookPastSpace(types_asdl::lex_mode_t lex_mode) {
   int n;
   int tok_type;
   int end_pos;
+  StackRoot _root0(&line_str);
+
   pos = this->line_pos;
   line_str = this->src_line->content;
   n = len(line_str);
@@ -32185,6 +35341,9 @@ syntax_asdl::Token* LineLexer::Read(types_asdl::lex_mode_t lex_mode) {
   int end_pos;
   int tok_len;
   syntax_asdl::Token* t = nullptr;
+  StackRoot _root0(&line_str);
+  StackRoot _root1(&t);
+
   if (this->src_line) {
     line_str = this->src_line->content;
   }
@@ -32275,7 +35434,8 @@ syntax_asdl::Token* Lexer::_Read(types_asdl::lex_mode_t lex_mode) {
   int id_;
   int old_id;
   int new_id;
-  StackRoot _root0(&src_line);
+  StackRoot _root0(&t);
+  StackRoot _root1(&src_line);
 
   t = this->line_lexer->Read(lex_mode);
   if (t->id == Id::Eol_Tok) {
@@ -32361,11 +35521,16 @@ using syntax_asdl::Eggex;
 using value_asdl::LeftName;
 
 value_asdl::LeftName* LName(BigStr* name) {
+  StackRoot _root0(&name);
+
   return Alloc<LeftName>(name, loc::Missing);
 }
 
 syntax_asdl::Token* TokenFor(syntax_asdl::loc_t* loc_) {
   syntax_asdl::loc_t* UP_location = nullptr;
+  StackRoot _root0(&loc_);
+  StackRoot _root1(&UP_location);
+
   UP_location = loc_;
   switch (loc_->tag()) {
     case loc_e::Missing: {
@@ -32438,6 +35603,10 @@ syntax_asdl::Token* TokenForCommand(syntax_asdl::command_t* node) {
   syntax_asdl::command_t* UP_node = nullptr;
   int tag;
   syntax_asdl::Redir* first = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&UP_node);
+  StackRoot _root2(&first);
+
   UP_node = node;
   tag = node->tag();
   if (tag == command_e::Redirect) {
@@ -32503,6 +35672,9 @@ syntax_asdl::Token* TokenForCommand(syntax_asdl::command_t* node) {
 
 syntax_asdl::Token* RightTokenForCommand(syntax_asdl::command_t* node) {
   syntax_asdl::command_t* UP_node = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&UP_node);
+
   UP_node = node;
   switch (node->tag()) {
     case command_e::BraceGroup: {
@@ -32521,6 +35693,9 @@ syntax_asdl::Token* RightTokenForCommand(syntax_asdl::command_t* node) {
 
 syntax_asdl::Token* TokenForArith(syntax_asdl::arith_expr_t* node) {
   syntax_asdl::arith_expr_t* UP_node = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&UP_node);
+
   UP_node = node;
   switch (node->tag()) {
     case arith_expr_e::VarSub: {
@@ -32554,6 +35729,9 @@ syntax_asdl::Token* TokenForArith(syntax_asdl::arith_expr_t* node) {
 
 syntax_asdl::Token* LeftTokenForWordPart(syntax_asdl::word_part_t* part) {
   syntax_asdl::word_part_t* UP_part = nullptr;
+  StackRoot _root0(&part);
+  StackRoot _root1(&UP_part);
+
   UP_part = part;
   switch (part->tag()) {
     case word_part_e::YshArrayLiteral: {
@@ -32649,6 +35827,9 @@ syntax_asdl::Token* LeftTokenForWordPart(syntax_asdl::word_part_t* part) {
 
 syntax_asdl::Token* _RightTokenForWordPart(syntax_asdl::word_part_t* part) {
   syntax_asdl::word_part_t* UP_part = nullptr;
+  StackRoot _root0(&part);
+  StackRoot _root1(&UP_part);
+
   UP_part = part;
   switch (part->tag()) {
     case word_part_e::YshArrayLiteral: {
@@ -32743,6 +35924,8 @@ syntax_asdl::Token* _RightTokenForWordPart(syntax_asdl::word_part_t* part) {
 }
 
 syntax_asdl::Token* LeftTokenForCompoundWord(syntax_asdl::CompoundWord* w) {
+  StackRoot _root0(&w);
+
   if (len(w->parts)) {
     return LeftTokenForWordPart(w->parts->at(0));
   }
@@ -32753,6 +35936,9 @@ syntax_asdl::Token* LeftTokenForCompoundWord(syntax_asdl::CompoundWord* w) {
 
 syntax_asdl::Token* LeftTokenForWord(syntax_asdl::word_t* w) {
   syntax_asdl::word_t* UP_w = nullptr;
+  StackRoot _root0(&w);
+  StackRoot _root1(&UP_w);
+
   if (w == nullptr) {
     return nullptr;
   }
@@ -32788,6 +35974,10 @@ syntax_asdl::Token* LeftTokenForWord(syntax_asdl::word_t* w) {
 syntax_asdl::Token* RightTokenForWord(syntax_asdl::word_t* w) {
   syntax_asdl::word_t* UP_w = nullptr;
   syntax_asdl::word_part_t* end = nullptr;
+  StackRoot _root0(&w);
+  StackRoot _root1(&UP_w);
+  StackRoot _root2(&end);
+
   UP_w = w;
   switch (w->tag()) {
     case word_e::Compound: {
@@ -32825,6 +36015,9 @@ syntax_asdl::Token* RightTokenForWord(syntax_asdl::word_t* w) {
 
 syntax_asdl::Token* TokenForLhsExpr(syntax_asdl::sh_lhs_t* node) {
   syntax_asdl::sh_lhs_t* UP_node = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&UP_node);
+
   UP_node = node;
   switch (node->tag()) {
     case sh_lhs_e::Name: {
@@ -32846,6 +36039,9 @@ syntax_asdl::Token* TokenForLhsExpr(syntax_asdl::sh_lhs_t* node) {
 
 syntax_asdl::loc_t* TokenForExpr(syntax_asdl::expr_t* node) {
   syntax_asdl::expr_t* UP_node = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&UP_node);
+
   UP_node = node;
   switch (node->tag()) {
     case expr_e::Const: {
@@ -33011,10 +36207,15 @@ void _BaseTrail::Clear() {
 }
 
 void _BaseTrail::SetLatestWords(List<syntax_asdl::CompoundWord*>* words, List<syntax_asdl::Redir*>* redirects) {
+  StackRoot _root0(&words);
+  StackRoot _root1(&redirects);
+
   ;  // pass
 }
 
 void _BaseTrail::AppendToken(syntax_asdl::Token* token) {
+  StackRoot _root0(&token);
+
   ;  // pass
 }
 
@@ -33048,6 +36249,9 @@ void Trail::Clear() {
 }
 
 void Trail::SetLatestWords(List<syntax_asdl::CompoundWord*>* words, List<syntax_asdl::Redir*>* redirects) {
+  StackRoot _root0(&words);
+  StackRoot _root1(&redirects);
+
   if (this->_expanding_alias) {
     this->alias_words = words;
     return ;
@@ -33057,6 +36261,8 @@ void Trail::SetLatestWords(List<syntax_asdl::CompoundWord*>* words, List<syntax_
 }
 
 void Trail::AppendToken(syntax_asdl::Token* token) {
+  StackRoot _root0(&token);
+
   if (this->_expanding_alias) {
     return ;
   }
@@ -33079,11 +36285,16 @@ ParseContext::ParseContext(alloc::Arena* arena, optview::Parse* parse_opts, Dict
 }
 
 void ParseContext::Init_Trail(parse_lib::_BaseTrail* trail) {
+  StackRoot _root0(&trail);
+
   this->trail = trail;
 }
 
 lexer::Lexer* ParseContext::MakeLexer(reader::_Reader* line_reader) {
   lexer::LineLexer* line_lexer = nullptr;
+  StackRoot _root0(&line_reader);
+  StackRoot _root1(&line_lexer);
+
   line_lexer = Alloc<lexer::LineLexer>(line_reader->arena);
   return Alloc<lexer::Lexer>(line_lexer, line_reader);
 }
@@ -33092,6 +36303,11 @@ cmd_parse::CommandParser* ParseContext::MakeOshParser(reader::_Reader* line_read
   lexer::Lexer* lx = nullptr;
   word_parse::WordParser* w_parser = nullptr;
   cmd_parse::CommandParser* c_parser = nullptr;
+  StackRoot _root0(&line_reader);
+  StackRoot _root1(&lx);
+  StackRoot _root2(&w_parser);
+  StackRoot _root3(&c_parser);
+
   lx = this->MakeLexer(line_reader);
   if (emit_comp_dummy) {
     lx->EmitCompDummy();
@@ -33106,6 +36322,12 @@ cmd_parse::CommandParser* ParseContext::MakeConfigParser(reader::_Reader* line_r
   optview::Parse* parse_opts = nullptr;
   word_parse::WordParser* w_parser = nullptr;
   cmd_parse::CommandParser* c_parser = nullptr;
+  StackRoot _root0(&line_reader);
+  StackRoot _root1(&lx);
+  StackRoot _root2(&parse_opts);
+  StackRoot _root3(&w_parser);
+  StackRoot _root4(&c_parser);
+
   lx = this->MakeLexer(line_reader);
   parse_opts = state::MakeYshParseOpts();
   w_parser = Alloc<word_parse::WordParser>(this, lx, line_reader);
@@ -33115,11 +36337,17 @@ cmd_parse::CommandParser* ParseContext::MakeConfigParser(reader::_Reader* line_r
 
 word_parse::WordParser* ParseContext::MakeWordParserForHereDoc(reader::_Reader* line_reader) {
   lexer::Lexer* lx = nullptr;
+  StackRoot _root0(&line_reader);
+  StackRoot _root1(&lx);
+
   lx = this->MakeLexer(line_reader);
   return Alloc<word_parse::WordParser>(this, lx, line_reader);
 }
 
 word_parse::WordParser* ParseContext::MakeWordParser(lexer::Lexer* lx, reader::_Reader* line_reader) {
+  StackRoot _root0(&lx);
+  StackRoot _root1(&line_reader);
+
   return Alloc<word_parse::WordParser>(this, lx, line_reader);
 }
 
@@ -33129,6 +36357,14 @@ tdop::TdopParser* ParseContext::MakeArithParser(BigStr* code_str, syntax_asdl::l
   lexer::Lexer* lx = nullptr;
   word_parse::WordParser* w_parser = nullptr;
   tdop::TdopParser* a_parser = nullptr;
+  StackRoot _root0(&code_str);
+  StackRoot _root1(&blame_loc);
+  StackRoot _root2(&arena);
+  StackRoot _root3(&line_reader);
+  StackRoot _root4(&lx);
+  StackRoot _root5(&w_parser);
+  StackRoot _root6(&a_parser);
+
   arena = Alloc<alloc::Arena>();
   arena->PushSource(Alloc<source::Dynamic>(S_Aou, blame_loc));
   line_reader = reader::StringLineReader(code_str, arena);
@@ -33142,6 +36378,11 @@ tdop::TdopParser* ParseContext::MakeArithParser(BigStr* code_str, syntax_asdl::l
 cmd_parse::CommandParser* ParseContext::MakeParserForCommandSub(reader::_Reader* line_reader, lexer::Lexer* lexer, int eof_id) {
   word_parse::WordParser* w_parser = nullptr;
   cmd_parse::CommandParser* c_parser = nullptr;
+  StackRoot _root0(&line_reader);
+  StackRoot _root1(&lexer);
+  StackRoot _root2(&w_parser);
+  StackRoot _root3(&c_parser);
+
   w_parser = Alloc<word_parse::WordParser>(this, lexer, line_reader);
   c_parser = Alloc<cmd_parse::CommandParser>(this, this->parse_opts, w_parser, lexer, line_reader, eof_id);
   return c_parser;
@@ -33150,6 +36391,10 @@ cmd_parse::CommandParser* ParseContext::MakeParserForCommandSub(reader::_Reader*
 word_parse::WordParser* ParseContext::MakeWordParserForPlugin(BigStr* code_str) {
   reader::FileLineReader* line_reader = nullptr;
   lexer::Lexer* lx = nullptr;
+  StackRoot _root0(&code_str);
+  StackRoot _root1(&line_reader);
+  StackRoot _root2(&lx);
+
   line_reader = reader::StringLineReader(code_str, this->arena);
   lx = this->MakeLexer(line_reader);
   return Alloc<word_parse::WordParser>(this, lx, line_reader);
@@ -33166,7 +36411,9 @@ Tuple2<syntax_asdl::VarDecl*, syntax_asdl::Token*> ParseContext::ParseVarDecl(sy
   syntax_asdl::VarDecl* ast_node = nullptr;
   StackRoot _root0(&kw_token);
   StackRoot _root1(&lexer);
-  StackRoot _root2(&last_token);
+  StackRoot _root2(&e_parser);
+  StackRoot _root3(&last_token);
+  StackRoot _root4(&ast_node);
 
   e_parser = this->_YshParser();
   {  // with
@@ -33188,7 +36435,9 @@ Tuple2<syntax_asdl::Mutation*, syntax_asdl::Token*> ParseContext::ParseMutation(
   syntax_asdl::Mutation* ast_node = nullptr;
   StackRoot _root0(&kw_token);
   StackRoot _root1(&lexer);
-  StackRoot _root2(&last_token);
+  StackRoot _root2(&e_parser);
+  StackRoot _root3(&last_token);
+  StackRoot _root4(&ast_node);
 
   e_parser = this->_YshParser();
   {  // with
@@ -33209,7 +36458,8 @@ void ParseContext::ParseProcCallArgs(lexer::Lexer* lx, syntax_asdl::ArgList* out
   syntax_asdl::Token* last_token = nullptr;
   StackRoot _root0(&lx);
   StackRoot _root1(&out);
-  StackRoot _root2(&last_token);
+  StackRoot _root2(&e_parser);
+  StackRoot _root3(&last_token);
 
   e_parser = this->_YshParser();
   {  // with
@@ -33229,7 +36479,9 @@ Tuple2<syntax_asdl::expr_t*, syntax_asdl::Token*> ParseContext::ParseYshExpr(lex
   syntax_asdl::Token* last_token = nullptr;
   syntax_asdl::expr_t* ast_node = nullptr;
   StackRoot _root0(&lx);
-  StackRoot _root1(&last_token);
+  StackRoot _root1(&e_parser);
+  StackRoot _root2(&last_token);
+  StackRoot _root3(&ast_node);
 
   e_parser = this->_YshParser();
   {  // with
@@ -33250,7 +36502,10 @@ Tuple3<syntax_asdl::pat_t*, syntax_asdl::Token*, syntax_asdl::Token*> ParseConte
   syntax_asdl::Token* left_tok = nullptr;
   syntax_asdl::pat_t* pattern = nullptr;
   StackRoot _root0(&lexer);
-  StackRoot _root1(&last_token);
+  StackRoot _root1(&e_parser);
+  StackRoot _root2(&last_token);
+  StackRoot _root3(&left_tok);
+  StackRoot _root4(&pattern);
 
   e_parser = this->_YshParser();
   {  // with
@@ -33271,7 +36526,8 @@ syntax_asdl::Token* ParseContext::ParseProc(lexer::Lexer* lexer, syntax_asdl::Pr
   syntax_asdl::Token* last_token = nullptr;
   StackRoot _root0(&lexer);
   StackRoot _root1(&out);
-  StackRoot _root2(&last_token);
+  StackRoot _root2(&e_parser);
+  StackRoot _root3(&last_token);
 
   e_parser = this->_YshParser();
   {  // with
@@ -33291,7 +36547,8 @@ syntax_asdl::Token* ParseContext::ParseFunc(lexer::Lexer* lexer, syntax_asdl::Fu
   syntax_asdl::Token* last_token = nullptr;
   StackRoot _root0(&lexer);
   StackRoot _root1(&out);
-  StackRoot _root2(&last_token);
+  StackRoot _root2(&e_parser);
+  StackRoot _root3(&last_token);
 
   e_parser = this->_YshParser();
   {  // with
@@ -33331,6 +36588,8 @@ Tuple2<syntax_asdl::SourceLine*, int> _Reader::GetLine() {
   syntax_asdl::SourceLine* eof_line = nullptr;
   syntax_asdl::SourceLine* src_line = nullptr;
   StackRoot _root0(&line_str);
+  StackRoot _root1(&eof_line);
+  StackRoot _root2(&src_line);
 
   line_str = this->_GetLine();
   if (line_str == nullptr) {
@@ -33365,6 +36624,8 @@ FileLineReader::FileLineReader(mylib::LineReader* f, alloc::Arena* arena) : ::re
 
 BigStr* FileLineReader::_GetLine() {
   BigStr* line = nullptr;
+  StackRoot _root0(&line);
+
   line = this->f->readline();
   if (len(line) == 0) {
     return nullptr;
@@ -33380,6 +36641,9 @@ bool FileLineReader::LastLineHint() {
 }
 
 reader::FileLineReader* StringLineReader(BigStr* s, alloc::Arena* arena) {
+  StackRoot _root0(&s);
+  StackRoot _root1(&arena);
+
   return Alloc<FileLineReader>(Alloc<mylib::BufLineReader>(s), arena);
 }
 
@@ -33394,6 +36658,9 @@ Tuple2<syntax_asdl::SourceLine*, int> VirtualLineReader::GetLine() {
   syntax_asdl::SourceLine* eof_line = nullptr;
   syntax_asdl::SourceLine* src_line = nullptr;
   int start_offset;
+  StackRoot _root0(&eof_line);
+  StackRoot _root1(&src_line);
+
   if (this->pos == this->num_lines) {
     eof_line = nullptr;
     return Tuple2<syntax_asdl::SourceLine*, int>(eof_line, 0);
@@ -33413,6 +36680,10 @@ Tuple2<syntax_asdl::SourceLine*, int> VirtualLineReader::GetLine() {
 BigStr* _PlainPromptInput(BigStr* prompt) {
   mylib::Writer* w = nullptr;
   BigStr* line = nullptr;
+  StackRoot _root0(&prompt);
+  StackRoot _root1(&w);
+  StackRoot _root2(&line);
+
   w = mylib::Stderr();
   w->write(prompt);
   w->flush();
@@ -33439,6 +36710,8 @@ void InteractiveLineReader::Reset() {
 
 BigStr* InteractiveLineReader::_ReadlinePromptInput() {
   BigStr* line = nullptr;
+  StackRoot _root0(&line);
+
   // if MYCPP
   {
     line = this->line_input->prompt_input(this->prompt_str);
@@ -33449,6 +36722,8 @@ BigStr* InteractiveLineReader::_ReadlinePromptInput() {
 
 BigStr* InteractiveLineReader::_GetLine() {
   BigStr* line = nullptr;
+  StackRoot _root0(&line);
+
   if (this->render_ps1) {
     this->prompt_str = this->prompt_ev->EvalFirstPrompt();
     this->prompt_state->SetLastPrompt(this->prompt_str);
@@ -33492,6 +36767,12 @@ void _AbbreviateToken(syntax_asdl::Token* tok, List<hnode_asdl::hnode_t*>* out) 
   BigStr* tok_str = nullptr;
   hnode::Leaf* n1 = nullptr;
   hnode::Leaf* n2 = nullptr;
+  StackRoot _root0(&tok);
+  StackRoot _root1(&out);
+  StackRoot _root2(&tok_str);
+  StackRoot _root3(&n1);
+  StackRoot _root4(&n2);
+
   tok_str = tok->line->content->slice(tok->col, (tok->col + tok->length));
   n1 = runtime::NewLeaf(Id_str(tok->id, false), color_e::OtherConst);
   out->append(n1);
@@ -33501,6 +36782,9 @@ void _AbbreviateToken(syntax_asdl::Token* tok, List<hnode_asdl::hnode_t*>* out) 
 
 hnode_asdl::hnode_t* _Token(syntax_asdl::Token* obj) {
   hnode::Record* p_node = nullptr;
+  StackRoot _root0(&obj);
+  StackRoot _root1(&p_node);
+
   p_node = runtime::NewRecord(S_Aoo);
   p_node->left = S_eox;
   p_node->right = S_jye;
@@ -33511,12 +36795,16 @@ hnode_asdl::hnode_t* _Token(syntax_asdl::Token* obj) {
 
 hnode_asdl::hnode_t* _CompoundWord(syntax_asdl::CompoundWord* obj) {
   hnode::Record* p_node = nullptr;
+  StackRoot _root0(&obj);
+  StackRoot _root1(&p_node);
+
   p_node = runtime::NewRecord(S_pfC);
   p_node->left = S_ijB;
   p_node->right = S_hxb;
   p_node->unnamed_fields = Alloc<List<hnode_asdl::hnode_t*>>();
   for (ListIter<syntax_asdl::word_part_t*> it(obj->parts); !it.Done(); it.Next()) {
     syntax_asdl::word_part_t* part = it.Value();
+    StackRoot _for(&part  );
     p_node->unnamed_fields->append(part->PrettyTree(true));
   }
   return p_node;
@@ -33524,6 +36812,9 @@ hnode_asdl::hnode_t* _CompoundWord(syntax_asdl::CompoundWord* obj) {
 
 hnode_asdl::hnode_t* _DoubleQuoted(syntax_asdl::DoubleQuoted* obj) {
   hnode::Record* p_node = nullptr;
+  StackRoot _root0(&obj);
+  StackRoot _root1(&p_node);
+
   if (obj->left->id != Id::Left_DoubleQuote) {
     return nullptr;
   }
@@ -33531,6 +36822,7 @@ hnode_asdl::hnode_t* _DoubleQuoted(syntax_asdl::DoubleQuoted* obj) {
   p_node->unnamed_fields = Alloc<List<hnode_asdl::hnode_t*>>();
   for (ListIter<syntax_asdl::word_part_t*> it(obj->parts); !it.Done(); it.Next()) {
     syntax_asdl::word_part_t* part = it.Value();
+    StackRoot _for(&part  );
     p_node->unnamed_fields->append(part->PrettyTree(true));
   }
   return p_node;
@@ -33539,6 +36831,10 @@ hnode_asdl::hnode_t* _DoubleQuoted(syntax_asdl::DoubleQuoted* obj) {
 hnode_asdl::hnode_t* _SingleQuoted(syntax_asdl::SingleQuoted* obj) {
   hnode::Record* p_node = nullptr;
   hnode::Leaf* n2 = nullptr;
+  StackRoot _root0(&obj);
+  StackRoot _root1(&p_node);
+  StackRoot _root2(&n2);
+
   if (obj->left->id != Id::Left_SingleQuote) {
     return nullptr;
   }
@@ -33554,6 +36850,12 @@ hnode_asdl::hnode_t* _SimpleVarSub(syntax_asdl::SimpleVarSub* obj) {
   syntax_asdl::Token* tok = nullptr;
   BigStr* var_name = nullptr;
   hnode::Leaf* n1 = nullptr;
+  StackRoot _root0(&obj);
+  StackRoot _root1(&p_node);
+  StackRoot _root2(&tok);
+  StackRoot _root3(&var_name);
+  StackRoot _root4(&n1);
+
   p_node = runtime::NewRecord(S_Czx);
   p_node->unnamed_fields = Alloc<List<hnode_asdl::hnode_t*>>();
   if ((obj->tok->id == Id::VSub_DollarName || obj->tok->id == Id::VSub_Number)) {
@@ -33571,6 +36873,9 @@ hnode_asdl::hnode_t* _SimpleVarSub(syntax_asdl::SimpleVarSub* obj) {
 
 hnode_asdl::hnode_t* _BracedVarSub(syntax_asdl::BracedVarSub* obj) {
   hnode::Record* p_node = nullptr;
+  StackRoot _root0(&obj);
+  StackRoot _root1(&p_node);
+
   p_node = runtime::NewRecord(S_hqF);
   if ((obj->prefix_op != nullptr or (obj->bracket_op != nullptr or obj->suffix_op != nullptr))) {
     return nullptr;
@@ -33582,6 +36887,9 @@ hnode_asdl::hnode_t* _BracedVarSub(syntax_asdl::BracedVarSub* obj) {
 
 hnode_asdl::hnode_t* _command__Simple(command::Simple* obj) {
   hnode::Record* p_node = nullptr;
+  StackRoot _root0(&obj);
+  StackRoot _root1(&p_node);
+
   p_node = runtime::NewRecord(S_sjc);
   if ((len(obj->more_env) or (obj->typed_args != nullptr or (obj->block != nullptr or obj->is_last_cmd == true)))) {
     return nullptr;
@@ -33589,6 +36897,7 @@ hnode_asdl::hnode_t* _command__Simple(command::Simple* obj) {
   p_node->unnamed_fields = Alloc<List<hnode_asdl::hnode_t*>>();
   for (ListIter<syntax_asdl::word_t*> it(obj->words); !it.Done(); it.Next()) {
     syntax_asdl::word_t* w = it.Value();
+    StackRoot _for(&w  );
     p_node->unnamed_fields->append(w->PrettyTree(true));
   }
   return p_node;
@@ -33597,6 +36906,10 @@ hnode_asdl::hnode_t* _command__Simple(command::Simple* obj) {
 hnode_asdl::hnode_t* _expr__Var(expr::Var* obj) {
   hnode::Record* p_node = nullptr;
   hnode::Leaf* n1 = nullptr;
+  StackRoot _root0(&obj);
+  StackRoot _root1(&p_node);
+  StackRoot _root2(&n1);
+
   p_node = runtime::NewRecord(S_CsA);
   n1 = runtime::NewLeaf(obj->name, color_e::StringConst);
   p_node->unnamed_fields = NewList<hnode_asdl::hnode_t*>(std::initializer_list<hnode_asdl::hnode_t*>{n1});
@@ -33608,6 +36921,12 @@ hnode_asdl::hnode_t* _expr__Const(expr::Const* obj) {
   syntax_asdl::Token* tok = nullptr;
   hnode::Leaf* n1 = nullptr;
   hnode::Leaf* n2 = nullptr;
+  StackRoot _root0(&obj);
+  StackRoot _root1(&p_node);
+  StackRoot _root2(&tok);
+  StackRoot _root3(&n1);
+  StackRoot _root4(&n2);
+
   p_node = runtime::NewRecord(S_wcu);
   tok = obj->c;
   n1 = runtime::NewLeaf(Id_str(tok->id, false), color_e::OtherConst);
@@ -33641,6 +36960,8 @@ using value_asdl::LiteralBlock;
 using error::e_usage;
 
 void DoesNotAccept(runtime_asdl::ProcArgs* proc_args) {
+  StackRoot _root0(&proc_args);
+
   if (proc_args != nullptr) {
     e_usage(S_rDq, proc_args->typed_args->left);
   }
@@ -33649,6 +36970,10 @@ void DoesNotAccept(runtime_asdl::ProcArgs* proc_args) {
 syntax_asdl::command_t* OptionalBlockAsFrag(cmd_value::Argv* cmd_val) {
   typed_args::Reader* r = nullptr;
   syntax_asdl::command_t* cmd = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&r);
+  StackRoot _root2(&cmd);
+
   r = ReaderForProc(cmd_val);
   cmd = r->OptionalBlockAsFrag();
   r->Done();
@@ -33658,6 +36983,10 @@ syntax_asdl::command_t* OptionalBlockAsFrag(cmd_value::Argv* cmd_val) {
 syntax_asdl::command_t* RequiredBlockAsFrag(cmd_value::Argv* cmd_val) {
   typed_args::Reader* r = nullptr;
   syntax_asdl::command_t* cmd = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&r);
+  StackRoot _root2(&cmd);
+
   r = ReaderForProc(cmd_val);
   cmd = r->RequiredBlockAsFrag();
   r->Done();
@@ -33668,6 +36997,11 @@ syntax_asdl::command_t* GetCommandFrag(value::Command* bound) {
   value_asdl::cmd_frag_t* frag = nullptr;
   value_asdl::LiteralBlock* lit = nullptr;
   cmd_frag::Expr* expr = nullptr;
+  StackRoot _root0(&bound);
+  StackRoot _root1(&frag);
+  StackRoot _root2(&lit);
+  StackRoot _root3(&expr);
+
   frag = bound->frag;
   switch (frag->tag()) {
     case cmd_frag_e::LiteralBlock: {
@@ -33693,6 +37027,14 @@ typed_args::Reader* ReaderForProc(cmd_value::Argv* cmd_val) {
   syntax_asdl::ArgList* arg_list = nullptr;
   value_asdl::value_t* block_arg = nullptr;
   typed_args::Reader* rd = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&proc_args);
+  StackRoot _root2(&pos_args);
+  StackRoot _root3(&named_args);
+  StackRoot _root4(&arg_list);
+  StackRoot _root5(&block_arg);
+  StackRoot _root6(&rd);
+
   proc_args = cmd_val->proc_args;
   if (proc_args) {
     pos_args = proc_args->pos_args != nullptr ? proc_args->pos_args : Alloc<List<value_asdl::value_t*>>();
@@ -33727,6 +37069,8 @@ Reader::Reader(List<value_asdl::value_t*>* pos_args, Dict<BigStr*, value_asdl::v
 }
 
 void Reader::SetFallbackLocation(syntax_asdl::loc_t* blame_loc) {
+  StackRoot _root0(&blame_loc);
+
   this->fallback_loc = blame_loc;
 }
 
@@ -33744,6 +37088,8 @@ syntax_asdl::loc_t* Reader::LeastSpecificLocation() {
 syntax_asdl::loc_t* Reader::BlamePos() {
   int pos;
   syntax_asdl::loc_t* l = nullptr;
+  StackRoot _root0(&l);
+
   pos = (this->pos_consumed - 1);
   if (this->is_bound) {
     pos -= 1;
@@ -33762,6 +37108,8 @@ syntax_asdl::loc_t* Reader::BlamePos() {
 
 value_asdl::value_t* Reader::PosValue() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   if (len(this->pos_args) == 0) {
     throw Alloc<error::TypeErrVerbose>(StrFormat("Expected at least %d typed args, but only got %d", (this->pos_consumed + 1), this->pos_consumed), this->LeastSpecificLocation());
   }
@@ -33779,6 +37127,8 @@ value_asdl::value_t* Reader::OptionalValue() {
 }
 
 BigStr* Reader::_ToStr(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::Str) {
     return static_cast<value::Str*>(val)->s;
   }
@@ -33786,6 +37136,8 @@ BigStr* Reader::_ToStr(value_asdl::value_t* val) {
 }
 
 bool Reader::_ToBool(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::Bool) {
     return static_cast<value::Bool*>(val)->b;
   }
@@ -33793,6 +37145,8 @@ bool Reader::_ToBool(value_asdl::value_t* val) {
 }
 
 mops::BigInt Reader::_ToInt(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::Int) {
     return static_cast<value::Int*>(val)->i;
   }
@@ -33800,6 +37154,8 @@ mops::BigInt Reader::_ToInt(value_asdl::value_t* val) {
 }
 
 double Reader::_ToFloat(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::Float) {
     return static_cast<value::Float*>(val)->f;
   }
@@ -33807,6 +37163,8 @@ double Reader::_ToFloat(value_asdl::value_t* val) {
 }
 
 List<BigStr*>* Reader::_ToInternalStringArray(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::InternalStringArray) {
     return static_cast<value::InternalStringArray*>(val)->strs;
   }
@@ -33814,6 +37172,8 @@ List<BigStr*>* Reader::_ToInternalStringArray(value_asdl::value_t* val) {
 }
 
 value::BashArray* Reader::_ToBashArray(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::BashArray) {
     return static_cast<value::BashArray*>(val);
   }
@@ -33821,6 +37181,8 @@ value::BashArray* Reader::_ToBashArray(value_asdl::value_t* val) {
 }
 
 List<value_asdl::value_t*>* Reader::_ToList(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::List) {
     return static_cast<value::List*>(val)->items;
   }
@@ -33828,6 +37190,8 @@ List<value_asdl::value_t*>* Reader::_ToList(value_asdl::value_t* val) {
 }
 
 Dict<BigStr*, value_asdl::value_t*>* Reader::_ToDict(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::Dict) {
     return static_cast<value::Dict*>(val)->d;
   }
@@ -33835,6 +37199,8 @@ Dict<BigStr*, value_asdl::value_t*>* Reader::_ToDict(value_asdl::value_t* val) {
 }
 
 value_asdl::Obj* Reader::_ToObj(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::Obj) {
     return static_cast<Obj*>(val);
   }
@@ -33842,6 +37208,8 @@ value_asdl::Obj* Reader::_ToObj(value_asdl::value_t* val) {
 }
 
 value::Place* Reader::_ToPlace(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::Place) {
     return static_cast<value::Place*>(val);
   }
@@ -33849,6 +37217,8 @@ value::Place* Reader::_ToPlace(value_asdl::value_t* val) {
 }
 
 value_asdl::RegexMatch* Reader::_ToMatch(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::Match) {
     return static_cast<RegexMatch*>(val);
   }
@@ -33856,6 +37226,8 @@ value_asdl::RegexMatch* Reader::_ToMatch(value_asdl::value_t* val) {
 }
 
 value::Eggex* Reader::_ToEggex(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::Eggex) {
     return static_cast<value::Eggex*>(val);
   }
@@ -33863,6 +37235,8 @@ value::Eggex* Reader::_ToEggex(value_asdl::value_t* val) {
 }
 
 value::Expr* Reader::_ToExpr(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::Expr) {
     return static_cast<value::Expr*>(val);
   }
@@ -33870,6 +37244,8 @@ value::Expr* Reader::_ToExpr(value_asdl::value_t* val) {
 }
 
 Dict<BigStr*, runtime_asdl::Cell*>* Reader::_ToFrame(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::Frame) {
     return static_cast<value::Frame*>(val)->frame;
   }
@@ -33877,6 +37253,8 @@ Dict<BigStr*, runtime_asdl::Cell*>* Reader::_ToFrame(value_asdl::value_t* val) {
 }
 
 syntax_asdl::debug_frame_t* Reader::_ToDebugFrame(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::DebugFrame) {
     return static_cast<value::DebugFrame*>(val)->frame;
   }
@@ -33885,6 +37263,9 @@ syntax_asdl::debug_frame_t* Reader::_ToDebugFrame(value_asdl::value_t* val) {
 
 syntax_asdl::command_t* Reader::_ToCommandFrag(value_asdl::value_t* val) {
   value::Command* bound = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&bound);
+
   if (val->tag() == value_e::CommandFrag) {
     return static_cast<value::CommandFrag*>(val)->c;
   }
@@ -33896,6 +37277,8 @@ syntax_asdl::command_t* Reader::_ToCommandFrag(value_asdl::value_t* val) {
 }
 
 value::Command* Reader::_ToCommand(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::Command) {
     return static_cast<value::Command*>(val);
   }
@@ -33903,6 +37286,8 @@ value::Command* Reader::_ToCommand(value_asdl::value_t* val) {
 }
 
 value::Proc* Reader::_ToProc(value_asdl::value_t* val) {
+  StackRoot _root0(&val);
+
   if (val->tag() == value_e::Proc) {
     return static_cast<value::Proc*>(val);
   }
@@ -33911,12 +37296,17 @@ value::Proc* Reader::_ToProc(value_asdl::value_t* val) {
 
 BigStr* Reader::PosStr() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToStr(val);
 }
 
 BigStr* Reader::OptionalStr(BigStr* default_) {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&default_);
+  StackRoot _root1(&val);
+
   val = this->OptionalValue();
   if (val == nullptr) {
     return default_;
@@ -33926,18 +37316,24 @@ BigStr* Reader::OptionalStr(BigStr* default_) {
 
 bool Reader::PosBool() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToBool(val);
 }
 
 mops::BigInt Reader::PosInt() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToInt(val);
 }
 
 mops::BigInt Reader::OptionalInt(int default_) {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->OptionalValue();
   if (val == nullptr) {
     return mops::IntWiden(default_);
@@ -33947,90 +37343,120 @@ mops::BigInt Reader::OptionalInt(int default_) {
 
 double Reader::PosFloat() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToFloat(val);
 }
 
 List<BigStr*>* Reader::PosInternalStringArray() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToInternalStringArray(val);
 }
 
 value::BashArray* Reader::PosBashArray() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToBashArray(val);
 }
 
 List<value_asdl::value_t*>* Reader::PosList() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToList(val);
 }
 
 Dict<BigStr*, value_asdl::value_t*>* Reader::PosDict() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToDict(val);
 }
 
 value_asdl::Obj* Reader::PosObj() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToObj(val);
 }
 
 value::Place* Reader::PosPlace() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToPlace(val);
 }
 
 value::Eggex* Reader::PosEggex() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToEggex(val);
 }
 
 value_asdl::RegexMatch* Reader::PosMatch() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToMatch(val);
 }
 
 Dict<BigStr*, runtime_asdl::Cell*>* Reader::PosFrame() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToFrame(val);
 }
 
 syntax_asdl::debug_frame_t* Reader::PosDebugFrame() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToDebugFrame(val);
 }
 
 syntax_asdl::command_t* Reader::PosCommandFrag() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToCommandFrag(val);
 }
 
 value::Command* Reader::PosCommand() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToCommand(val);
 }
 
 value::Proc* Reader::PosProc() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToProc(val);
 }
 
 value::Expr* Reader::PosExpr() {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&val);
+
   val = this->PosValue();
   return this->_ToExpr(val);
 }
@@ -34058,18 +37484,27 @@ syntax_asdl::command_t* Reader::OptionalBlockAsFrag() {
 
 List<value_asdl::value_t*>* Reader::RestPos() {
   List<value_asdl::value_t*>* ret = nullptr;
+  StackRoot _root0(&ret);
+
   ret = this->pos_args;
   this->pos_args = Alloc<List<value_asdl::value_t*>>();
   return ret;
 }
 
 syntax_asdl::loc_t* Reader::_BlameNamed(BigStr* name) {
+  StackRoot _root0(&name);
+
   return this->LeastSpecificLocation();
 }
 
 BigStr* Reader::NamedStr(BigStr* param_name, BigStr* default_) {
   value_asdl::value_t* val = nullptr;
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&param_name);
+  StackRoot _root1(&default_);
+  StackRoot _root2(&val);
+  StackRoot _root3(&UP_val);
+
   if (!dict_contains(this->named_args, param_name)) {
     return default_;
   }
@@ -34086,6 +37521,10 @@ BigStr* Reader::NamedStr(BigStr* param_name, BigStr* default_) {
 bool Reader::NamedBool(BigStr* param_name, bool default_) {
   value_asdl::value_t* val = nullptr;
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&param_name);
+  StackRoot _root1(&val);
+  StackRoot _root2(&UP_val);
+
   if (!dict_contains(this->named_args, param_name)) {
     return default_;
   }
@@ -34102,6 +37541,10 @@ bool Reader::NamedBool(BigStr* param_name, bool default_) {
 mops::BigInt Reader::NamedInt(BigStr* param_name, int default_) {
   value_asdl::value_t* val = nullptr;
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&param_name);
+  StackRoot _root1(&val);
+  StackRoot _root2(&UP_val);
+
   if (!dict_contains(this->named_args, param_name)) {
     return mops::IntWiden(default_);
   }
@@ -34118,6 +37561,10 @@ mops::BigInt Reader::NamedInt(BigStr* param_name, int default_) {
 double Reader::NamedFloat(BigStr* param_name, double default_) {
   value_asdl::value_t* val = nullptr;
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&param_name);
+  StackRoot _root1(&val);
+  StackRoot _root2(&UP_val);
+
   if (!dict_contains(this->named_args, param_name)) {
     return default_;
   }
@@ -34134,6 +37581,11 @@ double Reader::NamedFloat(BigStr* param_name, double default_) {
 List<value_asdl::value_t*>* Reader::NamedList(BigStr* param_name, List<value_asdl::value_t*>* default_) {
   value_asdl::value_t* val = nullptr;
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&param_name);
+  StackRoot _root1(&default_);
+  StackRoot _root2(&val);
+  StackRoot _root3(&UP_val);
+
   if (!dict_contains(this->named_args, param_name)) {
     return default_;
   }
@@ -34150,6 +37602,11 @@ List<value_asdl::value_t*>* Reader::NamedList(BigStr* param_name, List<value_asd
 Dict<BigStr*, value_asdl::value_t*>* Reader::NamedDict(BigStr* param_name, Dict<BigStr*, value_asdl::value_t*>* default_) {
   value_asdl::value_t* val = nullptr;
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&param_name);
+  StackRoot _root1(&default_);
+  StackRoot _root2(&val);
+  StackRoot _root3(&UP_val);
+
   if (!dict_contains(this->named_args, param_name)) {
     return default_;
   }
@@ -34165,6 +37622,8 @@ Dict<BigStr*, value_asdl::value_t*>* Reader::NamedDict(BigStr* param_name, Dict<
 
 Dict<BigStr*, value_asdl::value_t*>* Reader::RestNamed() {
   Dict<BigStr*, value_asdl::value_t*>* ret = nullptr;
+  StackRoot _root0(&ret);
+
   ret = this->named_args;
   this->named_args = Alloc<Dict<BigStr*, value_asdl::value_t*>>();
   return ret;
@@ -34174,6 +37633,9 @@ void Reader::Done() {
   int n;
   BigStr* bad_args = nullptr;
   syntax_asdl::loc_t* blame = nullptr;
+  StackRoot _root0(&bad_args);
+  StackRoot _root1(&blame);
+
   if (len(this->pos_args)) {
     n = this->pos_consumed;
     if (this->is_bound) {
@@ -34239,6 +37701,10 @@ syntax_asdl::arith_expr_t* NullUnaryMinus(tdop::TdopParser* p, syntax_asdl::word
 syntax_asdl::arith_expr_t* LeftIncDec(tdop::TdopParser* p, syntax_asdl::word_t* w, syntax_asdl::arith_expr_t* left, int rbp) {
   int arith_id;
   int op_id;
+  StackRoot _root0(&p);
+  StackRoot _root1(&w);
+  StackRoot _root2(&left);
+
   arith_id = word_::ArithId(w);
   if (arith_id == Id::Arith_DPlus) {
     op_id = Id::Node_PostDPlus;
@@ -34262,6 +37728,7 @@ syntax_asdl::arith_expr_t* LeftIndex(tdop::TdopParser* p, syntax_asdl::word_t* w
   StackRoot _root1(&w);
   StackRoot _root2(&left);
   StackRoot _root3(&index);
+  StackRoot _root4(&tok);
 
   if (!tdop::IsIndexable(left)) {
     p_die(S_fAu, Alloc<loc::Word>(w));
@@ -34314,6 +37781,8 @@ BoolParser::BoolParser(word_parse::WordEmitter* w_parser) {
 void BoolParser::_NextOne(types_asdl::lex_mode_t lex_mode) {
   int n;
   syntax_asdl::word_t* w = nullptr;
+  StackRoot _root0(&w);
+
   n = len(this->words);
   if (n == 2) {
     this->words->set(0, this->words->at(1));
@@ -34348,6 +37817,8 @@ void BoolParser::_Next(types_asdl::lex_mode_t lex_mode) {
 syntax_asdl::word_t* BoolParser::_LookAhead() {
   int n;
   syntax_asdl::word_t* w = nullptr;
+  StackRoot _root0(&w);
+
   n = len(this->words);
   if (n != 1) {
     assert(0);  // AssertionError
@@ -34360,6 +37831,9 @@ syntax_asdl::word_t* BoolParser::_LookAhead() {
 Tuple2<syntax_asdl::bool_expr_t*, syntax_asdl::Token*> BoolParser::Parse() {
   syntax_asdl::bool_expr_t* node = nullptr;
   syntax_asdl::Token* right = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&right);
+
   this->_Next();
   node = this->ParseExpr();
   if (this->bool_id != Id::Lit_DRightBracket) {
@@ -34375,6 +37849,8 @@ bool BoolParser::_TestAtEnd() {
 
 syntax_asdl::bool_expr_t* BoolParser::ParseForBuiltin() {
   syntax_asdl::bool_expr_t* node = nullptr;
+  StackRoot _root0(&node);
+
   this->_Next();
   node = this->ParseExpr();
   if (this->bool_id != Id::Eof_Real) {
@@ -34386,6 +37862,9 @@ syntax_asdl::bool_expr_t* BoolParser::ParseForBuiltin() {
 syntax_asdl::bool_expr_t* BoolParser::ParseExpr() {
   syntax_asdl::bool_expr_t* left = nullptr;
   syntax_asdl::bool_expr_t* right = nullptr;
+  StackRoot _root0(&left);
+  StackRoot _root1(&right);
+
   left = this->ParseTerm();
   if ((this->bool_id == Id::Op_DPipe || this->bool_id == Id::BoolUnary_o)) {
     this->_Next();
@@ -34400,6 +37879,9 @@ syntax_asdl::bool_expr_t* BoolParser::ParseExpr() {
 syntax_asdl::bool_expr_t* BoolParser::ParseTerm() {
   syntax_asdl::bool_expr_t* left = nullptr;
   syntax_asdl::bool_expr_t* right = nullptr;
+  StackRoot _root0(&left);
+  StackRoot _root1(&right);
+
   left = this->ParseNegatedFactor();
   if ((this->bool_id == Id::Op_DAmp || this->bool_id == Id::BoolUnary_a)) {
     this->_Next();
@@ -34413,6 +37895,8 @@ syntax_asdl::bool_expr_t* BoolParser::ParseTerm() {
 
 syntax_asdl::bool_expr_t* BoolParser::ParseNegatedFactor() {
   syntax_asdl::bool_expr_t* child = nullptr;
+  StackRoot _root0(&child);
+
   if (this->bool_id == Id::KW_Bang) {
     this->_Next();
     child = this->ParseFactor();
@@ -34434,6 +37918,13 @@ syntax_asdl::bool_expr_t* BoolParser::ParseFactor() {
   id_kind_asdl::Kind_t t2_bool_kind;
   syntax_asdl::word_t* left = nullptr;
   syntax_asdl::word_t* right = nullptr;
+  StackRoot _root0(&w);
+  StackRoot _root1(&tilde);
+  StackRoot _root2(&node);
+  StackRoot _root3(&t2);
+  StackRoot _root4(&left);
+  StackRoot _root5(&right);
+
   if (this->bool_kind == Kind::BoolUnary) {
     op = this->bool_id;
     this->_Next();
@@ -34534,6 +38025,8 @@ void _RangeParser::_Next() {
 
 BigStr* _RangeParser::_Eat(int token_type) {
   BigStr* val = nullptr;
+  StackRoot _root0(&val);
+
   if (this->token_type != token_type) {
     throw Alloc<_NotARange>(StrFormat("Expected %d, got %d", token_type, this->token_type));
   }
@@ -34557,6 +38050,10 @@ word_part::BracedRange* _RangeParser::_ParseRange(int range_kind) {
   BigStr* end = nullptr;
   int step;
   word_part::BracedRange* part = nullptr;
+  StackRoot _root0(&start);
+  StackRoot _root1(&end);
+  StackRoot _root2(&part);
+
   start = this->token_val;
   this->_Next();
   this->_Eat(Id::Range_Dots);
@@ -34579,6 +38076,8 @@ word_part::BracedRange* _RangeParser::Parse() {
   int end_num;
   bool upper1;
   bool upper2;
+  StackRoot _root0(&part);
+
   this->_Next();
   if (this->token_type == Id::Range_Int) {
     part = this->_ParseRange(this->token_type);
@@ -34650,6 +38149,11 @@ word_part::BracedRange* _RangePartDetect(syntax_asdl::Token* tok) {
   match::SimpleLexer* lx = nullptr;
   braces::_RangeParser* p = nullptr;
   word_part::BracedRange* part = nullptr;
+  StackRoot _root0(&tok);
+  StackRoot _root1(&lx);
+  StackRoot _root2(&p);
+  StackRoot _root3(&part);
+
   lx = match::BraceRangeLexer(lexer::TokenVal(tok));
   p = Alloc<_RangeParser>(lx, tok);
   try {
@@ -34680,6 +38184,16 @@ word::BracedTree* BraceDetect(syntax_asdl::CompoundWord* w) {
   syntax_asdl::word_part_t* part2 = nullptr;
   syntax_asdl::Token* tok = nullptr;
   braces::_StackFrame* frame = nullptr;
+  StackRoot _root0(&w);
+  StackRoot _root1(&cur_parts);
+  StackRoot _root2(&stack);
+  StackRoot _root3(&UP_part);
+  StackRoot _root4(&new_frame);
+  StackRoot _root5(&range_part);
+  StackRoot _root6(&part2);
+  StackRoot _root7(&tok);
+  StackRoot _root8(&frame);
+
   if (len(w->parts) < 3) {
     return nullptr;
   }
@@ -34689,6 +38203,7 @@ word::BracedTree* BraceDetect(syntax_asdl::CompoundWord* w) {
   i = 0;
   for (ListIter<syntax_asdl::word_part_t*> it(w->parts); !it.Done(); it.Next(), ++i) {
     syntax_asdl::word_part_t* part = it.Value();
+    StackRoot _for(&part  );
     append = true;
     UP_part = part;
     if (part->tag() == word_part_e::Literal) {
@@ -34763,9 +38278,14 @@ word::BracedTree* BraceDetect(syntax_asdl::CompoundWord* w) {
 List<syntax_asdl::word_t*>* BraceDetectAll(List<syntax_asdl::CompoundWord*>* words) {
   List<syntax_asdl::word_t*>* out = nullptr;
   word::BracedTree* brace_tree = nullptr;
+  StackRoot _root0(&words);
+  StackRoot _root1(&out);
+  StackRoot _root2(&brace_tree);
+
   out = Alloc<List<syntax_asdl::word_t*>>();
   for (ListIter<syntax_asdl::CompoundWord*> it(words); !it.Done(); it.Next()) {
     syntax_asdl::CompoundWord* w = it.Value();
+    StackRoot _for(&w  );
     brace_tree = BraceDetect(w);
     if (brace_tree) {
       out->append(brace_tree);
@@ -34778,9 +38298,12 @@ List<syntax_asdl::word_t*>* BraceDetectAll(List<syntax_asdl::CompoundWord*>* wor
 
 int _LeadingZeros(BigStr* s) {
   int n;
+  StackRoot _root0(&s);
+
   n = 0;
   for (StrIter it(s); !it.Done(); it.Next()) {
     BigStr* c = it.Value();
+    StackRoot _for(&c  );
     if (str_equals(c, S_wfw)) {
       n += 1;
     }
@@ -34795,6 +38318,9 @@ BigStr* _IntToString(int i, int width) {
   BigStr* s = nullptr;
   int n;
   BigStr* pad = nullptr;
+  StackRoot _root0(&s);
+  StackRoot _root1(&pad);
+
   s = str(i);
   n = len(s);
   if (n < width) {
@@ -34816,6 +38342,10 @@ List<BigStr*>* _RangeStrings(word_part::BracedRange* part) {
   int step;
   List<BigStr*>* chars = nullptr;
   int ord_end;
+  StackRoot _root0(&part);
+  StackRoot _root1(&nums);
+  StackRoot _root2(&chars);
+
   if (part->kind == Id::Range_Int) {
     nums = Alloc<List<BigStr*>>();
     z1 = _LeadingZeros(part->start);
@@ -34896,7 +38426,12 @@ List<List<syntax_asdl::word_part_t*>*>* _ExpandPart(List<syntax_asdl::word_part_
   StackRoot _root2(&out);
   StackRoot _root3(&prefix);
   StackRoot _root4(&expand_part);
-  StackRoot _root5(&expanded_alts);
+  StackRoot _root5(&UP_part);
+  StackRoot _root6(&expanded_alts);
+  StackRoot _root7(&out_parts);
+  StackRoot _root8(&strs);
+  StackRoot _root9(&out_parts_);
+  StackRoot _root10(&t);
 
   out = Alloc<List<List<syntax_asdl::word_part_t*>*>>();
   prefix = parts->slice(0, first_alt_index);
@@ -34908,12 +38443,15 @@ List<List<syntax_asdl::word_part_t*>*>* _ExpandPart(List<syntax_asdl::word_part_
       expanded_alts = Alloc<List<List<syntax_asdl::word_part_t*>*>>();
       for (ListIter<syntax_asdl::CompoundWord*> it(expand_part->words); !it.Done(); it.Next()) {
         syntax_asdl::CompoundWord* w = it.Value();
+        StackRoot _for(&w      );
         expanded_alts->extend(_BraceExpand(w->parts));
       }
       for (ListIter<List<syntax_asdl::word_part_t*>*> it(expanded_alts); !it.Done(); it.Next()) {
         List<syntax_asdl::word_part_t*>* alt_parts = it.Value();
+        StackRoot _for(&alt_parts      );
         for (ListIter<List<syntax_asdl::word_part_t*>*> it(suffixes); !it.Done(); it.Next()) {
           List<syntax_asdl::word_part_t*>* suffix = it.Value();
+          StackRoot _for(&suffix        );
           out_parts = Alloc<List<syntax_asdl::word_part_t*>>();
           out_parts->extend(prefix);
           out_parts->extend(alt_parts);
@@ -34928,8 +38466,10 @@ List<List<syntax_asdl::word_part_t*>*>* _ExpandPart(List<syntax_asdl::word_part_
       strs = _RangeStrings(expand_part);
       for (ListIter<BigStr*> it(strs); !it.Done(); it.Next()) {
         BigStr* s = it.Value();
+        StackRoot _for(&s      );
         for (ListIter<List<syntax_asdl::word_part_t*>*> it(suffixes); !it.Done(); it.Next()) {
           List<syntax_asdl::word_part_t*>* suffix = it.Value();
+          StackRoot _for(&suffix        );
           out_parts_ = Alloc<List<syntax_asdl::word_part_t*>>();
           out_parts_->extend(prefix);
           t = Alloc<word_part::BracedRangeDigit>(s, expand_part->blame_tok);
@@ -34956,7 +38496,9 @@ List<List<syntax_asdl::word_part_t*>*>* _BraceExpand(List<syntax_asdl::word_part
   List<syntax_asdl::word_part_t*>* tail_parts = nullptr;
   List<List<syntax_asdl::word_part_t*>*>* suffixes = nullptr;
   StackRoot _root0(&parts);
-  StackRoot _root1(&suffixes);
+  StackRoot _root1(&suffix);
+  StackRoot _root2(&tail_parts);
+  StackRoot _root3(&suffixes);
 
   mylib::MaybeCollect();
   num_alts = 0;
@@ -34964,6 +38506,7 @@ List<List<syntax_asdl::word_part_t*>*>* _BraceExpand(List<syntax_asdl::word_part
   i = 0;
   for (ListIter<syntax_asdl::word_part_t*> it(parts); !it.Done(); it.Next(), ++i) {
     syntax_asdl::word_part_t* part = it.Value();
+    StackRoot _for(&part  );
     tag = part->tag();
     if ((tag == word_part_e::BracedTuple || tag == word_part_e::BracedRange)) {
       num_alts += 1;
@@ -35003,10 +38546,13 @@ List<syntax_asdl::CompoundWord*>* BraceExpandWords(List<syntax_asdl::word_t*>* w
   StackRoot _root1(&out);
   StackRoot _root2(&UP_w);
   StackRoot _root3(&parts_list);
+  StackRoot _root4(&expanded);
+  StackRoot _root5(&ti);
 
   out = Alloc<List<syntax_asdl::CompoundWord*>>();
   for (ListIter<syntax_asdl::word_t*> it(words); !it.Done(); it.Next()) {
     syntax_asdl::word_t* w = it.Value();
+    StackRoot _for(&w  );
     UP_w = w;
     switch (w->tag()) {
       case word_e::BracedTree: {
@@ -35014,6 +38560,7 @@ List<syntax_asdl::CompoundWord*>* BraceExpandWords(List<syntax_asdl::word_t*>* w
         parts_list = _BraceExpand(w->parts);
         for (ListIter<List<syntax_asdl::word_part_t*>*> it(parts_list); !it.Done(); it.Next()) {
           List<syntax_asdl::word_part_t*>* parts = it.Value();
+          StackRoot _for(&parts        );
           expanded = Alloc<CompoundWord>(parts);
           ti = word_::TildeDetect2(expanded);
           if (ti) {
@@ -35045,6 +38592,7 @@ namespace cmd_eval {  // define
 using id_kind_asdl::Id;
 using id_kind_asdl::Id_t;
 using option_asdl::option_i;
+using option_asdl::builtin_i;
 using syntax_asdl::IntParamBox;
 using syntax_asdl::loc;
 using syntax_asdl::loc_t;
@@ -35113,6 +38661,10 @@ BigStr* _STRICT_ERREXIT_COND_MSG = S_kvC;
 cmd_value::Argv* MakeBuiltinArgv(List<BigStr*>* argv1) {
   List<BigStr*>* argv = nullptr;
   syntax_asdl::CompoundWord* missing = nullptr;
+  StackRoot _root0(&argv1);
+  StackRoot _root1(&argv);
+  StackRoot _root2(&missing);
+
   argv = NewList<BigStr*>(std::initializer_list<BigStr*>{S_Aoo});
   argv->extend(argv1);
   missing = nullptr;
@@ -35128,6 +38680,9 @@ Deps::Deps() {
 
 syntax_asdl::command_t* _HasManyStatuses(syntax_asdl::command_t* node) {
   syntax_asdl::command_t* UP_node = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&UP_node);
+
   UP_node = node;
   switch (node->tag()) {
     case command_e::Simple: 
@@ -35160,6 +38715,7 @@ syntax_asdl::command_t* _HasManyStatuses(syntax_asdl::command_t* node) {
       command::AndOr* node = static_cast<command::AndOr*>(UP_node);
       for (ListIter<syntax_asdl::command_t*> it(node->children); !it.Done(); it.Next()) {
         syntax_asdl::command_t* c = it.Value();
+        StackRoot _for(&c      );
         if (_HasManyStatuses(c)) {
           return c;
         }
@@ -35173,6 +38729,11 @@ syntax_asdl::command_t* _HasManyStatuses(syntax_asdl::command_t* node) {
 
 value_asdl::value_t* ListInitializeTarget(value_asdl::value_t* old_val, bool has_plus, optview::Exec* exec_opts, syntax_asdl::loc_t* blame_loc, bool destructive) {
   value_asdl::value_t* UP_old_val = nullptr;
+  StackRoot _root0(&old_val);
+  StackRoot _root1(&exec_opts);
+  StackRoot _root2(&blame_loc);
+  StackRoot _root3(&UP_old_val);
+
   UP_old_val = old_val;
   switch (old_val->tag()) {
     case value_e::Undef: {
@@ -35231,6 +38792,7 @@ void ListInitialize(value_asdl::value_t* val, value::InitializerList* initialize
   StackRoot _root2(&exec_opts);
   StackRoot _root3(&blame_loc);
   StackRoot _root4(&arith_ev);
+  StackRoot _root5(&UP_val);
 
   UP_val = val;
   switch (val->tag()) {
@@ -35254,6 +38816,11 @@ value_asdl::value_t* PlusEquals(value_asdl::value_t* old_val, value_asdl::value_
   value_asdl::value_t* UP_old_val = nullptr;
   value_asdl::value_t* UP_val = nullptr;
   int tag;
+  StackRoot _root0(&old_val);
+  StackRoot _root1(&val);
+  StackRoot _root2(&UP_old_val);
+  StackRoot _root3(&UP_val);
+
   UP_old_val = old_val;
   UP_val = val;
   tag = val->tag();
@@ -35302,6 +38869,10 @@ value_asdl::value_t* PlusEquals(value_asdl::value_t* old_val, value_asdl::value_
 bool _PrefixBindingsPersist(runtime_asdl::cmd_value_t* cmd_val) {
   runtime_asdl::cmd_value_t* UP_cmd_val = nullptr;
   BigStr* arg0 = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&UP_cmd_val);
+  StackRoot _root2(&arg0);
+
   UP_cmd_val = cmd_val;
   switch (cmd_val->tag()) {
     case cmd_value_e::Assign: {
@@ -35325,6 +38896,8 @@ bool _PrefixBindingsPersist(runtime_asdl::cmd_value_t* cmd_val) {
 
 int _ToInteger(BigStr* s) {
   int integer;
+  StackRoot _root0(&s);
+
   integer = to_int(s);
   return integer;
 }
@@ -35344,6 +38917,7 @@ int ControlFlowBuiltin::Static(int keyword_id, BigStr* keyword_str, syntax_asdl:
   StackRoot _root1(&keyword_loc);
   StackRoot _root2(&arg_str);
   StackRoot _root3(&arg_loc);
+  StackRoot _root4(&msg);
 
   if (arg_str != nullptr) {
     if ((len(arg_str) == 0 and !this->exec_opts->strict_control_flow())) {
@@ -35393,6 +38967,11 @@ int ControlFlowBuiltin::Run(cmd_value::Argv* cmd_val) {
   syntax_asdl::loc_t* arg_loc = nullptr;
   int keyword_id;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&keyword_str);
+  StackRoot _root2(&keyword_loc);
+  StackRoot _root3(&arg_r);
+  StackRoot _root4(&arg_str);
+  StackRoot _root5(&arg_loc);
 
   keyword_str = cmd_val->argv->at(0);
   keyword_loc = cmd_val->arg_locs->at(0);
@@ -35489,14 +39068,21 @@ void CommandEvaluator::CheckCircularDeps() {
 }
 
 int CommandEvaluator::_RunAssignBuiltin(cmd_value::Assign* cmd_val) {
+  int builtin_id;
   vm::_AssignBuiltin* builtin_func = nullptr;
   List<IOError_OSError*>* io_errors = nullptr;
   int status;
   BigStr* arg0 = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&io_errors);
+  StackRoot _root1(&builtin_func);
+  StackRoot _root2(&io_errors);
+  StackRoot _root3(&arg0);
 
-  builtin_func = this->assign_builtins->get(cmd_val->builtin_id);
+  builtin_id = cmd_val->builtin_id;
+  if ((this->exec_opts->no_osh_builtins() and builtin_id != builtin_i::export_)) {
+    e_die(StrFormat("The %s builtin isn't part of YSH (no_osh_builtins)", cmd_val->argv->at(0)), cmd_val->arg_locs->at(0));
+  }
+  builtin_func = this->assign_builtins->get(builtin_id);
   if (builtin_func == nullptr) {
     e_die(StrFormat("Assignment builtin %r not configured", cmd_val->argv->at(0)), cmd_val->arg_locs->at(0));
   }
@@ -35536,6 +39122,10 @@ void CommandEvaluator::_CheckStatus(int status, runtime_asdl::CommandStatus* cmd
   StackRoot _root0(&cmd_st);
   StackRoot _root1(&node);
   StackRoot _root2(&default_loc);
+  StackRoot _root3(&UP_node);
+  StackRoot _root4(&desc);
+  StackRoot _root5(&msg);
+  StackRoot _root6(&blame_loc);
 
   if (status == 0) {
     return ;
@@ -35593,6 +39183,17 @@ runtime_asdl::RedirValue* CommandEvaluator::_EvalRedirect(syntax_asdl::Redir* r)
   int target_fd;
   BigStr* s = nullptr;
   syntax_asdl::CompoundWord* w = nullptr;
+  StackRoot _root0(&r);
+  StackRoot _root1(&result);
+  StackRoot _root2(&arg);
+  StackRoot _root3(&UP_arg);
+  StackRoot _root4(&b);
+  StackRoot _root5(&files);
+  StackRoot _root6(&val);
+  StackRoot _root7(&t);
+  StackRoot _root8(&s);
+  StackRoot _root9(&w);
+
   result = Alloc<RedirValue>(r->op->id, r->op, r->loc, nullptr);
   arg = r->arg;
   UP_arg = arg;
@@ -35683,6 +39284,7 @@ int CommandEvaluator::_RunSimpleCommand(runtime_asdl::cmd_value_t* cmd_val, runt
   runtime_asdl::cmd_value_t* UP_cmd_val = nullptr;
   StackRoot _root0(&cmd_val);
   StackRoot _root1(&cmd_st);
+  StackRoot _root2(&UP_cmd_val);
 
   UP_cmd_val = cmd_val;
   switch (UP_cmd_val->tag()) {
@@ -35711,9 +39313,14 @@ void CommandEvaluator::_EvalTempEnv(List<syntax_asdl::EnvPair*>* more_env, int f
   value_asdl::LeftName* lval = nullptr;
   value_asdl::value_t* old_val = nullptr;
   StackRoot _root0(&more_env);
+  StackRoot _root1(&val);
+  StackRoot _root2(&initializer);
+  StackRoot _root3(&lval);
+  StackRoot _root4(&old_val);
 
   for (ListIter<syntax_asdl::EnvPair*> it(more_env); !it.Done(); it.Next()) {
     syntax_asdl::EnvPair* e_pair = it.Value();
+    StackRoot _for(&e_pair  );
     val = this->word_ev->EvalRhsWord(e_pair->val);
     has_plus = false;
     initializer = nullptr;
@@ -35733,6 +39340,10 @@ void CommandEvaluator::_EvalTempEnv(List<syntax_asdl::EnvPair*>* more_env, int f
 void CommandEvaluator::_StrictErrExit(syntax_asdl::command_t* node) {
   syntax_asdl::command_t* bad_node = nullptr;
   BigStr* node_str = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&bad_node);
+  StackRoot _root2(&node_str);
+
   if (!(this->exec_opts->errexit() and this->exec_opts->strict_errexit())) {
     return ;
   }
@@ -35747,6 +39358,11 @@ void CommandEvaluator::_StrictErrExitList(List<syntax_asdl::command_t*>* node_li
   syntax_asdl::command_t* node = nullptr;
   syntax_asdl::command_t* bad_node = nullptr;
   BigStr* node_str = nullptr;
+  StackRoot _root0(&node_list);
+  StackRoot _root1(&node);
+  StackRoot _root2(&bad_node);
+  StackRoot _root3(&node_str);
+
   if (!(this->exec_opts->errexit() and this->exec_opts->strict_errexit())) {
     return ;
   }
@@ -35768,7 +39384,8 @@ bool CommandEvaluator::_EvalCondition(syntax_asdl::condition_t* cond, syntax_asd
   value_asdl::value_t* obj = nullptr;
   StackRoot _root0(&cond);
   StackRoot _root1(&blame_tok);
-  StackRoot _root2(&obj);
+  StackRoot _root2(&UP_cond);
+  StackRoot _root3(&obj);
 
   b = false;
   UP_cond = cond;
@@ -35798,6 +39415,7 @@ value_asdl::value_t* CommandEvaluator::_EvalCaseArg(syntax_asdl::case_arg_t* arg
   syntax_asdl::case_arg_t* UP_arg = nullptr;
   StackRoot _root0(&arg);
   StackRoot _root1(&blame);
+  StackRoot _root2(&UP_arg);
 
   UP_arg = arg;
   switch (arg->tag()) {
@@ -35831,9 +39449,14 @@ int CommandEvaluator::_DoVarDecl(syntax_asdl::VarDecl* node) {
   int num_rhs;
   value_asdl::value_t* rval = nullptr;
   StackRoot _root0(&node);
-  StackRoot _root1(&lval);
-  StackRoot _root2(&val);
-  StackRoot _root3(&right_val);
+  StackRoot _root1(&lhs0);
+  StackRoot _root2(&lval);
+  StackRoot _root3(&val);
+  StackRoot _root4(&right_val);
+  StackRoot _root5(&lvals);
+  StackRoot _root6(&rhs_vals);
+  StackRoot _root7(&items);
+  StackRoot _root8(&rval);
 
   flags = state::YshDecl;
   if (node->keyword == nullptr) {
@@ -35849,6 +39472,7 @@ int CommandEvaluator::_DoVarDecl(syntax_asdl::VarDecl* node) {
       i = 0;
       for (ListIter<syntax_asdl::NameType*> it(node->lhs); !it.Done(); it.Next(), ++i) {
         syntax_asdl::NameType* lhs_val = it.Value();
+        StackRoot _for(&lhs_val      );
         lval = Alloc<LeftName>(lhs_val->name, lhs_val->left);
         this->mem->SetNamedYsh(lval, value::Null, scope_e::LocalOnly, flags);
       }
@@ -35874,6 +39498,7 @@ int CommandEvaluator::_DoVarDecl(syntax_asdl::VarDecl* node) {
       i = 0;
       for (ListIter<syntax_asdl::NameType*> it(node->lhs); !it.Done(); it.Next(), ++i) {
         syntax_asdl::NameType* lhs_val = it.Value();
+        StackRoot _for(&lhs_val      );
         lval = Alloc<LeftName>(lhs_val->name, lhs_val->left);
         lvals->append(lval);
         rhs_vals->append(items->at(i));
@@ -35882,6 +39507,7 @@ int CommandEvaluator::_DoVarDecl(syntax_asdl::VarDecl* node) {
     i = 0;
     for (ListIter<value_asdl::LeftName*> it(lvals); !it.Done(); it.Next(), ++i) {
       value_asdl::LeftName* lval = it.Value();
+      StackRoot _for(&lval    );
       rval = rhs_vals->at(i);
       this->mem->SetNamedYsh(lval, rval, scope_e::LocalOnly, flags);
     }
@@ -35911,8 +39537,13 @@ void CommandEvaluator::_DoMutation(syntax_asdl::Mutation* node) {
   StackRoot _root2(&lvals);
   StackRoot _root3(&rhs_vals);
   StackRoot _root4(&items);
-  StackRoot _root5(&aug_lval);
-  StackRoot _root6(&val);
+  StackRoot _root5(&rval);
+  StackRoot _root6(&UP_lval);
+  StackRoot _root7(&obj);
+  StackRoot _root8(&UP_obj);
+  StackRoot _root9(&key);
+  StackRoot _root10(&aug_lval);
+  StackRoot _root11(&val);
 
   switch (node->keyword->id) {
     case Id::KW_SetVar: {
@@ -35947,6 +39578,7 @@ void CommandEvaluator::_DoMutation(syntax_asdl::Mutation* node) {
       i = 0;
       for (ListIter<syntax_asdl::y_lhs_t*> it(node->lhs); !it.Done(); it.Next(), ++i) {
         syntax_asdl::y_lhs_t* lhs_val = it.Value();
+        StackRoot _for(&lhs_val      );
         lvals->append(this->expr_ev->EvalLhsExpr(lhs_val, which_scopes));
         rhs_vals->append(items->at(i));
       }
@@ -35954,6 +39586,7 @@ void CommandEvaluator::_DoMutation(syntax_asdl::Mutation* node) {
     i = 0;
     for (ListIter<value_asdl::y_lvalue_t*> it(lvals); !it.Done(); it.Next(), ++i) {
       value_asdl::y_lvalue_t* lval = it.Value();
+      StackRoot _for(&lval    );
       rval = rhs_vals->at(i);
       UP_lval = lval;
       if (lval->tag() == y_lvalue_e::Local) {
@@ -36013,15 +39646,19 @@ int CommandEvaluator::_DoSimple(command::Simple* node, runtime_asdl::CommandStat
   runtime_asdl::cmd_value_t* cmd_val = nullptr;
   runtime_asdl::cmd_value_t* UP_cmd_val = nullptr;
   int run_flags;
-  Dict<BigStr*, value_asdl::value_t*>* bindings = nullptr;
   int status;
+  int num_redirects;
+  List<IOError_OSError*>* io_errors = nullptr;
+  Dict<BigStr*, value_asdl::value_t*>* bindings = nullptr;
   syntax_asdl::EnvPair* first_pair = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&cmd_st);
   StackRoot _root2(&words);
   StackRoot _root3(&cmd_val);
   StackRoot _root4(&UP_cmd_val);
-  StackRoot _root5(&bindings);
+  StackRoot _root5(&io_errors);
+  StackRoot _root6(&bindings);
+  StackRoot _root7(&first_pair);
 
   DTRACE_PROBE(cmd_eval, _DoSimple_enter);
   words = braces::BraceExpandWords(node->words);
@@ -36047,41 +39684,57 @@ int CommandEvaluator::_DoSimple(command::Simple* node, runtime_asdl::CommandStat
     cmd_value::Assign* cmd_val = static_cast<cmd_value::Assign*>(UP_cmd_val);
   }
   run_flags = node->is_last_cmd ? executor::IS_LAST_CMD : 0;
-  if (len(node->more_env)) {
-    if (this->exec_opts->env_obj()) {
-      bindings = Alloc<Dict<BigStr*, value_asdl::value_t*>>();
-      {  // with
-        state::ctx_EnclosedFrame ctx{this->mem, this->mem->CurrentFrame(), this->mem->GlobalFrame(), bindings};
+  status = this->_EvalAndPushRedirects(node->redirects);
+  if (status != 0) {
+    return status;
+  }
+  num_redirects = 0;
+  if (node->redirects != nullptr) {
+    num_redirects = len(node->redirects);
+  }
+  io_errors = Alloc<List<IOError_OSError*>>();
+  {  // with
+    vm::ctx_Redirect ctx{this->shell_ex, num_redirects, io_errors};
 
-        this->_EvalTempEnv(node->more_env, 0);
-      }
-      {  // with
-        state::ctx_EnvObj ctx{this->mem, bindings};
-
-        status = this->_RunSimpleCommand(cmd_val, cmd_st, run_flags);
-      }
-    }
-    else {
-      if (_PrefixBindingsPersist(cmd_val)) {
-        if (this->exec_opts->strict_env_binding()) {
-          first_pair = node->more_env->at(0);
-          e_die(S_vte, first_pair->left);
-        }
-        this->_EvalTempEnv(node->more_env, 0);
-        status = this->_RunSimpleCommand(cmd_val, cmd_st, run_flags);
-      }
-      else {
+    if (len(node->more_env)) {
+      if (this->exec_opts->env_obj()) {
+        bindings = Alloc<Dict<BigStr*, value_asdl::value_t*>>();
         {  // with
-          state::ctx_Temp ctx{this->mem};
+          state::ctx_EnclosedFrame ctx{this->mem, this->mem->CurrentFrame(), this->mem->GlobalFrame(), bindings};
 
-          this->_EvalTempEnv(node->more_env, state::SetExport);
+          this->_EvalTempEnv(node->more_env, 0);
+        }
+        {  // with
+          state::ctx_EnvObj ctx{this->mem, bindings};
+
           status = this->_RunSimpleCommand(cmd_val, cmd_st, run_flags);
         }
       }
+      else {
+        if (_PrefixBindingsPersist(cmd_val)) {
+          if (this->exec_opts->strict_env_binding()) {
+            first_pair = node->more_env->at(0);
+            e_die(S_vte, first_pair->left);
+          }
+          this->_EvalTempEnv(node->more_env, 0);
+          status = this->_RunSimpleCommand(cmd_val, cmd_st, run_flags);
+        }
+        else {
+          {  // with
+            state::ctx_Temp ctx{this->mem};
+
+            this->_EvalTempEnv(node->more_env, state::SetExport);
+            status = this->_RunSimpleCommand(cmd_val, cmd_st, run_flags);
+          }
+        }
+      }
+    }
+    else {
+      status = this->_RunSimpleCommand(cmd_val, cmd_st, run_flags);
     }
   }
-  else {
-    status = this->_RunSimpleCommand(cmd_val, cmd_st, run_flags);
+  if (len(io_errors)) {
+    e_die(StrFormat("Fatal error popping redirect: %s", pyutil::strerror(io_errors->at(0))));
   }
   DTRACE_PROBE1(cmd_eval, _DoSimple_exit, status);
   return status;
@@ -36112,6 +39765,7 @@ int CommandEvaluator::_DoPipeline(command::Pipeline* node, runtime_asdl::Command
   cmd_st->check_errexit = true;
   for (ListIter<syntax_asdl::Token*> it(node->ops); !it.Done(); it.Next()) {
     syntax_asdl::Token* op = it.Value();
+    StackRoot _for(&op  );
     if (op->id != Id::Op_Pipe) {
       e_die(S_yDp, op);
     }
@@ -36154,10 +39808,14 @@ int CommandEvaluator::_DoShAssignment(command::ShAssignment* node, runtime_asdl:
   StackRoot _root1(&cmd_st);
   StackRoot _root2(&rhs);
   StackRoot _root3(&lval);
+  StackRoot _root4(&initializer);
+  StackRoot _root5(&old_val);
+  StackRoot _root6(&val);
 
   which_scopes = this->mem->ScopesForWriting();
   for (ListIter<syntax_asdl::AssignPair*> it(node->pairs); !it.Done(); it.Next()) {
     syntax_asdl::AssignPair* pair = it.Value();
+    StackRoot _for(&pair  );
     rhs = this->word_ev->EvalRhsWord(pair->rhs);
     lval = this->arith_ev->EvalShellLhs(pair->lhs, which_scopes);
     has_plus = pair->op == assign_op_e::PlusEqual;
@@ -36200,6 +39858,7 @@ int CommandEvaluator::_DoExpr(syntax_asdl::ExprCommand* node) {
   List<IOError_OSError*>* io_errors = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&val);
+  StackRoot _root2(&io_errors);
 
   val = this->expr_ev->EvalExpr(node->e, loc::Missing);
   if (node->keyword->id == Id::Lit_Equals) {
@@ -36230,6 +39889,11 @@ int CommandEvaluator::_DoControlFlow(command::ControlFlow* node) {
   syntax_asdl::Token* keyword = nullptr;
   BigStr* keyword_str = nullptr;
   StackRoot _root0(&node);
+  StackRoot _root1(&w);
+  StackRoot _root2(&arg_str);
+  StackRoot _root3(&arg_loc);
+  StackRoot _root4(&keyword);
+  StackRoot _root5(&keyword_str);
 
   w = node->arg_word;
   if (w) {
@@ -36255,6 +39919,9 @@ int CommandEvaluator::_DoAndOr(command::AndOr* node, runtime_asdl::CommandStatus
   int op_id;
   StackRoot _root0(&node);
   StackRoot _root1(&cmd_st);
+  StackRoot _root2(&left);
+  StackRoot _root3(&child);
+  StackRoot _root4(&op);
 
   left = node->children->at(0);
   this->_StrictErrExit(left);
@@ -36354,12 +40021,16 @@ int CommandEvaluator::_DoForEach(command::ForEach* node) {
   StackRoot _root1(&iter_list);
   StackRoot _root2(&iter_expr);
   StackRoot _root3(&expr_blame);
-  StackRoot _root4(&words);
-  StackRoot _root5(&i_name);
-  StackRoot _root6(&name1);
-  StackRoot _root7(&name2);
-  StackRoot _root8(&it2);
-  StackRoot _root9(&val);
+  StackRoot _root4(&iterable);
+  StackRoot _root5(&UP_iterable);
+  StackRoot _root6(&words);
+  StackRoot _root7(&i_name);
+  StackRoot _root8(&name1);
+  StackRoot _root9(&name2);
+  StackRoot _root10(&it2);
+  StackRoot _root11(&val);
+  StackRoot _root12(&UP_val);
+  StackRoot _root13(&first);
 
   iter_list = nullptr;
   iter_expr = nullptr;
@@ -36544,9 +40215,10 @@ int CommandEvaluator::_DoForExpr(command::ForExpr* node) {
   mops::BigInt cond_int;
   runtime_asdl::flow_t action;
   StackRoot _root0(&node);
-  StackRoot _root1(&for_cond);
-  StackRoot _root2(&body);
-  StackRoot _root3(&update);
+  StackRoot _root1(&init);
+  StackRoot _root2(&for_cond);
+  StackRoot _root3(&body);
+  StackRoot _root4(&update);
 
   status = 0;
   init = node->init;
@@ -36585,6 +40257,9 @@ int CommandEvaluator::_DoForExpr(command::ForExpr* node) {
 
 void CommandEvaluator::_DoShFunction(syntax_asdl::ShFunction* node) {
   value::Proc* sh_func = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&sh_func);
+
   sh_func = Alloc<value::Proc>(node->name, node->name_tok, proc_sig::Open, node->body, nullptr, true, nullptr, this->mem->GlobalFrame(), node->code_str);
   this->procs->DefineShellFunc(node->name, sh_func);
 }
@@ -36596,7 +40271,9 @@ void CommandEvaluator::_DoProc(syntax_asdl::Proc* node) {
   value::Proc* proc = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&proc_name);
-  StackRoot _root2(&proc_defaults);
+  StackRoot _root2(&sig);
+  StackRoot _root3(&proc_defaults);
+  StackRoot _root4(&proc);
 
   proc_name = lexer::TokenVal(node->name);
   if (node->sig->tag() == proc_sig_e::Closed) {
@@ -36621,6 +40298,7 @@ void CommandEvaluator::_DoFunc(syntax_asdl::Func* node) {
   StackRoot _root2(&lval);
   StackRoot _root3(&pos_defaults);
   StackRoot _root4(&named_defaults);
+  StackRoot _root5(&func_val);
 
   name = lexer::TokenVal(node->name);
   lval = location::LName(name);
@@ -36641,6 +40319,7 @@ int CommandEvaluator::_DoIf(command::If* node) {
   done = false;
   for (ListIter<syntax_asdl::IfArm*> it(node->arms); !it.Done(); it.Next()) {
     syntax_asdl::IfArm* if_arm = it.Value();
+    StackRoot _for(&if_arm  );
     b = this->_EvalCondition(if_arm->cond, if_arm->keyword);
     if (b) {
       status = this->_ExecuteList(if_arm->action);
@@ -36671,8 +40350,13 @@ int CommandEvaluator::_DoCase(command::Case* node) {
   value::Eggex* eggex_val = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&to_match);
-  StackRoot _root2(&pat_exprs);
-  StackRoot _root3(&expr_val);
+  StackRoot _root2(&to_match_str);
+  StackRoot _root3(&pat_words);
+  StackRoot _root4(&word_val);
+  StackRoot _root5(&pat_exprs);
+  StackRoot _root6(&expr_val);
+  StackRoot _root7(&eggex);
+  StackRoot _root8(&eggex_val);
 
   to_match = this->_EvalCaseArg(node->to_match, node->case_kw);
   fnmatch_flags = this->exec_opts->nocasematch() ? FNM_CASEFOLD : 0;
@@ -36681,6 +40365,7 @@ int CommandEvaluator::_DoCase(command::Case* node) {
   ignore_next_cond = false;
   for (ListIter<syntax_asdl::CaseArm*> it(node->arms); !it.Done(); it.Next()) {
     syntax_asdl::CaseArm* case_arm = it.Value();
+    StackRoot _for(&case_arm  );
     switch (case_arm->pattern->tag()) {
       case pat_e::Words: {
         if (to_match->tag() != value_e::Str) {
@@ -36696,6 +40381,7 @@ int CommandEvaluator::_DoCase(command::Case* node) {
         else {
           for (ListIter<syntax_asdl::word_t*> it(pat_words->words); !it.Done(); it.Next()) {
             syntax_asdl::word_t* pat_word = it.Value();
+            StackRoot _for(&pat_word          );
             word_val = this->word_ev->EvalWordToString(pat_word, word_eval::QUOTE_FNMATCH);
             if (libc::fnmatch(word_val->s, to_match_str->s, fnmatch_flags)) {
               this_arm_matches = true;
@@ -36725,6 +40411,7 @@ int CommandEvaluator::_DoCase(command::Case* node) {
         pat_exprs = static_cast<pat::YshExprs*>(case_arm->pattern);
         for (ListIter<syntax_asdl::expr_t*> it(pat_exprs->exprs); !it.Done(); it.Next()) {
           syntax_asdl::expr_t* pat_expr = it.Value();
+          StackRoot _for(&pat_expr        );
           expr_val = this->expr_ev->EvalExpr(pat_expr, case_arm->left);
           if (val_ops::ExactlyEqual(expr_val, to_match, case_arm->left)) {
             status = this->_ExecuteList(case_arm->action);
@@ -36784,53 +40471,70 @@ int CommandEvaluator::_DoTimeBlock(command::TimeBlock* node) {
   return status;
 }
 
-int CommandEvaluator::_DoRedirect(command::Redirect* node, runtime_asdl::CommandStatus* cmd_st) {
+int CommandEvaluator::_EvalAndPushRedirects(List<syntax_asdl::Redir*>* redirects) {
   int status;
-  List<runtime_asdl::RedirValue*>* redirects = nullptr;
+  List<runtime_asdl::RedirValue*>* redir_vals = nullptr;
   List<IOError_OSError*>* io_errors = nullptr;
-  StackRoot _root0(&node);
-  StackRoot _root1(&cmd_st);
+  StackRoot _root0(&redirects);
+  StackRoot _root1(&redir_vals);
   StackRoot _root2(&io_errors);
 
+  if (redirects == nullptr) {
+    return 0;
+  }
   status = 0;
-  redirects = Alloc<List<runtime_asdl::RedirValue*>>();
+  redir_vals = Alloc<List<runtime_asdl::RedirValue*>>();
   try {
-    for (ListIter<syntax_asdl::Redir*> it(node->redirects); !it.Done(); it.Next()) {
+    for (ListIter<syntax_asdl::Redir*> it(redirects); !it.Done(); it.Next()) {
       syntax_asdl::Redir* redir = it.Value();
-      redirects->append(this->_EvalRedirect(redir));
+      StackRoot _for(&redir    );
+      redir_vals->append(this->_EvalRedirect(redir));
     }
   }
   catch (error::RedirectEval* e) {
     this->errfmt->PrettyPrintError(e);
-    redirects = nullptr;
+    redir_vals = nullptr;
   }
   catch (error::WordFailure* e) {
     if (!e->HasLocation()) {
       e->location = this->mem->GetFallbackLocation();
     }
     this->errfmt->PrettyPrintError(e);
-    redirects = nullptr;
+    redir_vals = nullptr;
   }
-  if (redirects == nullptr) {
+  if (redir_vals == nullptr) {
     status = 1;
   }
-  io_errors = Alloc<List<IOError_OSError*>>();
   if (status == 0) {
-    this->shell_ex->PushRedirects(redirects, io_errors);
+    io_errors = Alloc<List<IOError_OSError*>>();
+    this->shell_ex->PushRedirects(redir_vals, io_errors);
     if (len(io_errors)) {
       this->errfmt->PrintMessage(StrFormat("I/O error applying redirect: %s", pyutil::strerror(io_errors->at(0))), this->mem->GetFallbackLocation());
       status = 1;
     }
   }
-  if (status == 0) {
-    {  // with
-      vm::ctx_Redirect ctx{this->shell_ex, len(redirects), io_errors};
+  return status;
+}
 
-      status = this->_Execute(node->child);
-    }
-    if (len(io_errors)) {
-      e_die(StrFormat("Fatal error popping redirect: %s", pyutil::strerror(io_errors->at(0))));
-    }
+int CommandEvaluator::_DoRedirect(command::Redirect* node, runtime_asdl::CommandStatus* cmd_st) {
+  int status;
+  List<IOError_OSError*>* io_errors = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&cmd_st);
+  StackRoot _root2(&io_errors);
+
+  status = this->_EvalAndPushRedirects(node->redirects);
+  if (status != 0) {
+    return status;
+  }
+  io_errors = Alloc<List<IOError_OSError*>>();
+  {  // with
+    vm::ctx_Redirect ctx{this->shell_ex, len(node->redirects), io_errors};
+
+    status = this->_Execute(node->child);
+  }
+  if (len(io_errors)) {
+    e_die(StrFormat("Fatal error popping redirect: %s", pyutil::strerror(io_errors->at(0))));
   }
   return status;
 }
@@ -37073,6 +40777,7 @@ void CommandEvaluator::RunPendingTraps() {
 
       for (ListIter<syntax_asdl::command_t*> it(trap_nodes); !it.Done(); it.Next()) {
         syntax_asdl::command_t* trap_node = it.Value();
+        StackRoot _for(&trap_node      );
         {  // with
           state::ctx_Registers ctx{this->mem};
 
@@ -37098,6 +40803,7 @@ void CommandEvaluator::RunPendingTrapsAndCatch() {
 
       for (ListIter<syntax_asdl::command_t*> it(trap_nodes); !it.Done(); it.Next()) {
         syntax_asdl::command_t* trap_node = it.Value();
+        StackRoot _for(&trap_node      );
         {  // with
           state::ctx_Registers ctx{this->mem};
 
@@ -37126,7 +40832,11 @@ int CommandEvaluator::_Execute(syntax_asdl::command_t* node) {
   int i;
   List<int>* codes = nullptr;
   StackRoot _root0(&node);
-  StackRoot _root1(&process_sub_st);
+  StackRoot _root1(&cmd_st);
+  StackRoot _root2(&process_sub_st);
+  StackRoot _root3(&pipe_status);
+  StackRoot _root4(&errexit_loc);
+  StackRoot _root5(&codes);
 
   cmd_st = CommandStatus::CreateNull();
   if (len(this->status_array_pool)) {
@@ -37203,6 +40913,7 @@ int CommandEvaluator::_ExecuteList(List<syntax_asdl::command_t*>* children) {
   status = 0;
   for (ListIter<syntax_asdl::command_t*> it(children); !it.Done(); it.Next()) {
     syntax_asdl::command_t* child = it.Value();
+    StackRoot _for(&child  );
     status = this->_Execute(child);
   }
   return status;
@@ -37214,6 +40925,9 @@ int CommandEvaluator::LastStatus() {
 
 void CommandEvaluator::_MarkLastCommands(syntax_asdl::command_t* node) {
   syntax_asdl::command_t* UP_node = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&UP_node);
+
   UP_node = node;
   switch (node->tag()) {
     case command_e::Simple: {
@@ -37259,6 +40973,9 @@ void CommandEvaluator::_MarkLastCommands(syntax_asdl::command_t* node) {
 
 syntax_asdl::command_t* CommandEvaluator::_RemoveSubshells(syntax_asdl::command_t* node) {
   syntax_asdl::command_t* UP_node = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&UP_node);
+
   UP_node = node;
   switch (node->tag()) {
     case command_e::Subshell: {
@@ -37279,6 +40996,7 @@ Tuple2<bool, bool> CommandEvaluator::ExecuteAndCatch(syntax_asdl::command_t* nod
   List<int>* options = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&err);
+  StackRoot _root2(&options);
 
   if ((cmd_flags & OptimizeSubshells)) {
     node = this->_RemoveSubshells(node);
@@ -37364,6 +41082,7 @@ void CommandEvaluator::RunTrapsOnExit(syntax_asdl::IntParamBox* mut_status) {
   bool is_return;
   bool is_fatal;
   StackRoot _root0(&mut_status);
+  StackRoot _root1(&node);
 
   this->RunPendingTrapsAndCatch();
   node = this->trap_state->GetHook(S_BDg);
@@ -37389,6 +41108,8 @@ void CommandEvaluator::RunTrapsOnExit(syntax_asdl::IntParamBox* mut_status) {
 
 void CommandEvaluator::_MaybeRunDebugTrap() {
   syntax_asdl::command_t* node = nullptr;
+  StackRoot _root0(&node);
+
   node = this->trap_state->GetHook(S_Fzz);
   if (node == nullptr) {
     return ;
@@ -37416,6 +41137,8 @@ void CommandEvaluator::_MaybeRunDebugTrap() {
 
 void CommandEvaluator::_MaybeRunErrTrap() {
   syntax_asdl::command_t* node = nullptr;
+  StackRoot _root0(&node);
+
   node = this->trap_state->GetHook(S_zDr);
   if (node == nullptr) {
     return ;
@@ -37450,6 +41173,8 @@ int CommandEvaluator::RunProc(value::Proc* proc, cmd_value::Argv* cmd_val) {
   int status;
   StackRoot _root0(&proc);
   StackRoot _root1(&cmd_val);
+  StackRoot _root2(&sig);
+  StackRoot _root3(&proc_argv);
 
   sig = proc->sig;
   if (sig->tag() == proc_sig_e::Closed) {
@@ -37486,6 +41211,7 @@ int CommandEvaluator::RunFuncForCompletion(value::Proc* proc, List<BigStr*>* arg
   int status;
   StackRoot _root0(&proc);
   StackRoot _root1(&argv);
+  StackRoot _root2(&cmd_val);
 
   cmd_val = MakeBuiltinArgv(argv);
   try {
@@ -37564,6 +41290,7 @@ using value_asdl::LiteralBlock;
 using error::p_die;
 int TAB_CH = 9;
 int SPACE_CH = 32;
+BigStr* _AMPERSAND_ERROR = S_aby;
 
 Tuple2<List<Tuple2<syntax_asdl::SourceLine*, int>*>*, Tuple2<syntax_asdl::SourceLine*, int>*> _ReadHereLines(reader::_Reader* line_reader, syntax_asdl::Redir* h, BigStr* delimiter) {
   List<Tuple2<syntax_asdl::SourceLine*, int>*>* here_lines = nullptr;
@@ -37580,6 +41307,7 @@ Tuple2<List<Tuple2<syntax_asdl::SourceLine*, int>*>*, Tuple2<syntax_asdl::Source
   StackRoot _root3(&here_lines);
   StackRoot _root4(&last_line);
   StackRoot _root5(&src_line);
+  StackRoot _root6(&line);
 
   here_lines = Alloc<List<Tuple2<syntax_asdl::SourceLine*, int>*>>();
   last_line = nullptr;
@@ -37615,10 +41343,16 @@ Tuple2<List<Tuple2<syntax_asdl::SourceLine*, int>*>*, Tuple2<syntax_asdl::Source
 List<syntax_asdl::word_part_t*>* _MakeLiteralHereLines(List<Tuple2<syntax_asdl::SourceLine*, int>*>* here_lines, alloc::Arena* arena, bool do_lossless) {
   List<syntax_asdl::word_part_t*>* tokens = nullptr;
   syntax_asdl::Token* t = nullptr;
+  StackRoot _root0(&here_lines);
+  StackRoot _root1(&arena);
+  StackRoot _root2(&tokens);
+  StackRoot _root3(&t);
+
   tokens = Alloc<List<syntax_asdl::word_part_t*>>();
   for (ListIter<Tuple2<syntax_asdl::SourceLine*, int>*> it(here_lines); !it.Done(); it.Next()) {
     Tuple2<syntax_asdl::SourceLine*, int>* tup1 = it.Value();
     syntax_asdl::SourceLine* src_line = tup1->at0();
+    StackRoot _unpack_0(&src_line);
     int start_offset = tup1->at1();
     if (do_lossless) {
       arena->NewToken(Id::Lit_CharsWithoutPrefix, start_offset, 0, src_line);
@@ -37644,9 +41378,11 @@ void _ParseHereDocBody(parse_lib::ParseContext* parse_ctx, syntax_asdl::Redir* r
   StackRoot _root2(&line_reader);
   StackRoot _root3(&arena);
   StackRoot _root4(&h);
-  StackRoot _root5(&here_lines);
-  StackRoot _root6(&last_line);
-  StackRoot _root7(&end_line);
+  StackRoot _root5(&delimiter);
+  StackRoot _root6(&here_lines);
+  StackRoot _root7(&last_line);
+  StackRoot _root8(&w_parser);
+  StackRoot _root9(&end_line);
 
   h = static_cast<redir_param::HereDoc*>(r->arg);
   Tuple3<bool, BigStr*, bool> tup2 = word_::StaticEval(h->here_begin);
@@ -37698,8 +41434,17 @@ syntax_asdl::AssignPair* _MakeAssignPair(parse_lib::ParseContext* parse_ctx, syn
   StackRoot _root1(&preparsed);
   StackRoot _root2(&arena);
   StackRoot _root3(&left_token);
-  StackRoot _root4(&var_name);
-  StackRoot _root5(&index_node);
+  StackRoot _root4(&close_token);
+  StackRoot _root5(&lhs);
+  StackRoot _root6(&var_name);
+  StackRoot _root7(&index_str);
+  StackRoot _root8(&code_str);
+  StackRoot _root9(&a_parser);
+  StackRoot _root10(&src);
+  StackRoot _root11(&index_node);
+  StackRoot _root12(&parts);
+  StackRoot _root13(&rhs);
+  StackRoot _root14(&w);
 
   left_token = preparsed->left;
   close_token = preparsed->close;
@@ -37780,8 +41525,17 @@ void _AppendMoreEnv(List<syntax_asdl::ParsedAssignment*>* preparsed_list, List<s
   int offset;
   syntax_asdl::rhs_word_t* rhs = nullptr;
   syntax_asdl::CompoundWord* w = nullptr;
+  StackRoot _root0(&preparsed_list);
+  StackRoot _root1(&more_env);
+  StackRoot _root2(&left_token);
+  StackRoot _root3(&var_name);
+  StackRoot _root4(&parts);
+  StackRoot _root5(&rhs);
+  StackRoot _root6(&w);
+
   for (ListIter<syntax_asdl::ParsedAssignment*> it(preparsed_list); !it.Done(); it.Next()) {
     syntax_asdl::ParsedAssignment* preparsed = it.Value();
+    StackRoot _for(&preparsed  );
     left_token = preparsed->left;
     if (left_token->id != Id::Lit_VarLike) {
       p_die(S_pqq, left_token);
@@ -37812,11 +41566,18 @@ Tuple2<List<syntax_asdl::ParsedAssignment*>*, List<syntax_asdl::CompoundWord*>*>
   syntax_asdl::Token* left_token = nullptr;
   syntax_asdl::Token* close_token = nullptr;
   int part_offset;
+  StackRoot _root0(&words);
+  StackRoot _root1(&preparsed_list);
+  StackRoot _root2(&suffix_words);
+  StackRoot _root3(&left_token);
+  StackRoot _root4(&close_token);
+
   preparsed_list = Alloc<List<syntax_asdl::ParsedAssignment*>>();
   suffix_words = Alloc<List<syntax_asdl::CompoundWord*>>();
   done_prefix = false;
   for (ListIter<syntax_asdl::CompoundWord*> it(words); !it.Done(); it.Next()) {
     syntax_asdl::CompoundWord* w = it.Value();
+    StackRoot _for(&w  );
     if (done_prefix) {
       suffix_words->append(w);
       continue;
@@ -37836,14 +41597,26 @@ Tuple2<List<syntax_asdl::ParsedAssignment*>*, List<syntax_asdl::CompoundWord*>*>
   return Tuple2<List<syntax_asdl::ParsedAssignment*>*, List<syntax_asdl::CompoundWord*>*>(preparsed_list, suffix_words);
 }
 
-command::Simple* _MakeSimpleCommand(List<syntax_asdl::ParsedAssignment*>* preparsed_list, List<syntax_asdl::CompoundWord*>* suffix_words, syntax_asdl::ArgList* typed_args, value_asdl::LiteralBlock* block) {
+command::Simple* _MakeSimpleCommand(List<syntax_asdl::ParsedAssignment*>* preparsed_list, List<syntax_asdl::CompoundWord*>* suffix_words, syntax_asdl::ArgList* typed_args, value_asdl::LiteralBlock* block, List<syntax_asdl::Redir*>* redirects) {
   syntax_asdl::word_part_t* part0 = nullptr;
   syntax_asdl::Token* blame_tok = nullptr;
   List<syntax_asdl::word_t*>* words2 = nullptr;
   List<syntax_asdl::word_t*>* words3 = nullptr;
   List<syntax_asdl::EnvPair*>* more_env = nullptr;
+  StackRoot _root0(&preparsed_list);
+  StackRoot _root1(&suffix_words);
+  StackRoot _root2(&typed_args);
+  StackRoot _root3(&block);
+  StackRoot _root4(&redirects);
+  StackRoot _root5(&part0);
+  StackRoot _root6(&blame_tok);
+  StackRoot _root7(&words2);
+  StackRoot _root8(&words3);
+  StackRoot _root9(&more_env);
+
   for (ListIter<syntax_asdl::ParsedAssignment*> it(preparsed_list); !it.Done(); it.Next()) {
     syntax_asdl::ParsedAssignment* preparsed = it.Value();
+    StackRoot _for(&preparsed  );
     if (word_::HasArrayPart(preparsed->w)) {
       p_die(S_fts, Alloc<loc::Word>(preparsed->w));
     }
@@ -37854,7 +41627,10 @@ command::Simple* _MakeSimpleCommand(List<syntax_asdl::ParsedAssignment*>* prepar
   words3 = word_::TildeDetectAll(words2);
   more_env = Alloc<List<syntax_asdl::EnvPair*>>();
   _AppendMoreEnv(preparsed_list, more_env);
-  return Alloc<command::Simple>(blame_tok, more_env, words3, typed_args, block, false);
+  if (len(redirects) == 0) {
+    redirects = nullptr;
+  }
+  return Alloc<command::Simple>(blame_tok, more_env, words3, typed_args, block, false, redirects);
 }
 
 VarChecker::VarChecker() {
@@ -37864,6 +41640,9 @@ VarChecker::VarChecker() {
 
 void VarChecker::Push(syntax_asdl::Token* blame_tok) {
   Dict<BigStr*, int>* entry = nullptr;
+  StackRoot _root0(&blame_tok);
+  StackRoot _root1(&entry);
+
   if (len(this->tokens) != 0) {
     if ((this->tokens->at(0)->id != Id::KW_Proc && this->tokens->at(0)->id != Id::KW_Func)) {
       if (blame_tok->id == Id::KW_Proc) {
@@ -37891,6 +41670,10 @@ void VarChecker::Pop() {
 
 void VarChecker::Check(int keyword_id, BigStr* var_name, syntax_asdl::Token* blame_tok) {
   Dict<BigStr*, int>* top = nullptr;
+  StackRoot _root0(&var_name);
+  StackRoot _root1(&blame_tok);
+  StackRoot _root2(&top);
+
   if (len(this->names) == 0) {
     return ;
   }
@@ -37952,6 +41735,8 @@ CommandParser::CommandParser(parse_lib::ParseContext* parse_ctx, optview::Parse*
 }
 
 void CommandParser::Init_AliasesInFlight(List<Tuple2<BigStr*, int>*>* aliases_in_flight) {
+  StackRoot _root0(&aliases_in_flight);
+
   this->aliases_in_flight = aliases_in_flight;
 }
 
@@ -37981,6 +41766,7 @@ void CommandParser::_GetWord() {
   syntax_asdl::word_t* w = nullptr;
   syntax_asdl::Token* tok = nullptr;
   StackRoot _root0(&w);
+  StackRoot _root1(&tok);
 
   if (this->next_lex_mode != lex_mode_e::Undefined) {
     w = this->w_parser->ReadWord(this->next_lex_mode);
@@ -37989,6 +41775,7 @@ void CommandParser::_GetWord() {
       if (tok->id == Id::Op_Newline) {
         for (ListIter<syntax_asdl::Redir*> it(this->pending_here_docs); !it.Done(); it.Next()) {
           syntax_asdl::Redir* h = it.Value();
+          StackRoot _for(&h        );
           _ParseHereDocBody(this->parse_ctx, h, this->line_reader, this->arena);
         }
         this->pending_here_docs->clear();
@@ -38004,6 +41791,7 @@ void CommandParser::_GetWord() {
 syntax_asdl::word_t* CommandParser::_Eat(int c_id, BigStr* msg) {
   syntax_asdl::word_t* skipped = nullptr;
   StackRoot _root0(&msg);
+  StackRoot _root1(&skipped);
 
   this->_GetWord();
   if (this->c_id != c_id) {
@@ -38047,7 +41835,16 @@ syntax_asdl::Redir* CommandParser::ParseRedirect() {
   syntax_asdl::DoubleQuoted* dq = nullptr;
   redir_param::HereWord* param = nullptr;
   StackRoot _root0(&op_tok);
-  StackRoot _root1(&where);
+  StackRoot _root1(&op_val);
+  StackRoot _root2(&where);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&r);
+  StackRoot _root5(&arg_word);
+  StackRoot _root6(&tilde);
+  StackRoot _root7(&part0);
+  StackRoot _root8(&sq);
+  StackRoot _root9(&dq);
+  StackRoot _root10(&param);
 
   this->_GetWord();
   op_tok = static_cast<Token*>(this->cur_word);
@@ -38176,8 +41973,11 @@ Tuple4<List<syntax_asdl::Redir*>*, List<syntax_asdl::CompoundWord*>*, syntax_asd
   StackRoot _root2(&typed_args);
   StackRoot _root3(&block);
   StackRoot _root4(&node);
-  StackRoot _root5(&word_str);
-  StackRoot _root6(&brace_group);
+  StackRoot _root5(&w);
+  StackRoot _root6(&bad_tok);
+  StackRoot _root7(&word_str);
+  StackRoot _root8(&brace_group);
+  StackRoot _root9(&code_str);
 
   redirects = Alloc<List<syntax_asdl::Redir*>>();
   words = Alloc<List<syntax_asdl::CompoundWord*>>();
@@ -38286,7 +42086,22 @@ syntax_asdl::command_t* CommandParser::_MaybeExpandAliases(List<syntax_asdl::Com
   source::Alias* src = nullptr;
   command::CommandList* node = nullptr;
   StackRoot _root0(&words);
-  StackRoot _root1(&node);
+  StackRoot _root1(&aliases_in_flight);
+  StackRoot _root2(&first_word_str);
+  StackRoot _root3(&argv0_loc);
+  StackRoot _root4(&expanded);
+  StackRoot _root5(&w);
+  StackRoot _root6(&word_str);
+  StackRoot _root7(&alias_exp);
+  StackRoot _root8(&left_tok);
+  StackRoot _root9(&right_tok);
+  StackRoot _root10(&words_str);
+  StackRoot _root11(&code_str);
+  StackRoot _root12(&arena);
+  StackRoot _root13(&line_reader);
+  StackRoot _root14(&cp);
+  StackRoot _root15(&src);
+  StackRoot _root16(&node);
 
   aliases_in_flight = len(this->aliases_in_flight) ? this->aliases_in_flight : Alloc<List<Tuple2<BigStr*, int>*>>();
   first_word_str = nullptr;
@@ -38370,7 +42185,6 @@ syntax_asdl::command_t* CommandParser::ParseSimpleCommand() {
   syntax_asdl::command_t* expanded_node = nullptr;
   List<syntax_asdl::EnvPair*>* more_env = nullptr;
   command::ExpandedAlias* exp = nullptr;
-  command::Simple* node = nullptr;
   StackRoot _root0(&redirects);
   StackRoot _root1(&words);
   StackRoot _root2(&typed_args);
@@ -38379,9 +42193,13 @@ syntax_asdl::command_t* CommandParser::ParseSimpleCommand() {
   StackRoot _root5(&preparsed_list);
   StackRoot _root6(&suffix_words);
   StackRoot _root7(&pairs);
-  StackRoot _root8(&kw_token);
-  StackRoot _root9(&arg_word);
-  StackRoot _root10(&expanded_node);
+  StackRoot _root8(&left_tok);
+  StackRoot _root9(&assign_node);
+  StackRoot _root10(&kw_token);
+  StackRoot _root11(&arg_word);
+  StackRoot _root12(&expanded_node);
+  StackRoot _root13(&more_env);
+  StackRoot _root14(&exp);
 
   Tuple4<List<syntax_asdl::Redir*>*, List<syntax_asdl::CompoundWord*>*, syntax_asdl::ArgList*, value_asdl::LiteralBlock*> tup8 = this->_ScanSimpleCommand();
   redirects = tup8.at0();
@@ -38419,6 +42237,7 @@ syntax_asdl::command_t* CommandParser::ParseSimpleCommand() {
     pairs = Alloc<List<syntax_asdl::AssignPair*>>();
     for (ListIter<syntax_asdl::ParsedAssignment*> it(preparsed_list); !it.Done(); it.Next()) {
       syntax_asdl::ParsedAssignment* preparsed = it.Value();
+      StackRoot _for(&preparsed    );
       pairs->append(_MakeAssignPair(this->parse_ctx, preparsed, this->arena));
     }
     left_tok = location::LeftTokenForCompoundWord(words->at(0));
@@ -38434,7 +42253,7 @@ syntax_asdl::command_t* CommandParser::ParseSimpleCommand() {
   kind = tup10.at0();
   kw_token = tup10.at1();
   if (kind == Kind::ControlFlow) {
-    if ((!this->parse_opts->parse_ignored() and len(redirects))) {
+    if ((this->parse_opts->no_parse_ignored() and len(redirects))) {
       p_die(S_Biw, kw_token);
     }
     if (len(preparsed_list)) {
@@ -38492,13 +42311,7 @@ syntax_asdl::command_t* CommandParser::ParseSimpleCommand() {
       }
     }
   }
-  node = _MakeSimpleCommand(preparsed_list, suffix_words, typed_args, block);
-  if (len(redirects)) {
-    return Alloc<command::Redirect>(node, redirects);
-  }
-  else {
-    return node;
-  }
+  return _MakeSimpleCommand(preparsed_list, suffix_words, typed_args, block, redirects);
 }
 
 syntax_asdl::BraceGroup* CommandParser::ParseBraceGroup() {
@@ -38510,8 +42323,10 @@ syntax_asdl::BraceGroup* CommandParser::ParseBraceGroup() {
   syntax_asdl::Token* right = nullptr;
   StackRoot _root0(&ate);
   StackRoot _root1(&left);
-  StackRoot _root2(&doc_token);
-  StackRoot _root3(&c_list);
+  StackRoot _root2(&doc_word);
+  StackRoot _root3(&doc_token);
+  StackRoot _root4(&c_list);
+  StackRoot _root5(&right);
 
   ate = this->_Eat(Id::Lit_LBrace);
   left = word_::BraceToken(ate);
@@ -38544,6 +42359,7 @@ command::DoGroup* CommandParser::ParseDoGroup() {
   StackRoot _root0(&ate);
   StackRoot _root1(&do_kw);
   StackRoot _root2(&c_list);
+  StackRoot _root3(&done_kw);
 
   ate = this->_Eat(Id::KW_Do);
   do_kw = word_::AsKeywordToken(ate);
@@ -38560,6 +42376,8 @@ Tuple2<List<syntax_asdl::CompoundWord*>*, syntax_asdl::Token*> CommandParser::Pa
   syntax_asdl::CompoundWord* w2 = nullptr;
   StackRoot _root0(&words);
   StackRoot _root1(&semi_tok);
+  StackRoot _root2(&tok);
+  StackRoot _root3(&w2);
 
   words = Alloc<List<syntax_asdl::CompoundWord*>>();
   semi_tok = nullptr;
@@ -38651,12 +42469,16 @@ command::ForEach* CommandParser::_ParseForEachLoop(syntax_asdl::Token* for_kw) {
   List<syntax_asdl::word_t*>* words3 = nullptr;
   StackRoot _root0(&for_kw);
   StackRoot _root1(&node);
-  StackRoot _root2(&iter_name);
-  StackRoot _root3(&expr_blame);
-  StackRoot _root4(&enode);
-  StackRoot _root5(&semi_tok);
-  StackRoot _root6(&iter_words);
-  StackRoot _root7(&s);
+  StackRoot _root2(&w);
+  StackRoot _root3(&UP_w);
+  StackRoot _root4(&iter_name);
+  StackRoot _root5(&expr_blame);
+  StackRoot _root6(&enode);
+  StackRoot _root7(&semi_tok);
+  StackRoot _root8(&iter_words);
+  StackRoot _root9(&s);
+  StackRoot _root10(&words2);
+  StackRoot _root11(&words3);
 
   node = command::ForEach::CreateNull(true);
   node->keyword = for_kw;
@@ -38724,13 +42546,13 @@ command::ForEach* CommandParser::_ParseForEachLoop(syntax_asdl::Token* for_kw) {
           iter_words = tup12.at0();
           semi_tok = tup12.at1();
           node->semi_tok = semi_tok;
-          if ((!this->parse_opts->parse_bare_word() and len(iter_words) == 1)) {
+          if ((this->parse_opts->no_parse_bare_word() and len(iter_words) == 1)) {
             Tuple3<bool, BigStr*, bool> tup13 = word_::StaticEval(iter_words->at(0));
             ok = tup13.at0();
             s = tup13.at1();
             quoted = tup13.at2();
             if ((ok and (match::IsValidVarName(s) and !quoted))) {
-              p_die(S_BpF, Alloc<loc::Word>(iter_words->at(0)));
+              p_die(S_nae, Alloc<loc::Word>(iter_words->at(0)));
             }
           }
           words2 = braces::BraceDetectAll(iter_words);
@@ -38781,8 +42603,8 @@ syntax_asdl::command_t* CommandParser::ParseFor() {
   for_kw = word_::AsKeywordToken(ate);
   this->_GetWord();
   if (this->c_id == Id::Op_DLeftParen) {
-    if (!this->parse_opts->parse_dparen()) {
-      p_die(S_laa, Alloc<loc::Word>(this->cur_word));
+    if (this->parse_opts->no_parse_dparen()) {
+      p_die(S_eyp, Alloc<loc::Word>(this->cur_word));
     }
     n1 = this->_ParseForExprLoop(for_kw);
     return this->_MaybeParseRedirectList(n1);
@@ -38961,6 +42783,7 @@ command::Case* CommandParser::ParseYshCase(syntax_asdl::Token* case_kw) {
   StackRoot _root4(&arms_start);
   StackRoot _root5(&arms);
   StackRoot _root6(&arm);
+  StackRoot _root7(&arms_end);
 
   enode = this->w_parser->ParseYshExprForCommand();
   to_match = Alloc<case_arg::YshExpr>(enode);
@@ -38991,22 +42814,24 @@ command::Case* CommandParser::ParseOldCase(syntax_asdl::Token* case_kw) {
   syntax_asdl::CaseArm* arm = nullptr;
   syntax_asdl::Token* arms_end = nullptr;
   StackRoot _root0(&case_kw);
-  StackRoot _root1(&s);
-  StackRoot _root2(&to_match);
-  StackRoot _root3(&ate);
-  StackRoot _root4(&arms_start);
-  StackRoot _root5(&arms);
-  StackRoot _root6(&arm);
+  StackRoot _root1(&w);
+  StackRoot _root2(&s);
+  StackRoot _root3(&to_match);
+  StackRoot _root4(&ate);
+  StackRoot _root5(&arms_start);
+  StackRoot _root6(&arms);
+  StackRoot _root7(&arm);
+  StackRoot _root8(&arms_end);
 
   this->_GetWord();
   w = this->cur_word;
-  if (!this->parse_opts->parse_bare_word()) {
+  if (this->parse_opts->no_parse_bare_word()) {
     Tuple3<bool, BigStr*, bool> tup15 = word_::StaticEval(w);
     ok = tup15.at0();
     s = tup15.at1();
     quoted = tup15.at2();
     if ((ok and !quoted)) {
-      p_die(S_tjF, Alloc<loc::Word>(w));
+      p_die(S_EFo, Alloc<loc::Word>(w));
     }
   }
   if (w->tag() != word_e::Compound) {
@@ -39037,6 +42862,8 @@ command::Case* CommandParser::ParseOldCase(syntax_asdl::Token* case_kw) {
 
 command::Case* CommandParser::ParseCase() {
   syntax_asdl::Token* case_kw = nullptr;
+  StackRoot _root0(&case_kw);
+
   case_kw = word_::AsKeywordToken(this->cur_word);
   this->_SetNext();
   if (this->w_parser->LookPastSpace() == Id::Op_LParen) {
@@ -39062,6 +42889,7 @@ void CommandParser::_ParseYshElifElse(command::If* if_node) {
   StackRoot _root4(&cond);
   StackRoot _root5(&commands);
   StackRoot _root6(&body);
+  StackRoot _root7(&arm);
 
   arms = if_node->arms;
   while (this->c_id == Id::KW_Elif) {
@@ -39098,6 +42926,7 @@ command::If* CommandParser::_ParseYshIf(syntax_asdl::Token* if_kw, syntax_asdl::
   StackRoot _root1(&cond);
   StackRoot _root2(&if_node);
   StackRoot _root3(&body1);
+  StackRoot _root4(&arm);
 
   if_node = command::If::CreateNull(true);
   if_node->if_kw = if_kw;
@@ -39127,7 +42956,8 @@ void CommandParser::_ParseElifElse(command::If* if_node) {
   StackRoot _root4(&ate);
   StackRoot _root5(&then_kw);
   StackRoot _root6(&body);
-  StackRoot _root7(&else_kw);
+  StackRoot _root7(&arm);
+  StackRoot _root8(&else_kw);
 
   arms = if_node->arms;
   this->_GetWord();
@@ -39170,6 +43000,7 @@ command::If* CommandParser::ParseIf() {
   StackRoot _root4(&ate);
   StackRoot _root5(&then_kw);
   StackRoot _root6(&body);
+  StackRoot _root7(&arm);
 
   if_node = command::If::CreateNull(true);
   if_kw = word_::AsKeywordToken(this->cur_word);
@@ -39222,10 +43053,12 @@ syntax_asdl::command_t* CommandParser::ParseCompoundCommand() {
   command::DParen* n7 = nullptr;
   StackRoot _root0(&n1);
   StackRoot _root1(&n2);
-  StackRoot _root2(&n3);
-  StackRoot _root3(&n4);
-  StackRoot _root4(&n5);
-  StackRoot _root5(&n7);
+  StackRoot _root2(&keyword);
+  StackRoot _root3(&n3);
+  StackRoot _root4(&n4);
+  StackRoot _root5(&n5);
+  StackRoot _root6(&n6);
+  StackRoot _root7(&n7);
 
   this->_GetWord();
   if (this->c_id == Id::Lit_LBrace) {
@@ -39253,15 +43086,15 @@ syntax_asdl::command_t* CommandParser::ParseCompoundCommand() {
     return this->_MaybeParseRedirectList(n5);
   }
   if (this->c_id == Id::KW_DLeftBracket) {
-    if (!this->parse_opts->parse_dbracket()) {
-      p_die(S_mEk, Alloc<loc::Word>(this->cur_word));
+    if (this->parse_opts->no_parse_dbracket()) {
+      p_die(S_Dov, Alloc<loc::Word>(this->cur_word));
     }
     n6 = this->ParseDBracket();
     return this->_MaybeParseRedirectList(n6);
   }
   if (this->c_id == Id::Op_DLeftParen) {
-    if (!this->parse_opts->parse_dparen()) {
-      p_die(S_ulC, Alloc<loc::Word>(this->cur_word));
+    if (this->parse_opts->no_parse_dparen()) {
+      p_die(S_DxF, Alloc<loc::Word>(this->cur_word));
     }
     n7 = this->ParseDParen();
     return this->_MaybeParseRedirectList(n7);
@@ -39281,8 +43114,10 @@ syntax_asdl::ShFunction* CommandParser::ParseFunctionDef() {
   syntax_asdl::Token* right_tok = nullptr;
   StackRoot _root0(&word0);
   StackRoot _root1(&name);
-  StackRoot _root2(&blame_tok);
-  StackRoot _root3(&func);
+  StackRoot _root2(&part0);
+  StackRoot _root3(&blame_tok);
+  StackRoot _root4(&func);
+  StackRoot _root5(&right_tok);
 
   word0 = static_cast<CompoundWord*>(this->cur_word);
   name = word_::ShFunctionName(word0);
@@ -39327,9 +43162,11 @@ syntax_asdl::ShFunction* CommandParser::ParseKshFunctionDef() {
   syntax_asdl::ShFunction* func = nullptr;
   syntax_asdl::Token* right_tok = nullptr;
   StackRoot _root0(&keyword_tok);
-  StackRoot _root1(&name);
-  StackRoot _root2(&name_word);
-  StackRoot _root3(&func);
+  StackRoot _root1(&cur_word);
+  StackRoot _root2(&name);
+  StackRoot _root3(&name_word);
+  StackRoot _root4(&func);
+  StackRoot _root5(&right_tok);
 
   keyword_tok = word_::AsKeywordToken(this->cur_word);
   this->_SetNext();
@@ -39374,6 +43211,13 @@ syntax_asdl::Proc* CommandParser::ParseYshProc() {
   syntax_asdl::ParamGroup* named = nullptr;
   syntax_asdl::Param* b = nullptr;
   StackRoot _root0(&node);
+  StackRoot _root1(&keyword_tok);
+  StackRoot _root2(&sig);
+  StackRoot _root3(&wp);
+  StackRoot _root4(&r);
+  StackRoot _root5(&posit);
+  StackRoot _root6(&named);
+  StackRoot _root7(&b);
 
   node = Proc::CreateNull(true);
   keyword_tok = word_::AsKeywordToken(this->cur_word);
@@ -39391,6 +43235,7 @@ syntax_asdl::Proc* CommandParser::ParseYshProc() {
         if (wp) {
           for (ListIter<syntax_asdl::Param*> it(wp->params); !it.Done(); it.Next()) {
             syntax_asdl::Param* param = it.Value();
+            StackRoot _for(&param          );
             this->var_checker->Check(Id::KW_Var, param->name, param->blame_tok);
           }
           if (wp->rest_of) {
@@ -39402,6 +43247,7 @@ syntax_asdl::Proc* CommandParser::ParseYshProc() {
         if (posit) {
           for (ListIter<syntax_asdl::Param*> it(posit->params); !it.Done(); it.Next()) {
             syntax_asdl::Param* param = it.Value();
+            StackRoot _for(&param          );
             this->var_checker->Check(Id::KW_Var, param->name, param->blame_tok);
           }
           if (posit->rest_of) {
@@ -39413,6 +43259,7 @@ syntax_asdl::Proc* CommandParser::ParseYshProc() {
         if (named) {
           for (ListIter<syntax_asdl::Param*> it(named->params); !it.Done(); it.Next()) {
             syntax_asdl::Param* param = it.Value();
+            StackRoot _for(&param          );
             this->var_checker->Check(Id::KW_Var, param->name, param->blame_tok);
           }
           if (named->rest_of) {
@@ -39439,6 +43286,10 @@ syntax_asdl::Func* CommandParser::ParseYshFunc() {
   syntax_asdl::RestParam* r = nullptr;
   syntax_asdl::ParamGroup* named = nullptr;
   StackRoot _root0(&node);
+  StackRoot _root1(&keyword_tok);
+  StackRoot _root2(&posit);
+  StackRoot _root3(&r);
+  StackRoot _root4(&named);
 
   node = Func::CreateNull(true);
   keyword_tok = word_::AsKeywordToken(this->cur_word);
@@ -39451,6 +43302,7 @@ syntax_asdl::Func* CommandParser::ParseYshFunc() {
     if (posit) {
       for (ListIter<syntax_asdl::Param*> it(posit->params); !it.Done(); it.Next()) {
         syntax_asdl::Param* param = it.Value();
+        StackRoot _for(&param      );
         this->var_checker->Check(Id::KW_Var, param->name, param->blame_tok);
       }
       if (posit->rest_of) {
@@ -39462,6 +43314,7 @@ syntax_asdl::Func* CommandParser::ParseYshFunc() {
     if (named) {
       for (ListIter<syntax_asdl::Param*> it(named->params); !it.Done(); it.Next()) {
         syntax_asdl::Param* param = it.Value();
+        StackRoot _for(&param      );
         this->var_checker->Check(Id::KW_Var, param->name, param->blame_tok);
       }
       if (named->rest_of) {
@@ -39493,8 +43346,12 @@ command::Subshell* CommandParser::ParseSubshell() {
   StackRoot _root1(&c_list);
   StackRoot _root2(&child);
   StackRoot _root3(&ate);
+  StackRoot _root4(&right);
 
   left = word_::AsOperatorToken(this->cur_word);
+  if (this->parse_opts->no_parse_osh()) {
+    p_die(S_kAf, left);
+  }
   this->_SetNext();
   this->lexer->PushHint(Id::Op_RParen, Id::Right_Subshell);
   c_list = this->_ParseCommandList();
@@ -39514,6 +43371,11 @@ command::DBracket* CommandParser::ParseDBracket() {
   bool_parse::BoolParser* b_parser = nullptr;
   syntax_asdl::bool_expr_t* bnode = nullptr;
   syntax_asdl::Token* right = nullptr;
+  StackRoot _root0(&left);
+  StackRoot _root1(&b_parser);
+  StackRoot _root2(&bnode);
+  StackRoot _root3(&right);
+
   left = word_::AsKeywordToken(this->cur_word);
   this->_SetNext();
   b_parser = Alloc<bool_parse::BoolParser>(this->w_parser);
@@ -39550,11 +43412,15 @@ syntax_asdl::command_t* CommandParser::ParseCommand() {
   List<syntax_asdl::word_part_t*>* parts = nullptr;
   syntax_asdl::word_part_t* part0 = nullptr;
   syntax_asdl::Token* tok = nullptr;
-  StackRoot _root0(&n8);
-  StackRoot _root1(&n9);
-  StackRoot _root2(&keyword);
-  StackRoot _root3(&enode);
-  StackRoot _root4(&tok);
+  StackRoot _root0(&kw_token);
+  StackRoot _root1(&n8);
+  StackRoot _root2(&n9);
+  StackRoot _root3(&keyword);
+  StackRoot _root4(&enode);
+  StackRoot _root5(&cur_word);
+  StackRoot _root6(&parts);
+  StackRoot _root7(&part0);
+  StackRoot _root8(&tok);
 
   if (this->_AtSecondaryKeyword()) {
     p_die(S_lrE, Alloc<loc::Word>(this->cur_word));
@@ -39598,6 +43464,7 @@ syntax_asdl::command_t* CommandParser::ParseCommand() {
     n8 = this->w_parser->ParseVarDecl(kw_token);
     for (ListIter<syntax_asdl::NameType*> it(n8->lhs); !it.Done(); it.Next()) {
       syntax_asdl::NameType* lhs = it.Value();
+      StackRoot _for(&lhs    );
       this->var_checker->Check(keyword_id, lhs->name, lhs->left);
     }
     return n8;
@@ -39668,7 +43535,9 @@ syntax_asdl::command_t* CommandParser::ParsePipeline() {
   StackRoot _root0(&negated);
   StackRoot _root1(&child);
   StackRoot _root2(&children);
-  StackRoot _root3(&ops);
+  StackRoot _root3(&node);
+  StackRoot _root4(&ops);
+  StackRoot _root5(&op);
 
   negated = nullptr;
   this->_GetWord();
@@ -39755,6 +43624,7 @@ syntax_asdl::command_t* CommandParser::_ParseCommandLine() {
   StackRoot _root0(&END_LIST);
   StackRoot _root1(&children);
   StackRoot _root2(&child);
+  StackRoot _root3(&tok);
 
   END_LIST = NewList<int>(std::initializer_list<int>{Id::Op_Newline, Id::Eof_Real});
   children = Alloc<List<syntax_asdl::command_t*>>();
@@ -39764,6 +43634,9 @@ syntax_asdl::command_t* CommandParser::_ParseCommandLine() {
     this->_GetWord();
     if ((this->c_id == Id::Op_Semi || this->c_id == Id::Op_Amp)) {
       tok = static_cast<Token*>(this->cur_word);
+      if ((tok->id == Id::Op_Amp and this->parse_opts->no_parse_osh())) {
+        p_die(_AMPERSAND_ERROR, tok);
+      }
       child = Alloc<command::Sentence>(child, tok);
       this->_SetNext();
       this->_GetWord();
@@ -39798,6 +43671,7 @@ command::CommandList* CommandParser::_ParseCommandTerm() {
   StackRoot _root0(&END_LIST);
   StackRoot _root1(&children);
   StackRoot _root2(&child);
+  StackRoot _root3(&tok);
 
   END_LIST = NewList<int>(std::initializer_list<int>{this->eof_id, Id::Right_Subshell, Id::Lit_RBrace, Id::Op_DSemi, Id::Op_SemiAmp, Id::Op_DSemiAmp});
   children = Alloc<List<syntax_asdl::command_t*>>();
@@ -39818,6 +43692,9 @@ command::CommandList* CommandParser::_ParseCommandTerm() {
     else {
       if ((this->c_id == Id::Op_Semi || this->c_id == Id::Op_Amp)) {
         tok = static_cast<Token*>(this->cur_word);
+        if ((tok->id == Id::Op_Amp and this->parse_opts->no_parse_osh())) {
+          p_die(_AMPERSAND_ERROR, tok);
+        }
         child = Alloc<command::Sentence>(child, tok);
         this->_SetNext();
         this->_GetWord();
@@ -39909,6 +43786,9 @@ syntax_asdl::command_t* CommandParser::ParseCommandSub() {
 void CommandParser::CheckForPendingHereDocs() {
   syntax_asdl::Redir* node = nullptr;
   redir_param::HereDoc* h = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&h);
+
   if (len(this->pending_here_docs)) {
     node = this->pending_here_docs->at(0);
     h = static_cast<redir_param::HereDoc*>(node->arg);
@@ -39928,6 +43808,7 @@ using syntax_asdl::word_part_e;
 using syntax_asdl::glob_part;
 using syntax_asdl::glob_part_e;
 using syntax_asdl::glob_part_t;
+using syntax_asdl::loc_t;
 using mylib::print_stderr;
 
 bool LooksLikeGlob(BigStr* s) {
@@ -39935,6 +43816,8 @@ bool LooksLikeGlob(BigStr* s) {
   int i;
   int n;
   int c;
+  StackRoot _root0(&s);
+
   left_bracket = false;
   i = 0;
   n = len(s);
@@ -39966,9 +43849,12 @@ bool LooksLikeGlob(BigStr* s) {
 bool LooksLikeStaticGlob(syntax_asdl::CompoundWord* w) {
   bool left_bracket;
   int id_;
+  StackRoot _root0(&w);
+
   left_bracket = false;
   for (ListIter<syntax_asdl::word_part_t*> it(w->parts); !it.Done(); it.Next()) {
     syntax_asdl::word_part_t* part = it.Value();
+    StackRoot _for(&part  );
     if (part->tag() == word_part_e::Literal) {
       id_ = static_cast<Token*>(part)->id;
       if ((id_ == Id::Lit_Star || id_ == Id::Lit_QMark)) {
@@ -39991,11 +43877,21 @@ bool LooksLikeStaticGlob(syntax_asdl::CompoundWord* w) {
 BigStr* GLOB_META_CHARS = S_hpd;
 
 BigStr* GlobEscape(BigStr* s) {
+  StackRoot _root0(&s);
+
   return pyutil::BackslashEscape(s, GLOB_META_CHARS);
+}
+
+BigStr* GlobEscapeBackslash(BigStr* s) {
+  StackRoot _root0(&s);
+
+  return s->replace(S_iyu, S_ehs);
 }
 BigStr* ERE_META_CHARS = S_ivk;
 
 BigStr* ExtendedRegexEscape(BigStr* s) {
+  StackRoot _root0(&s);
+
   return pyutil::BackslashEscape(s, ERE_META_CHARS);
 }
 
@@ -40005,6 +43901,9 @@ BigStr* GlobUnescape(BigStr* s) {
   int n;
   int c;
   int c2;
+  StackRoot _root0(&s);
+  StackRoot _root1(&unescaped);
+
   unescaped = Alloc<List<int>>();
   i = 0;
   n = len(s);
@@ -40017,7 +43916,45 @@ BigStr* GlobUnescape(BigStr* s) {
         unescaped->append(c2);
       }
       else {
-        assert(0);  // AssertionError
+        if (mylib::ByteEquals(c2, S_AeE)) {
+          unescaped->append(pyos::BACKSLASH_CH);
+        }
+        else {
+          assert(0);  // AssertionError
+        }
+      }
+    }
+    else {
+      unescaped->append(c);
+    }
+    i += 1;
+  }
+  return mylib::JoinBytes(unescaped);
+}
+
+BigStr* GlobUnescapeBackslash(BigStr* s) {
+  List<int>* unescaped = nullptr;
+  int i;
+  int n;
+  int c;
+  int c2;
+  StackRoot _root0(&s);
+  StackRoot _root1(&unescaped);
+
+  unescaped = Alloc<List<int>>();
+  i = 0;
+  n = len(s);
+  while (i < n) {
+    c = mylib::ByteAt(s, i);
+    if ((mylib::ByteEquals(c, S_iyu) and i != (n - 1))) {
+      i += 1;
+      c2 = mylib::ByteAt(s, i);
+      if (mylib::ByteEquals(c2, S_AeE)) {
+        unescaped->append(pyos::BACKSLASH_CH);
+      }
+      else {
+        unescaped->append(pyos::BACKSLASH_CH);
+        unescaped->append(c2);
       }
     }
     else {
@@ -40049,6 +43986,11 @@ List<syntax_asdl::glob_part_t*>* _GlobParser::_ParseCharClass() {
   bool negated;
   int id1;
   List<BigStr*>* strs = nullptr;
+  StackRoot _root0(&first_token);
+  StackRoot _root1(&tokens);
+  StackRoot _root2(&parts);
+  StackRoot _root3(&strs);
+
   first_token = Alloc<glob_part::Literal>(this->token_type, this->token_val);
   balance = 1;
   tokens = Alloc<List<Tuple2<int, BigStr*>*>>();
@@ -40061,6 +44003,7 @@ List<syntax_asdl::glob_part_t*>* _GlobParser::_ParseCharClass() {
         Tuple2<int, BigStr*>* tup1 = it.Value();
         int id_ = tup1->at0();
         BigStr* s = tup1->at1();
+        StackRoot _unpack_1(&s);
         parts->append(Alloc<glob_part::Literal>(id_, s));
       }
       return parts;
@@ -40091,6 +44034,7 @@ List<syntax_asdl::glob_part_t*>* _GlobParser::_ParseCharClass() {
   for (ListIter<Tuple2<int, BigStr*>*> it(tokens); !it.Done(); it.Next()) {
     Tuple2<int, BigStr*>* tup3 = it.Value();
     BigStr* s = tup3->at1();
+    StackRoot _unpack_1(&s);
     strs->append(s);
   }
   return NewList<syntax_asdl::glob_part_t*>(std::initializer_list<syntax_asdl::glob_part_t*>{Alloc<glob_part::CharClass>(negated, strs)});
@@ -40100,6 +44044,9 @@ Tuple2<List<syntax_asdl::glob_part_t*>*, List<BigStr*>*> _GlobParser::Parse() {
   List<syntax_asdl::glob_part_t*>* parts = nullptr;
   int id_;
   BigStr* s = nullptr;
+  StackRoot _root0(&parts);
+  StackRoot _root1(&s);
+
   parts = Alloc<List<syntax_asdl::glob_part_t*>>();
   while (true) {
     this->_Next();
@@ -40138,9 +44085,16 @@ BigStr* _GenerateERE(List<syntax_asdl::glob_part_t*>* parts) {
   List<BigStr*>* good = nullptr;
   bool literal_hyphen;
   bool literal_rbracket;
+  StackRoot _root0(&parts);
+  StackRoot _root1(&out);
+  StackRoot _root2(&UP_part);
+  StackRoot _root3(&c);
+  StackRoot _root4(&good);
+
   out = Alloc<List<BigStr*>>();
   for (ListIter<syntax_asdl::glob_part_t*> it(parts); !it.Done(); it.Next()) {
     syntax_asdl::glob_part_t* part = it.Value();
+    StackRoot _for(&part  );
     tag = part->tag();
     UP_part = part;
     if (tag == glob_part_e::Literal) {
@@ -40217,6 +44171,7 @@ BigStr* _GenerateERE(List<syntax_asdl::glob_part_t*>* parts) {
           literal_rbracket = false;
           for (ListIter<BigStr*> it(part->strs); !it.Done(); it.Next()) {
             BigStr* s = it.Value();
+            StackRoot _for(&s          );
             if (str_equals(s, S_iCa)) {
               literal_hyphen = true;
               continue;
@@ -40248,6 +44203,13 @@ Tuple2<BigStr*, List<BigStr*>*> GlobToERE(BigStr* pat) {
   List<syntax_asdl::glob_part_t*>* parts = nullptr;
   List<BigStr*>* warnings = nullptr;
   BigStr* regex = nullptr;
+  StackRoot _root0(&pat);
+  StackRoot _root1(&lexer);
+  StackRoot _root2(&p);
+  StackRoot _root3(&parts);
+  StackRoot _root4(&warnings);
+  StackRoot _root5(&regex);
+
   lexer = match::GlobLexer(pat);
   p = Alloc<_GlobParser>(lexer);
   Tuple2<List<syntax_asdl::glob_part_t*>*, List<BigStr*>*> tup4 = p->Parse();
@@ -40267,6 +44229,12 @@ int Globber::_Glob(BigStr* arg, List<BigStr*>* out) {
   BigStr* msg = nullptr;
   int n;
   List<BigStr*>* tmp = nullptr;
+  StackRoot _root0(&arg);
+  StackRoot _root1(&out);
+  StackRoot _root2(&results);
+  StackRoot _root3(&msg);
+  StackRoot _root4(&tmp);
+
   try {
     flags = 0;
     if (this->exec_opts->dotglob()) {
@@ -40281,7 +44249,7 @@ int Globber::_Glob(BigStr* arg, List<BigStr*>* out) {
   }
   n = len(results);
   if (n) {
-    if (!this->exec_opts->dashglob()) {
+    if (this->exec_opts->no_dash_glob()) {
       tmp = Alloc<List<BigStr*>>();
       for (ListIter<BigStr*> it(results); !it.Done(); it.Next()) {
         BigStr* s = it.Value();
@@ -40295,6 +44263,7 @@ int Globber::_Glob(BigStr* arg, List<BigStr*>* out) {
     n = 0;
     for (ListIter<BigStr*> it(results); !it.Done(); it.Next()) {
       BigStr* s = it.Value();
+      StackRoot _for(&s    );
       if ((!str_equals(s, S_Aru) && !str_equals(s, S_Dmc))) {
         out->append(s);
         n += 1;
@@ -40305,32 +44274,38 @@ int Globber::_Glob(BigStr* arg, List<BigStr*>* out) {
   return 0;
 }
 
-int Globber::Expand(BigStr* arg, List<BigStr*>* out) {
+int Globber::Expand(BigStr* arg, List<BigStr*>* out, syntax_asdl::loc_t* blame_loc) {
   int n;
+  StackRoot _root0(&arg);
+  StackRoot _root1(&out);
+  StackRoot _root2(&blame_loc);
+
   if (this->exec_opts->noglob()) {
-    out->append(arg);
-    return 1;
+    return -1;
   }
   n = this->_Glob(arg, out);
   if (n) {
     return n;
   }
   if (this->exec_opts->failglob()) {
-    return -1;
+    throw Alloc<error::FailGlob>(StrFormat("Pattern %r matched no files", arg), blame_loc);
   }
   if (this->exec_opts->nullglob()) {
     return 0;
   }
-  else {
-    out->append(GlobUnescape(arg));
-    return 1;
-  }
+  return -1;
 }
 
 int Globber::ExpandExtended(BigStr* glob_pat, BigStr* fnmatch_pat, List<BigStr*>* out) {
   List<BigStr*>* tmp = nullptr;
   List<BigStr*>* filtered = nullptr;
   int n;
+  StackRoot _root0(&glob_pat);
+  StackRoot _root1(&fnmatch_pat);
+  StackRoot _root2(&out);
+  StackRoot _root3(&tmp);
+  StackRoot _root4(&filtered);
+
   if (this->exec_opts->noglob()) {
     out->append(fnmatch_pat);
     return 1;
@@ -40401,9 +44376,22 @@ BigStr* Evaluator::Eval(BigStr* line) {
   StackRoot _root0(&line);
   StackRoot _root1(&tokens);
   StackRoot _root2(&parts);
-  StackRoot _root3(&prev);
-  StackRoot _root4(&ch);
-  StackRoot _root5(&val);
+  StackRoot _root3(&out);
+  StackRoot _root4(&prev);
+  StackRoot _root5(&ch);
+  StackRoot _root6(&line_reader);
+  StackRoot _root7(&c_parser);
+  StackRoot _root8(&words);
+  StackRoot _root9(&w);
+  StackRoot _root10(&tok1);
+  StackRoot _root11(&tok2);
+  StackRoot _root12(&w1);
+  StackRoot _root13(&w2);
+  StackRoot _root14(&last_char);
+  StackRoot _root15(&val);
+  StackRoot _root16(&prefix);
+  StackRoot _root17(&substring);
+  StackRoot _root18(&cmd);
 
   if (!this->readline) {
     return line;
@@ -40431,6 +44419,7 @@ BigStr* Evaluator::Eval(BigStr* line) {
     Tuple2<int, BigStr*>* tup1 = it.Value();
     int id_ = tup1->at0();
     BigStr* val = tup1->at1();
+    StackRoot _unpack_1(&val);
     if (id_ == Id::History_Other) {
       out = val;
     }
@@ -40583,6 +44572,9 @@ int _PromptEvaluatorCache::_GetEuid() {
 
 BigStr* _PromptEvaluatorCache::Get(BigStr* name) {
   BigStr* value = nullptr;
+  StackRoot _root0(&name);
+  StackRoot _root1(&value);
+
   if (dict_contains(this->cache, name)) {
     return this->cache->at(name);
   }
@@ -40625,6 +44617,8 @@ void Evaluator::CheckCircularDeps() {
 }
 
 BigStr* Evaluator::PromptVal(BigStr* what) {
+  StackRoot _root0(&what);
+
   if (str_equals(what, S_qks)) {
     return StrFormat(_ERROR_FMT, S_uDe);
   }
@@ -40639,6 +44633,13 @@ BigStr* Evaluator::PromptSubst(BigStr* ch, BigStr* arg) {
   double now;
   BigStr* fmt = nullptr;
   BigStr* home = nullptr;
+  StackRoot _root0(&ch);
+  StackRoot _root1(&arg);
+  StackRoot _root2(&r);
+  StackRoot _root3(&hostname);
+  StackRoot _root4(&fmt);
+  StackRoot _root5(&home);
+
   if (str_equals(ch, S_Czx)) {
     r = this->cache->Get(S_Czx);
   }
@@ -40719,12 +44720,19 @@ BigStr* Evaluator::_ReplaceBackslashCodes(List<Tuple2<int, BigStr*>*>* tokens) {
   BigStr* ch = nullptr;
   BigStr* arg = nullptr;
   BigStr* r = nullptr;
+  StackRoot _root0(&tokens);
+  StackRoot _root1(&ret);
+  StackRoot _root2(&ch);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&r);
+
   ret = Alloc<List<BigStr*>>();
   non_printing = 0;
   for (ListIter<Tuple2<int, BigStr*>*> it(tokens); !it.Done(); it.Next()) {
     Tuple2<int, BigStr*>* tup1 = it.Value();
     int id_ = tup1->at0();
     BigStr* s = tup1->at1();
+    StackRoot _unpack_1(&s);
     if ((id_ == Id::PS_Literals || id_ == Id::PS_BadBackslash)) {
       ret->append(s);
     }
@@ -40777,9 +44785,11 @@ BigStr* Evaluator::EvalPrompt(BigStr* s) {
   word_parse::WordParser* w_parser = nullptr;
   value::Str* val2 = nullptr;
   StackRoot _root0(&s);
-  StackRoot _root1(&ps1_str);
-  StackRoot _root2(&ps1_word);
-  StackRoot _root3(&val2);
+  StackRoot _root1(&tokens);
+  StackRoot _root2(&ps1_str);
+  StackRoot _root3(&ps1_word);
+  StackRoot _root4(&w_parser);
+  StackRoot _root5(&val2);
 
   tokens = this->tokens_cache->get(s);
   if (tokens == nullptr) {
@@ -40810,7 +44820,13 @@ BigStr* Evaluator::EvalFirstPrompt() {
   BigStr* msg = nullptr;
   value_asdl::value_t* ps1_val = nullptr;
   value_asdl::value_t* UP_ps1_val = nullptr;
-  StackRoot _root0(&val);
+  StackRoot _root0(&UP_func_val);
+  StackRoot _root1(&pos_args);
+  StackRoot _root2(&val);
+  StackRoot _root3(&UP_val);
+  StackRoot _root4(&msg);
+  StackRoot _root5(&ps1_val);
+  StackRoot _root6(&UP_ps1_val);
 
   UP_func_val = this->mem->GetValue(S_jAe);
   if (UP_func_val->tag() == value_e::Func) {
@@ -40858,8 +44874,12 @@ void UserPlugin::Run() {
   reader::FileLineReader* line_reader = nullptr;
   cmd_parse::CommandParser* c_parser = nullptr;
   source::Variable* src = nullptr;
-  StackRoot _root0(&prompt_cmd);
-  StackRoot _root1(&node);
+  StackRoot _root0(&val);
+  StackRoot _root1(&prompt_cmd);
+  StackRoot _root2(&node);
+  StackRoot _root3(&line_reader);
+  StackRoot _root4(&c_parser);
+  StackRoot _root5(&src);
 
   val = this->mem->GetValue(PROMPT_COMMAND);
   if (val->tag() != value_e::Str) {
@@ -40940,6 +44960,18 @@ value_asdl::value_t* OldValue(value_asdl::sh_lvalue_t* lval, state::Mem* mem, op
   value_asdl::value_t* UP_val = nullptr;
   BigStr* s = nullptr;
   value::BashAssoc* assoc_val = nullptr;
+  StackRoot _root0(&lval);
+  StackRoot _root1(&mem);
+  StackRoot _root2(&exec_opts);
+  StackRoot _root3(&blame_loc);
+  StackRoot _root4(&UP_lval);
+  StackRoot _root5(&var_name);
+  StackRoot _root6(&cell);
+  StackRoot _root7(&val);
+  StackRoot _root8(&UP_val);
+  StackRoot _root9(&s);
+  StackRoot _root10(&assoc_val);
+
   UP_lval = lval;
   switch (lval->tag()) {
     case sh_lvalue_e::Var: {
@@ -41060,12 +45092,13 @@ value_asdl::sh_lvalue_t* UnsafeArith::ParseLValue(BigStr* s, syntax_asdl::loc_t*
   value_asdl::sh_lvalue_t* lval = nullptr;
   StackRoot _root0(&s);
   StackRoot _root1(&location);
-  StackRoot _root2(&anode);
-  StackRoot _root3(&lval);
+  StackRoot _root2(&a_parser);
+  StackRoot _root3(&anode);
+  StackRoot _root4(&lval);
 
-  if (!this->parse_ctx->parse_opts->parse_sh_arith()) {
+  if (this->parse_ctx->parse_opts->no_parse_sh_arith()) {
     if (!match::IsValidVarName(s)) {
-      e_die(StrFormat("Invalid variable name %r (parse_sh_arith is off)", s), location);
+      e_die(StrFormat("Invalid variable name %r (no_parse_sh_arith)", s), location);
     }
     return Alloc<LeftName>(s, location);
   }
@@ -41102,7 +45135,11 @@ syntax_asdl::BracedVarSub* UnsafeArith::ParseVarRef(BigStr* ref_str, syntax_asdl
   syntax_asdl::BracedVarSub* bvs_part = nullptr;
   StackRoot _root0(&ref_str);
   StackRoot _root1(&blame_tok);
-  StackRoot _root2(&bvs_part);
+  StackRoot _root2(&line_reader);
+  StackRoot _root3(&lexer);
+  StackRoot _root4(&w_parser);
+  StackRoot _root5(&src);
+  StackRoot _root6(&bvs_part);
 
   line_reader = reader::StringLineReader(ref_str, this->arena);
   lexer = this->parse_ctx->MakeLexer(line_reader);
@@ -41132,6 +45169,11 @@ Tuple2<bool, mops::BigInt> _ParseOshInteger(BigStr* s, syntax_asdl::loc_t* blame
   int base;
   mops::BigInt integer;
   int digit;
+  StackRoot _root0(&s);
+  StackRoot _root1(&blame_loc);
+  StackRoot _root2(&b);
+  StackRoot _root3(&digits);
+
   Tuple2<int, int> tup2 = match::MatchShNumberToken(s, 0);
   id_ = tup2.at0();
   pos = tup2.at1();
@@ -41187,6 +45229,7 @@ Tuple2<bool, mops::BigInt> _ParseOshInteger(BigStr* s, syntax_asdl::loc_t* blame
           integer = mops::ZERO;
           for (StrIter it(digits); !it.Done(); it.Next()) {
             BigStr* ch = it.Value();
+            StackRoot _for(&ch          );
             if (IsLower(ch)) {
               digit = ((ord(ch) - ord(S_gCD)) + 10);
             }
@@ -41248,7 +45291,8 @@ mops::BigInt ArithEvaluator::StringToBigInt(BigStr* s, syntax_asdl::loc_t* blame
   mops::BigInt integer;
   StackRoot _root0(&s);
   StackRoot _root1(&blame_loc);
-  StackRoot _root2(&node2);
+  StackRoot _root2(&a_parser);
+  StackRoot _root3(&node2);
 
   s = s->strip();
   Tuple2<bool, mops::BigInt> tup7 = _ParseOshInteger(s, blame_loc);
@@ -41296,6 +45340,7 @@ mops::BigInt ArithEvaluator::_ValToIntOrError(value_asdl::value_t* val, syntax_a
   value_asdl::value_t* UP_val = nullptr;
   StackRoot _root0(&val);
   StackRoot _root1(&blame);
+  StackRoot _root2(&UP_val);
 
   try {
     UP_val = val;
@@ -41334,6 +45379,8 @@ Tuple2<mops::BigInt, value_asdl::sh_lvalue_t*> ArithEvaluator::_EvalLhsAndLookup
   mops::BigInt i;
   StackRoot _root0(&node);
   StackRoot _root1(&lval);
+  StackRoot _root2(&val);
+  StackRoot _root3(&named_lval);
 
   lval = this->EvalArithLhs(node);
   val = OldValue(lval, this->mem, this->exec_opts, location::TokenForArith(node));
@@ -41357,6 +45404,9 @@ Tuple2<mops::BigInt, value_asdl::sh_lvalue_t*> ArithEvaluator::_EvalLhsAndLookup
 
 void ArithEvaluator::_Store(value_asdl::sh_lvalue_t* lval, mops::BigInt new_int) {
   value::Str* val = nullptr;
+  StackRoot _root0(&lval);
+  StackRoot _root1(&val);
+
   val = Alloc<value::Str>(mops::ToStr(new_int));
   state::OshLanguageSetValue(this->mem, lval, val);
 }
@@ -41367,6 +45417,7 @@ mops::BigInt ArithEvaluator::EvalToBigInt(syntax_asdl::arith_expr_t* node) {
   mops::BigInt i;
   StackRoot _root0(&node);
   StackRoot _root1(&val);
+  StackRoot _root2(&vsub);
 
   val = this->Eval(node);
   if (((val->tag() == value_e::InternalStringArray || val->tag() == value_e::BashAssoc || val->tag() == value_e::BashArray) and node->tag() == arith_expr_e::VarSub)) {
@@ -41408,10 +45459,14 @@ value_asdl::value_t* ArithEvaluator::Eval(syntax_asdl::arith_expr_t* node) {
   mops::BigInt index;
   mops::BigInt cond;
   StackRoot _root0(&node);
-  StackRoot _root1(&lval);
-  StackRoot _root2(&left);
-  StackRoot _root3(&UP_left);
-  StackRoot _root4(&s);
+  StackRoot _root1(&UP_node);
+  StackRoot _root2(&var_name);
+  StackRoot _root3(&val);
+  StackRoot _root4(&lval);
+  StackRoot _root5(&left);
+  StackRoot _root6(&UP_left);
+  StackRoot _root7(&s);
+  StackRoot _root8(&key);
 
   UP_node = node;
   switch (node->tag()) {
@@ -41809,6 +45864,11 @@ value_asdl::value_t* ArithEvaluator::Eval(syntax_asdl::arith_expr_t* node) {
 BigStr* ArithEvaluator::EvalWordToString(syntax_asdl::arith_expr_t* node, syntax_asdl::loc_t* blame_loc) {
   syntax_asdl::arith_expr_t* UP_node = nullptr;
   value::Str* val = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&blame_loc);
+  StackRoot _root2(&UP_node);
+  StackRoot _root3(&val);
+
   UP_node = node;
   if (node->tag() == arith_expr_e::Word) {
     CompoundWord* w = static_cast<CompoundWord*>(UP_node);
@@ -41829,6 +45889,12 @@ value_asdl::sh_lvalue_t* ArithEvaluator::EvalShellLhs(syntax_asdl::sh_lhs_t* nod
   int index;
   sh_lvalue::Indexed* lval3 = nullptr;
   StackRoot _root0(&node);
+  StackRoot _root1(&UP_node);
+  StackRoot _root2(&lval);
+  StackRoot _root3(&lval1);
+  StackRoot _root4(&key);
+  StackRoot _root5(&lval2);
+  StackRoot _root6(&lval3);
 
   UP_node = node;
   lval = nullptr;
@@ -41864,6 +45930,11 @@ Tuple2<BigStr*, syntax_asdl::loc_t*> ArithEvaluator::_VarNameOrWord(syntax_asdl:
   syntax_asdl::arith_expr_t* UP_anode = nullptr;
   BigStr* var_name = nullptr;
   BigStr* no_str = nullptr;
+  StackRoot _root0(&anode);
+  StackRoot _root1(&UP_anode);
+  StackRoot _root2(&var_name);
+  StackRoot _root3(&no_str);
+
   UP_anode = anode;
   switch (anode->tag()) {
     case arith_expr_e::VarSub: {
@@ -41890,8 +45961,11 @@ value_asdl::sh_lvalue_t* ArithEvaluator::EvalArithLhs(syntax_asdl::arith_expr_t*
   BigStr* key = nullptr;
   int index;
   StackRoot _root0(&anode);
-  StackRoot _root1(&var_name);
-  StackRoot _root2(&blame_loc);
+  StackRoot _root1(&UP_anode);
+  StackRoot _root2(&var_name);
+  StackRoot _root3(&blame_loc);
+  StackRoot _root4(&arith_loc);
+  StackRoot _root5(&key);
 
   UP_anode = anode;
   if (anode->tag() == arith_expr_e::Binary) {
@@ -41940,6 +46014,14 @@ bool BoolEvaluator::_IsDefined(BigStr* s, syntax_asdl::loc_t* blame_loc) {
   runtime_asdl::error_code_t error_code;
   int length;
   mops::BigInt big_length;
+  StackRoot _root0(&s);
+  StackRoot _root1(&blame_loc);
+  StackRoot _root2(&m);
+  StackRoot _root3(&var_name);
+  StackRoot _root4(&index_str);
+  StackRoot _root5(&val);
+  StackRoot _root6(&UP_val);
+
   m = util::RegexSearch(consts::TEST_V_RE, s);
   if (m == nullptr) {
     if (this->exec_opts->strict_word_eval()) {
@@ -42013,6 +46095,9 @@ bool BoolEvaluator::_IsDefined(BigStr* s, syntax_asdl::loc_t* blame_loc) {
 mops::BigInt BoolEvaluator::_StringToBigIntOrError(BigStr* s, syntax_asdl::loc_t* blame_loc) {
   bool ok;
   mops::BigInt i;
+  StackRoot _root0(&s);
+  StackRoot _root1(&blame_loc);
+
   if (this->bracket) {
     if (match::LooksLikeInteger(s)) {
       Tuple2<bool, mops::BigInt> tup16 = mops::FromStr2(s);
@@ -42045,6 +46130,9 @@ mops::BigInt BoolEvaluator::_StringToBigIntOrError(BigStr* s, syntax_asdl::loc_t
 
 BigStr* BoolEvaluator::_EvalCompoundWord(syntax_asdl::word_t* word, int eval_flags) {
   value::Str* val = nullptr;
+  StackRoot _root0(&word);
+  StackRoot _root1(&val);
+
   val = this->word_ev->EvalWordToString(word, eval_flags);
   return val->s;
 }
@@ -42064,6 +46152,13 @@ bool BoolEvaluator::EvalB(syntax_asdl::bool_expr_t* node) {
   int fnmatch_flags;
   int regex_flags;
   List<int>* indices = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&UP_node);
+  StackRoot _root2(&s);
+  StackRoot _root3(&s1);
+  StackRoot _root4(&s2);
+  StackRoot _root5(&indices);
+
   UP_node = node;
   switch (node->tag()) {
     case bool_expr_e::WordTest: {
@@ -42253,6 +46348,12 @@ List<BigStr*>* _SpansToParts(BigStr* s, List<Tuple2<runtime_asdl::span_t, int>*>
   bool last_span_was_black;
   mylib::BufWriter* buf = nullptr;
   List<BigStr*>* result = nullptr;
+  StackRoot _root0(&s);
+  StackRoot _root1(&spans);
+  StackRoot _root2(&parts);
+  StackRoot _root3(&buf);
+  StackRoot _root4(&result);
+
   parts = Alloc<List<mylib::BufWriter*>>();
   start_index = 0;
   join_next = false;
@@ -42305,6 +46406,13 @@ split::IfsSplitter* SplitContext::_GetSplitter(BigStr* ifs) {
   split::IfsSplitter* sp = nullptr;
   mylib::BufWriter* ifs_whitespace = nullptr;
   mylib::BufWriter* ifs_other = nullptr;
+  StackRoot _root0(&ifs);
+  StackRoot _root1(&val);
+  StackRoot _root2(&UP_val);
+  StackRoot _root3(&sp);
+  StackRoot _root4(&ifs_whitespace);
+  StackRoot _root5(&ifs_other);
+
   if (ifs == nullptr) {
     val = this->mem->GetValue(S_nie, scope_e::Dynamic);
     UP_val = val;
@@ -42329,6 +46437,7 @@ split::IfsSplitter* SplitContext::_GetSplitter(BigStr* ifs) {
     ifs_other = Alloc<mylib::BufWriter>();
     for (StrIter it(ifs); !it.Done(); it.Next()) {
       BigStr* c = it.Value();
+      StackRoot _for(&c    );
       if (str_contains(S_xvt, c)) {
         ifs_whitespace->write(c);
       }
@@ -42345,6 +46454,9 @@ split::IfsSplitter* SplitContext::_GetSplitter(BigStr* ifs) {
 BigStr* SplitContext::GetJoinChar() {
   value_asdl::value_t* val = nullptr;
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&UP_val);
+
   val = this->mem->GetValue(S_nie, scope_e::Dynamic);
   UP_val = val;
   switch (val->tag()) {
@@ -42371,24 +46483,50 @@ BigStr* SplitContext::GetJoinChar() {
 
 BigStr* SplitContext::Escape(BigStr* s) {
   split::IfsSplitter* sp = nullptr;
+  StackRoot _root0(&s);
+  StackRoot _root1(&sp);
+
   sp = this->_GetSplitter();
   return sp->Escape(s);
 }
 
-List<BigStr*>* SplitContext::SplitForWordEval(BigStr* s, BigStr* ifs) {
+split::IfsSplitterState* SplitContext::CreateSplitterState(BigStr* ifs) {
   split::IfsSplitter* sp = nullptr;
-  List<Tuple2<runtime_asdl::span_t, int>*>* spans = nullptr;
+  StackRoot _root0(&ifs);
+  StackRoot _root1(&sp);
+
   sp = this->_GetSplitter(ifs);
-  spans = sp->Split(s, true);
-  return _SpansToParts(s, spans);
+  return Alloc<IfsSplitterState>(sp->ifs_whitespace, sp->ifs_other);
 }
 
-List<Tuple2<runtime_asdl::span_t, int>*>* SplitContext::SplitForRead(BigStr* line, bool allow_escape, bool do_split) {
+List<BigStr*>* SplitContext::SplitForWordEval(BigStr* s, BigStr* ifs) {
+  split::IfsSplitterState* sp = nullptr;
+  StackRoot _root0(&s);
+  StackRoot _root1(&ifs);
+  StackRoot _root2(&sp);
+
+  sp = this->CreateSplitterState(ifs);
+  sp->SetAllowEscape(true);
+  sp->PushFragment(s);
+  return sp->PushTerminator();
+}
+
+List<BigStr*>* SplitContext::SplitForRead(BigStr* line, bool allow_escape, bool do_split, int max_parts) {
   BigStr* ifs = nullptr;
-  split::IfsSplitter* sp = nullptr;
+  split::IfsSplitterState* sp = nullptr;
+  StackRoot _root0(&line);
+  StackRoot _root1(&ifs);
+  StackRoot _root2(&sp);
+
+  if (len(line) == 0) {
+    return Alloc<List<BigStr*>>();
+  }
   ifs = do_split ? nullptr : S_Aoo;
-  sp = this->_GetSplitter(ifs);
-  return sp->Split(line, allow_escape);
+  sp = this->CreateSplitterState(ifs);
+  sp->SetAllowEscape(allow_escape);
+  sp->SetMaxSplit((max_parts - 1));
+  sp->PushFragment(line);
+  return sp->PushTerminator();
 }
 
 _BaseSplitter::_BaseSplitter(BigStr* escape_chars) {
@@ -42396,6 +46534,8 @@ _BaseSplitter::_BaseSplitter(BigStr* escape_chars) {
 }
 
 BigStr* _BaseSplitter::Escape(BigStr* s) {
+  StackRoot _root0(&s);
+
   return pyutil::BackslashEscape(s, this->escape_chars);
 }
 
@@ -42415,6 +46555,11 @@ List<Tuple2<runtime_asdl::span_t, int>*>* IfsSplitter::Split(BigStr* s, bool all
   int ch;
   int new_state;
   int action;
+  StackRoot _root0(&s);
+  StackRoot _root1(&ws_chars);
+  StackRoot _root2(&other_chars);
+  StackRoot _root3(&spans);
+
   ws_chars = this->ifs_whitespace;
   other_chars = this->ifs_other;
   n = len(s);
@@ -42500,6 +46645,161 @@ List<Tuple2<runtime_asdl::span_t, int>*>* IfsSplitter::Split(BigStr* s, bool all
   return spans;
 }
 
+IfsSplitterState::IfsSplitterState(BigStr* ifs_space, BigStr* ifs_other) {
+  this->ifs_space = ifs_space;
+  this->ifs_other = ifs_other;
+  this->glob_escape = false;
+  this->allow_escape = false;
+  this->max_split = -1;
+  this->state = state_i::Start;
+  this->args = Alloc<List<BigStr*>>();
+  this->frags = Alloc<List<BigStr*>>();
+  this->char_buff = Alloc<List<int>>();
+  this->white_buff = nullptr;
+}
+
+void IfsSplitterState::SetGlobEscape(bool glob_escape) {
+  this->glob_escape = glob_escape;
+}
+
+void IfsSplitterState::SetAllowEscape(bool allow_escape) {
+  this->allow_escape = allow_escape;
+}
+
+void IfsSplitterState::SetMaxSplit(int max_split) {
+  this->max_split = max_split;
+  if ((max_split >= 0 and this->white_buff == nullptr)) {
+    this->white_buff = Alloc<List<int>>();
+  }
+}
+
+void IfsSplitterState::_FlushCharBuff() {
+  BigStr* frag = nullptr;
+  StackRoot _root0(&frag);
+
+  if (len(this->char_buff) >= 1) {
+    frag = mylib::JoinBytes(this->char_buff);
+    if (this->glob_escape) {
+      frag = glob_::GlobEscapeBackslash(frag);
+    }
+    this->frags->append(frag);
+    this->char_buff->clear();
+  }
+}
+
+void IfsSplitterState::_GenerateWord() {
+  this->_FlushCharBuff();
+  this->args->append(S_Aoo->join(this->frags));
+  this->frags->clear();
+  if ((this->max_split >= 0 and len(this->white_buff) >= 1)) {
+    this->char_buff->extend(this->white_buff);
+    this->white_buff->clear();
+  }
+}
+
+void IfsSplitterState::PushLiteral(BigStr* s) {
+  StackRoot _root0(&s);
+
+  if (this->state == state_i::DE_White1) {
+    this->_GenerateWord();
+  }
+  else {
+    this->_FlushCharBuff();
+  }
+  this->frags->append(s);
+  this->state = state_i::Black;
+}
+
+void IfsSplitterState::PushFragment(BigStr* s) {
+  BigStr* ifs_space = nullptr;
+  BigStr* ifs_other = nullptr;
+  bool allow_escape;
+  int max_split;
+  int n;
+  int byte;
+  StackRoot _root0(&s);
+  StackRoot _root1(&ifs_space);
+  StackRoot _root2(&ifs_other);
+
+  ifs_space = this->ifs_space;
+  ifs_other = this->ifs_other;
+  allow_escape = this->allow_escape;
+  max_split = this->max_split;
+  n = len(s);
+  for (int i = 0; i < n; ++i) {
+    byte = mylib::ByteAt(s, i);
+    if (this->state == state_i::Backslash) {
+      ;  // pass
+    }
+    else {
+      if ((max_split >= 0 and len(this->args) == (max_split + 1))) {
+        if ((allow_escape and byte == pyos::BACKSLASH_CH)) {
+          this->state = state_i::Backslash;
+          continue;
+        }
+        else {
+          if (mylib::ByteInSet(byte, ifs_space)) {
+            if (this->state == state_i::Start) {
+              this->char_buff->append(byte);
+              continue;
+            }
+          }
+        }
+      }
+      else {
+        if ((allow_escape and byte == pyos::BACKSLASH_CH)) {
+          if (this->state == state_i::DE_White1) {
+            this->_GenerateWord();
+          }
+          this->state = state_i::Backslash;
+          continue;
+        }
+        else {
+          if (mylib::ByteInSet(byte, ifs_space)) {
+            if (this->state != state_i::Start) {
+              if (len(this->args) == max_split) {
+                this->white_buff->append(byte);
+              }
+              this->state = state_i::DE_White1;
+            }
+            continue;
+          }
+          else {
+            if (mylib::ByteInSet(byte, ifs_other)) {
+              if (len(this->args) == max_split) {
+                this->white_buff->append(byte);
+              }
+              this->_GenerateWord();
+              this->state = state_i::Start;
+              continue;
+            }
+          }
+        }
+      }
+    }
+    if (this->state == state_i::DE_White1) {
+      this->_GenerateWord();
+    }
+    this->char_buff->append(byte);
+    this->state = state_i::Black;
+  }
+}
+
+List<BigStr*>* IfsSplitterState::PushTerminator() {
+  BigStr* last = nullptr;
+  StackRoot _root0(&last);
+
+  if ((this->state == state_i::DE_White1 || this->state == state_i::Black)) {
+    this->_GenerateWord();
+    if ((this->max_split >= 0 and len(this->args) == (this->max_split + 2))) {
+      last = this->args->pop();
+      this->args->set(-1, str_concat(this->args->at(-1), last->rstrip(this->ifs_space)));
+    }
+    this->state = state_i::Start;
+  }
+  return this->args;
+}
+
 }  // define namespace split
 
 namespace string_ops {  // define
@@ -42538,6 +46838,8 @@ BigStr* Utf8Error_str(int error) {
 int DecodeUtf8Char(BigStr* s, int start) {
   int codepoint_or_error;
   int _bytes_read;
+  StackRoot _root0(&s);
+
   Tuple2<int, int> tup0 = fastfunc::Utf8DecodeOne(s, start);
   codepoint_or_error = tup0.at0();
   _bytes_read = tup0.at1();
@@ -42550,6 +46852,8 @@ int DecodeUtf8Char(BigStr* s, int start) {
 int NextUtf8Char(BigStr* s, int i) {
   int codepoint_or_error;
   int bytes_read;
+  StackRoot _root0(&s);
+
   Tuple2<int, int> tup1 = fastfunc::Utf8DecodeOne(s, i);
   codepoint_or_error = tup1.at0();
   bytes_read = tup1.at1();
@@ -42588,6 +46892,8 @@ int PreviousUtf8Char(BigStr* s, int i) {
   int orig_i;
   int byte_as_int;
   int offset;
+  StackRoot _root0(&s);
+
   orig_i = i;
   while (i > 0) {
     i -= 1;
@@ -42607,6 +46913,8 @@ int CountUtf8Chars(BigStr* s) {
   int num_chars;
   int num_bytes;
   int i;
+  StackRoot _root0(&s);
+
   num_chars = 0;
   num_bytes = len(s);
   i = 0;
@@ -42620,6 +46928,8 @@ int CountUtf8Chars(BigStr* s) {
 int AdvanceUtf8Chars(BigStr* s, int num_chars, int byte_offset) {
   int num_bytes;
   int i;
+  StackRoot _root0(&s);
+
   num_bytes = len(s);
   i = byte_offset;
   for (int _ = 0; _ < num_chars; ++_) {
@@ -42642,6 +46952,8 @@ Tuple2<int, int> StartsWithWhitespaceByteRange(BigStr* s) {
   int codepoint;
   int start;
   int end;
+  StackRoot _root0(&s);
+
   len_s = len(s);
   i = 0;
   while (i < len_s) {
@@ -42667,6 +46979,8 @@ Tuple2<int, int> EndsWithWhitespaceByteRange(BigStr* s) {
   int codepoint;
   int start;
   int end;
+  StackRoot _root0(&s);
+
   len_s = len(s);
   i = len_s;
   while (i > 0) {
@@ -42686,6 +47000,10 @@ BigStr* DoUnarySuffixOp(BigStr* s, syntax_asdl::Token* op_tok, BigStr* arg, bool
   int id_;
   int i;
   int n;
+  StackRoot _root0(&s);
+  StackRoot _root1(&op_tok);
+  StackRoot _root2(&arg);
+
   id_ = op_tok->id;
   if ((!is_extglob and !glob_::LooksLikeGlob(arg))) {
     arg = glob_::GlobUnescape(arg);
@@ -42831,6 +47149,11 @@ List<Tuple2<int, int>*>* _AllMatchPositions(BigStr* s, BigStr* regex) {
   Tuple2<int, int>* m = nullptr;
   int start;
   int end;
+  StackRoot _root0(&s);
+  StackRoot _root1(&regex);
+  StackRoot _root2(&matches);
+  StackRoot _root3(&m);
+
   matches = Alloc<List<Tuple2<int, int>*>>();
   pos = 0;
   n = len(s);
@@ -42851,6 +47174,11 @@ List<Tuple2<int, int>*>* _AllMatchPositions(BigStr* s, BigStr* regex) {
 BigStr* _PatSubAll(BigStr* s, BigStr* regex, BigStr* replace_str) {
   List<BigStr*>* parts = nullptr;
   int prev_end;
+  StackRoot _root0(&s);
+  StackRoot _root1(&regex);
+  StackRoot _root2(&replace_str);
+  StackRoot _root3(&parts);
+
   parts = Alloc<List<BigStr*>>();
   prev_end = 0;
   for (ListIter<Tuple2<int, int>*> it(_AllMatchPositions(s, regex)); !it.Done(); it.Next()) {
@@ -42877,6 +47205,12 @@ BigStr* GlobReplacer::Replace(BigStr* s, suffix_op::PatSub* op) {
   Tuple2<int, int>* m = nullptr;
   int start;
   int end;
+  StackRoot _root0(&s);
+  StackRoot _root1(&op);
+  StackRoot _root2(&regex);
+  StackRoot _root3(&msg);
+  StackRoot _root4(&m);
+
   regex = StrFormat("(%s)", this->regex);
   if (op->replace_mode == Id::Lit_Slash) {
     if (len(this->regex) == 0) {
@@ -42909,6 +47243,8 @@ BigStr* GlobReplacer::Replace(BigStr* s, suffix_op::PatSub* op) {
 }
 
 BigStr* ShellQuoteB(BigStr* s) {
+  StackRoot _root0(&s);
+
   s = s->replace(S_raD, S_FDn)->replace(S_nfs, S_ylr);
   return pyutil::BackslashEscape(s, S_cDi);
 }
@@ -42930,6 +47266,8 @@ using syntax_asdl::Token;
 using error::p_die;
 
 bool IsIndexable(syntax_asdl::arith_expr_t* node) {
+  StackRoot _root0(&node);
+
   switch (node->tag()) {
     case arith_expr_e::VarSub: 
     case arith_expr_e::Word: {
@@ -42942,6 +47280,10 @@ bool IsIndexable(syntax_asdl::arith_expr_t* node) {
 
 void CheckLhsExpr(syntax_asdl::arith_expr_t* node, syntax_asdl::word_t* blame_word) {
   syntax_asdl::arith_expr_t* UP_node = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&blame_word);
+  StackRoot _root2(&UP_node);
+
   UP_node = node;
   if (node->tag() == arith_expr_e::Binary) {
     arith_expr::Binary* node = static_cast<arith_expr::Binary*>(UP_node);
@@ -42956,12 +47298,19 @@ void CheckLhsExpr(syntax_asdl::arith_expr_t* node, syntax_asdl::word_t* blame_wo
 }
 
 syntax_asdl::arith_expr_t* NullError(tdop::TdopParser* p, syntax_asdl::word_t* t, int bp) {
+  StackRoot _root0(&p);
+  StackRoot _root1(&t);
+
   p_die(S_Dmb, Alloc<loc::Word>(t));
   return nullptr;
 }
 
 syntax_asdl::arith_expr_t* NullConstant(tdop::TdopParser* p, syntax_asdl::word_t* w, int bp) {
   syntax_asdl::Token* name_tok = nullptr;
+  StackRoot _root0(&p);
+  StackRoot _root1(&w);
+  StackRoot _root2(&name_tok);
+
   name_tok = word_::LooksLikeArithVar(w);
   if (name_tok) {
     return name_tok;
@@ -42991,6 +47340,10 @@ syntax_asdl::arith_expr_t* NullPrefixOp(tdop::TdopParser* p, syntax_asdl::word_t
 }
 
 syntax_asdl::arith_expr_t* LeftError(tdop::TdopParser* p, syntax_asdl::word_t* t, syntax_asdl::arith_expr_t* left, int rbp) {
+  StackRoot _root0(&p);
+  StackRoot _root1(&t);
+  StackRoot _root2(&left);
+
   p_die(S_vvB, Alloc<loc::Word>(t));
   return nullptr;
 }
@@ -43000,6 +47353,7 @@ syntax_asdl::arith_expr_t* LeftBinaryOp(tdop::TdopParser* p, syntax_asdl::word_t
   StackRoot _root0(&p);
   StackRoot _root1(&w);
   StackRoot _root2(&left);
+  StackRoot _root3(&tok);
 
   tok = static_cast<Token*>(w);
   return Alloc<arith_expr::Binary>(tok, left, p->ParseUntil(rbp));
@@ -43074,8 +47428,8 @@ syntax_asdl::arith_expr_t* TdopParser::ParseUntil(int rbp) {
 
 syntax_asdl::arith_expr_t* TdopParser::Parse() {
   this->Next();
-  if (!this->parse_opts->parse_sh_arith()) {
-    p_die(S_tFx, Alloc<loc::Word>(this->cur_word));
+  if (this->parse_opts->no_parse_sh_arith()) {
+    p_die(S_jmt, Alloc<loc::Word>(this->cur_word));
   }
   return this->ParseUntil(0);
 }
@@ -43088,6 +47442,7 @@ using id_kind_asdl::Id;
 using id_kind_asdl::Kind;
 using id_kind_asdl::Id_t;
 using id_kind_asdl::Kind_t;
+using runtime_asdl::Piece;
 using syntax_asdl::Token;
 using syntax_asdl::CompoundWord;
 using syntax_asdl::DoubleQuoted;
@@ -43101,7 +47456,27 @@ using syntax_asdl::word_part_t;
 using syntax_asdl::word_part_e;
 using syntax_asdl::AssocPair;
 
+runtime_asdl::Piece* MakePiece(BigStr* s, bool quoted) {
+  StackRoot _root0(&s);
+
+  return Alloc<Piece>(s, quoted, !quoted);
+}
+
+runtime_asdl::Piece* PieceQuoted(BigStr* s) {
+  StackRoot _root0(&s);
+
+  return Alloc<Piece>(s, true, false);
+}
+
+runtime_asdl::Piece* PieceOperator(BigStr* s) {
+  StackRoot _root0(&s);
+
+  return Alloc<Piece>(s, false, false);
+}
+
 int LiteralId(syntax_asdl::word_part_t* part) {
+  StackRoot _root0(&part);
+
   if (part->tag() != word_part_e::Literal) {
     return Id::Undefined_Tok;
   }
@@ -43110,6 +47485,9 @@ int LiteralId(syntax_asdl::word_part_t* part) {
 
 syntax_asdl::Token* CheckLiteralId(syntax_asdl::word_part_t* part, int tok_id) {
   syntax_asdl::Token* tok = nullptr;
+  StackRoot _root0(&part);
+  StackRoot _root1(&tok);
+
   if (part->tag() != word_part_e::Literal) {
     return nullptr;
   }
@@ -43122,6 +47500,9 @@ syntax_asdl::Token* CheckLiteralId(syntax_asdl::word_part_t* part, int tok_id) {
 
 syntax_asdl::Token* LiteralToken(syntax_asdl::word_t* UP_w) {
   syntax_asdl::word_part_t* part0 = nullptr;
+  StackRoot _root0(&UP_w);
+  StackRoot _root1(&part0);
+
   CompoundWord* w = static_cast<CompoundWord*>(UP_w);
   if (len(w->parts) != 1) {
     return nullptr;
@@ -43138,6 +47519,11 @@ Tuple3<bool, BigStr*, bool> _EvalWordPart(syntax_asdl::word_part_t* part) {
   BigStr* s = nullptr;
   List<BigStr*>* strs = nullptr;
   bool ok;
+  StackRoot _root0(&part);
+  StackRoot _root1(&UP_part);
+  StackRoot _root2(&s);
+  StackRoot _root3(&strs);
+
   UP_part = part;
   switch (part->tag()) {
     case word_part_e::Literal: {
@@ -43161,6 +47547,7 @@ Tuple3<bool, BigStr*, bool> _EvalWordPart(syntax_asdl::word_part_t* part) {
       strs = Alloc<List<BigStr*>>();
       for (ListIter<syntax_asdl::word_part_t*> it(part->parts); !it.Done(); it.Next()) {
         syntax_asdl::word_part_t* p = it.Value();
+        StackRoot _for(&p      );
         Tuple3<bool, BigStr*, bool> tup0 = _EvalWordPart(p);
         ok = tup0.at0();
         s = tup0.at1();
@@ -43195,6 +47582,10 @@ Tuple3<bool, BigStr*, bool> _EvalWordPart(syntax_asdl::word_part_t* part) {
 BigStr* FastStrEval(syntax_asdl::CompoundWord* w) {
   syntax_asdl::word_part_t* part0 = nullptr;
   syntax_asdl::word_part_t* UP_part0 = nullptr;
+  StackRoot _root0(&w);
+  StackRoot _root1(&part0);
+  StackRoot _root2(&UP_part0);
+
   if (len(w->parts) != 1) {
     return nullptr;
   }
@@ -43228,6 +47619,10 @@ Tuple3<bool, BigStr*, bool> StaticEval(syntax_asdl::word_t* UP_w) {
   bool ok;
   BigStr* s = nullptr;
   bool q;
+  StackRoot _root0(&UP_w);
+  StackRoot _root1(&strs);
+  StackRoot _root2(&s);
+
   quoted = false;
   if (UP_w->tag() != word_e::Compound) {
     return Tuple3<bool, BigStr*, bool>(false, S_Aoo, quoted);
@@ -43236,6 +47631,7 @@ Tuple3<bool, BigStr*, bool> StaticEval(syntax_asdl::word_t* UP_w) {
   strs = Alloc<List<BigStr*>>();
   for (ListIter<syntax_asdl::word_part_t*> it(w->parts); !it.Done(); it.Next()) {
     syntax_asdl::word_part_t* part = it.Value();
+    StackRoot _for(&part  );
     Tuple3<bool, BigStr*, bool> tup1 = _EvalWordPart(part);
     ok = tup1.at0();
     s = tup1.at1();
@@ -43252,6 +47648,8 @@ Tuple3<bool, BigStr*, bool> StaticEval(syntax_asdl::word_t* UP_w) {
 }
 
 syntax_asdl::CompoundWord* TildeDetect(syntax_asdl::word_t* UP_w) {
+  StackRoot _root0(&UP_w);
+
   if (UP_w->tag() != word_e::Compound) {
     return nullptr;
   }
@@ -43265,6 +47663,11 @@ syntax_asdl::CompoundWord* TildeDetect2(syntax_asdl::CompoundWord* w) {
   int id1;
   syntax_asdl::Token* tok1 = nullptr;
   int id2;
+  StackRoot _root0(&w);
+  StackRoot _root1(&tok0);
+  StackRoot _root2(&new_parts);
+  StackRoot _root3(&tok1);
+
   if (len(w->parts) == 0) {
     return nullptr;
   }
@@ -43314,10 +47717,20 @@ void TildeDetectAssign(syntax_asdl::CompoundWord* w) {
   int id1;
   syntax_asdl::Token* tok1 = nullptr;
   int id2;
+  StackRoot _root0(&w);
+  StackRoot _root1(&parts);
+  StackRoot _root2(&new_parts);
+  StackRoot _root3(&part0);
+  StackRoot _root4(&part1);
+  StackRoot _root5(&part2);
+  StackRoot _root6(&tok0);
+  StackRoot _root7(&tok1);
+
   parts = w->parts;
   has_tilde = false;
   for (ListIter<syntax_asdl::word_part_t*> it(parts); !it.Done(); it.Next()) {
     syntax_asdl::word_part_t* part = it.Value();
+    StackRoot _for(&part  );
     if (LiteralId(part) == Id::Lit_Tilde) {
       has_tilde = true;
       break;
@@ -43390,9 +47803,14 @@ void TildeDetectAssign(syntax_asdl::CompoundWord* w) {
 List<syntax_asdl::word_t*>* TildeDetectAll(List<syntax_asdl::word_t*>* words) {
   List<syntax_asdl::word_t*>* out = nullptr;
   syntax_asdl::CompoundWord* t = nullptr;
+  StackRoot _root0(&words);
+  StackRoot _root1(&out);
+  StackRoot _root2(&t);
+
   out = Alloc<List<syntax_asdl::word_t*>>();
   for (ListIter<syntax_asdl::word_t*> it(words); !it.Done(); it.Next()) {
     syntax_asdl::word_t* w = it.Value();
+    StackRoot _for(&w  );
     t = TildeDetect(w);
     if (t) {
       out->append(t);
@@ -43405,8 +47823,11 @@ List<syntax_asdl::word_t*>* TildeDetectAll(List<syntax_asdl::word_t*>* words) {
 }
 
 bool HasArrayPart(syntax_asdl::CompoundWord* w) {
+  StackRoot _root0(&w);
+
   for (ListIter<syntax_asdl::word_part_t*> it(w->parts); !it.Done(); it.Next()) {
     syntax_asdl::word_part_t* part = it.Value();
+    StackRoot _for(&part  );
     if (part->tag() == word_part_e::InitializerLiteral) {
       return true;
     }
@@ -43418,6 +47839,9 @@ BigStr* ShFunctionName(syntax_asdl::CompoundWord* w) {
   bool ok;
   BigStr* s = nullptr;
   bool quoted;
+  StackRoot _root0(&w);
+  StackRoot _root1(&s);
+
   Tuple3<bool, BigStr*, bool> tup2 = StaticEval(w);
   ok = tup2.at0();
   s = tup2.at1();
@@ -43429,6 +47853,8 @@ BigStr* ShFunctionName(syntax_asdl::CompoundWord* w) {
 }
 
 bool IsVarLike(syntax_asdl::CompoundWord* w) {
+  StackRoot _root0(&w);
+
   if (len(w->parts) == 0) {
     return false;
   }
@@ -43436,6 +47862,8 @@ bool IsVarLike(syntax_asdl::CompoundWord* w) {
 }
 
 syntax_asdl::Token* LooksLikeArithVar(syntax_asdl::word_t* UP_w) {
+  StackRoot _root0(&UP_w);
+
   if (UP_w->tag() != word_e::Compound) {
     return nullptr;
   }
@@ -43447,6 +47875,8 @@ syntax_asdl::Token* LooksLikeArithVar(syntax_asdl::word_t* UP_w) {
 }
 
 syntax_asdl::Token* CheckLeadingEquals(syntax_asdl::CompoundWord* w) {
+  StackRoot _root0(&w);
+
   if (len(w->parts) == 0) {
     return nullptr;
   }
@@ -43460,6 +47890,13 @@ Tuple3<syntax_asdl::Token*, syntax_asdl::Token*, int> DetectShAssignment(syntax_
   syntax_asdl::Token* tok0 = nullptr;
   syntax_asdl::word_part_t* part = nullptr;
   syntax_asdl::Token* tok_close = nullptr;
+  StackRoot _root0(&w);
+  StackRoot _root1(&no_token);
+  StackRoot _root2(&part0);
+  StackRoot _root3(&tok0);
+  StackRoot _root4(&part);
+  StackRoot _root5(&tok_close);
+
   no_token = nullptr;
   n = len(w->parts);
   if (n == 0) {
@@ -43495,6 +47932,11 @@ syntax_asdl::AssocPair* DetectAssocPair(syntax_asdl::CompoundWord* w) {
   syntax_asdl::CompoundWord* key = nullptr;
   syntax_asdl::CompoundWord* value = nullptr;
   bool has_plus;
+  StackRoot _root0(&w);
+  StackRoot _root1(&parts);
+  StackRoot _root2(&key);
+  StackRoot _root3(&value);
+
   parts = w->parts;
   if (LiteralId(parts->at(0)) != Id::Lit_LBracket) {
     return nullptr;
@@ -43517,6 +47959,10 @@ Tuple2<id_kind_asdl::Kind_t, syntax_asdl::Token*> IsControlFlow(syntax_asdl::Com
   syntax_asdl::word_part_t* UP_part0 = nullptr;
   int token_type;
   id_kind_asdl::Kind_t token_kind;
+  StackRoot _root0(&w);
+  StackRoot _root1(&no_token);
+  StackRoot _root2(&UP_part0);
+
   no_token = nullptr;
   if (len(w->parts) != 1) {
     return Tuple2<id_kind_asdl::Kind_t, syntax_asdl::Token*>(Kind::Undefined, no_token);
@@ -43534,6 +47980,8 @@ Tuple2<id_kind_asdl::Kind_t, syntax_asdl::Token*> IsControlFlow(syntax_asdl::Com
 }
 
 syntax_asdl::Token* BraceToken(syntax_asdl::word_t* UP_w) {
+  StackRoot _root0(&UP_w);
+
   switch (UP_w->tag()) {
     case word_e::Operator: {
       Token* tok = static_cast<Token*>(UP_w);
@@ -43554,6 +48002,10 @@ syntax_asdl::Token* BraceToken(syntax_asdl::word_t* UP_w) {
 syntax_asdl::Token* AsKeywordToken(syntax_asdl::word_t* UP_w) {
   syntax_asdl::word_part_t* part = nullptr;
   syntax_asdl::Token* tok = nullptr;
+  StackRoot _root0(&UP_w);
+  StackRoot _root1(&part);
+  StackRoot _root2(&tok);
+
   CompoundWord* w = static_cast<CompoundWord*>(UP_w);
   part = w->parts->at(0);
   tok = static_cast<Token*>(part);
@@ -43561,11 +48013,16 @@ syntax_asdl::Token* AsKeywordToken(syntax_asdl::word_t* UP_w) {
 }
 
 syntax_asdl::Token* AsOperatorToken(syntax_asdl::word_t* word) {
+  StackRoot _root0(&word);
+
   return static_cast<Token*>(word);
 }
 
 int ArithId(syntax_asdl::word_t* w) {
   syntax_asdl::Token* tok = nullptr;
+  StackRoot _root0(&w);
+  StackRoot _root1(&tok);
+
   if (w->tag() == word_e::Operator) {
     tok = static_cast<Token*>(w);
     return tok->id;
@@ -43577,6 +48034,9 @@ int BoolId(syntax_asdl::word_t* w) {
   syntax_asdl::word_t* UP_w = nullptr;
   int token_type;
   id_kind_asdl::Kind_t token_kind;
+  StackRoot _root0(&w);
+  StackRoot _root1(&UP_w);
+
   UP_w = w;
   switch (w->tag()) {
     case word_e::String: {
@@ -43618,6 +48078,9 @@ int CommandId(syntax_asdl::word_t* w) {
   syntax_asdl::word_t* UP_w = nullptr;
   int token_type;
   id_kind_asdl::Kind_t token_kind;
+  StackRoot _root0(&w);
+  StackRoot _root1(&UP_w);
+
   UP_w = w;
   switch (w->tag()) {
     case word_e::Operator: {
@@ -43652,6 +48115,9 @@ int CommandId(syntax_asdl::word_t* w) {
 
 id_kind_asdl::Kind_t CommandKind(syntax_asdl::word_t* w) {
   syntax_asdl::Token* tok = nullptr;
+  StackRoot _root0(&w);
+  StackRoot _root1(&tok);
+
   if (w->tag() == word_e::Operator) {
     tok = static_cast<Token*>(w);
     return consts::GetKind(tok->id);
@@ -43660,17 +48126,25 @@ id_kind_asdl::Kind_t CommandKind(syntax_asdl::word_t* w) {
 }
 
 bool IsVarSub(syntax_asdl::word_t* w) {
+  StackRoot _root0(&w);
+
   return false;
 }
 
 syntax_asdl::CompoundWord* ErrorWord(BigStr* error_str) {
   syntax_asdl::Token* t = nullptr;
+  StackRoot _root0(&error_str);
+  StackRoot _root1(&t);
+
   t = lexer::DummyToken(Id::Lit_Chars, error_str);
   return Alloc<CompoundWord>(NewList<syntax_asdl::word_part_t*>(std::initializer_list<syntax_asdl::word_part_t*>{t}));
 }
 
 BigStr* Pretty(syntax_asdl::word_t* w) {
   syntax_asdl::word_t* UP_w = nullptr;
+  StackRoot _root0(&w);
+  StackRoot _root1(&UP_w);
+
   UP_w = w;
   if (w->tag() == word_e::String) {
     word::String* w = static_cast<word::String*>(UP_w);
@@ -43727,6 +48201,11 @@ syntax_asdl::CharCode* EvalCharLiteralForRegex(syntax_asdl::Token* tok) {
   BigStr* s = nullptr;
   int i;
   BigStr* one_char_str = nullptr;
+  StackRoot _root0(&tok);
+  StackRoot _root1(&value);
+  StackRoot _root2(&s);
+  StackRoot _root3(&one_char_str);
+
   id_ = tok->id;
   value = lexer::TokenVal(tok);
   switch (id_) {
@@ -43741,6 +48220,7 @@ syntax_asdl::CharCode* EvalCharLiteralForRegex(syntax_asdl::Token* tok) {
       return Alloc<CharCode>(tok, ord(one_char_str), false);
     }
       break;
+    case Id::Char_YHex: 
     case Id::Char_Hex: {
       s = lexer::TokenSliceLeft(tok, 2);
       i = to_int(s, 16);
@@ -43764,6 +48244,10 @@ BigStr* EvalCStringToken(int id_, BigStr* value) {
   BigStr* c = nullptr;
   BigStr* s = nullptr;
   int i;
+  StackRoot _root0(&value);
+  StackRoot _root1(&c);
+  StackRoot _root2(&s);
+
   code_point = -1;
   if ((id_ == Id::Lit_Chars || id_ == Id::Lit_CharsWithoutPrefix || id_ == Id::Unknown_Backslash)) {
     return value;
@@ -43829,6 +48313,10 @@ BigStr* EvalSingleQuoted(int id_, List<syntax_asdl::Token*>* tokens) {
   List<BigStr*>* strs = nullptr;
   BigStr* s = nullptr;
   int code_point;
+  StackRoot _root0(&tokens);
+  StackRoot _root1(&strs);
+  StackRoot _root2(&s);
+
   if ((id_ == Id::Left_SingleQuote || id_ == Id::Left_RSingleQuote || id_ == Id::Left_TSingleQuote || id_ == Id::Left_RTSingleQuote)) {
     strs = Alloc<List<BigStr*>>();
     for (ListIter<syntax_asdl::Token*> it(tokens); !it.Done(); it.Next()) {
@@ -43841,6 +48329,7 @@ BigStr* EvalSingleQuoted(int id_, List<syntax_asdl::Token*>* tokens) {
       strs = Alloc<List<BigStr*>>();
       for (ListIter<syntax_asdl::Token*> it(tokens); !it.Done(); it.Next()) {
         syntax_asdl::Token* t = it.Value();
+        StackRoot _for(&t      );
         if (t->id == Id::Char_UBraced) {
           s = lexer::TokenSlice(t, 3, -1);
           code_point = to_int(s, 16);
@@ -43865,6 +48354,9 @@ bool _TokenConsistsOf(syntax_asdl::Token* tok, BigStr* byte_set) {
   int start;
   int end;
   int b;
+  StackRoot _root0(&tok);
+  StackRoot _root1(&byte_set);
+
   start = tok->col;
   end = (tok->col + tok->length);
   for (int i = start; i < end; ++i) {
@@ -43877,10 +48369,14 @@ bool _TokenConsistsOf(syntax_asdl::Token* tok, BigStr* byte_set) {
 }
 
 bool _IsLeadingSpace(syntax_asdl::Token* tok) {
+  StackRoot _root0(&tok);
+
   return _TokenConsistsOf(tok, S_jEs);
 }
 
 bool _IsTrailingSpace(syntax_asdl::Token* tok) {
+  StackRoot _root0(&tok);
+
   return _TokenConsistsOf(tok, S_Dqk);
 }
 
@@ -43890,6 +48386,12 @@ void RemoveLeadingSpaceDQ(List<syntax_asdl::word_part_t*>* parts) {
   BigStr* to_strip = nullptr;
   int n;
   syntax_asdl::Token* lit_tok = nullptr;
+  StackRoot _root0(&parts);
+  StackRoot _root1(&UP_first);
+  StackRoot _root2(&UP_last);
+  StackRoot _root3(&to_strip);
+  StackRoot _root4(&lit_tok);
+
   if (len(parts) <= 1) {
     return ;
   }
@@ -43915,6 +48417,7 @@ void RemoveLeadingSpaceDQ(List<syntax_asdl::word_part_t*>* parts) {
   n = len(to_strip);
   for (ListIter<syntax_asdl::word_part_t*> it(parts); !it.Done(); it.Next()) {
     syntax_asdl::word_part_t* part = it.Value();
+    StackRoot _for(&part  );
     if (part->tag() != word_part_e::Literal) {
       continue;
     }
@@ -43932,6 +48435,11 @@ void RemoveLeadingSpaceSQ(List<syntax_asdl::Token*>* tokens) {
   syntax_asdl::Token* last = nullptr;
   BigStr* to_strip = nullptr;
   int n;
+  StackRoot _root0(&tokens);
+  StackRoot _root1(&first);
+  StackRoot _root2(&last);
+  StackRoot _root3(&to_strip);
+
   if (len(tokens) <= 1) {
     return ;
   }
@@ -43955,6 +48463,7 @@ void RemoveLeadingSpaceSQ(List<syntax_asdl::Token*>* tokens) {
   n = len(to_strip);
   for (ListIter<syntax_asdl::Token*> it(tokens); !it.Done(); it.Next()) {
     syntax_asdl::Token* tok = it.Value();
+    StackRoot _for(&tok  );
     if ((tok->col == 0 and lexer::TokenStartsWith(tok, to_strip))) {
       tok->col = n;
       tok->length -= n;
@@ -44026,6 +48535,9 @@ int QUOTE_ERE = (1 << 6);
 GLOBAL_LIST(_STRING_AND_ARRAY, BigStr*, 3, {S_lqk COMMA S_lCr COMMA S_Dyf});
 
 bool ShouldArrayDecay(BigStr* var_name, optview::Exec* exec_opts, bool is_plain_var_sub) {
+  StackRoot _root0(&var_name);
+  StackRoot _root1(&exec_opts);
+
   return (!exec_opts->strict_array() or (is_plain_var_sub and list_contains(_STRING_AND_ARRAY, var_name)));
 }
 
@@ -44035,6 +48547,12 @@ value_asdl::value_t* DecayArray(value_asdl::value_t* val) {
   runtime_asdl::error_code_t error_code;
   value::BashArray* sparse_val = nullptr;
   value::BashAssoc* assoc_val = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&array_val);
+  StackRoot _root2(&s);
+  StackRoot _root3(&sparse_val);
+  StackRoot _root4(&assoc_val);
+
   if ((val->tag() == value_e::InternalStringArray || val->tag() == value_e::BashArray)) {
     if (val->tag() == value_e::InternalStringArray) {
       array_val = static_cast<value::InternalStringArray*>(val);
@@ -44072,6 +48590,8 @@ value_asdl::value_t* DecayArray(value_asdl::value_t* val) {
 }
 
 bool _DetectMetaBuiltinStr(BigStr* s) {
+  StackRoot _root0(&s);
+
   return (consts::LookupNormalBuiltin(s) == builtin_i::builtin || consts::LookupNormalBuiltin(s) == builtin_i::command);
 }
 
@@ -44081,6 +48601,13 @@ runtime_asdl::AssignArg* _SplitAssignArg(BigStr* arg, syntax_asdl::CompoundWord*
   BigStr* op = nullptr;
   value_asdl::value_t* val = nullptr;
   bool append;
+  StackRoot _root0(&arg);
+  StackRoot _root1(&blame_word);
+  StackRoot _root2(&m);
+  StackRoot _root3(&var_name);
+  StackRoot _root4(&op);
+  StackRoot _root5(&val);
+
   m = util::RegexSearch(consts::ASSIGN_ARG_RE, arg);
   if (m == nullptr) {
     e_die(StrFormat("Assignment builtin expected NAME=value, got %r", arg), blame_word);
@@ -44099,21 +48626,28 @@ runtime_asdl::AssignArg* _SplitAssignArg(BigStr* arg, syntax_asdl::CompoundWord*
 }
 
 BigStr* _BackslashEscape(BigStr* s) {
+  StackRoot _root0(&s);
+
   return s->replace(S_iyu, S_Eef);
 }
 
 runtime_asdl::part_value_t* _ValueToPartValue(value_asdl::value_t* val, bool quoted, syntax_asdl::word_part_t* part_loc) {
   value_asdl::value_t* UP_val = nullptr;
   BigStr* s = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&part_loc);
+  StackRoot _root2(&UP_val);
+  StackRoot _root3(&s);
+
   UP_val = val;
   switch (val->tag()) {
     case value_e::Undef: {
-      return Alloc<Piece>(S_Aoo, quoted, !quoted);
+      return word_::MakePiece(S_Aoo, quoted);
     }
       break;
     case value_e::Str: {
       value::Str* val = static_cast<value::Str*>(UP_val);
-      return Alloc<Piece>(val->s, quoted, !quoted);
+      return word_::MakePiece(val->s, quoted);
     }
       break;
     case value_e::InternalStringArray: {
@@ -44138,7 +48672,7 @@ runtime_asdl::part_value_t* _ValueToPartValue(value_asdl::value_t* val, bool quo
     case value_e::Eggex: 
     case value_e::List: {
       s = val_ops::Stringify(val, Alloc<loc::WordPart>(part_loc), S_fEB);
-      return Alloc<Piece>(s, quoted, !quoted);
+      return word_::MakePiece(s, quoted);
     }
       break;
     default: {
@@ -44154,10 +48688,17 @@ List<List<runtime_asdl::Piece*>*>* _MakeWordFrames(List<runtime_asdl::part_value
   runtime_asdl::part_value_t* UP_p = nullptr;
   bool is_first;
   runtime_asdl::Piece* piece = nullptr;
+  StackRoot _root0(&part_vals);
+  StackRoot _root1(&current);
+  StackRoot _root2(&frames);
+  StackRoot _root3(&UP_p);
+  StackRoot _root4(&piece);
+
   current = Alloc<List<runtime_asdl::Piece*>>();
   frames = NewList<List<runtime_asdl::Piece*>*>(std::initializer_list<List<runtime_asdl::Piece*>*>{current});
   for (ListIter<runtime_asdl::part_value_t*> it(part_vals); !it.Done(); it.Next()) {
     runtime_asdl::part_value_t* p = it.Value();
+    StackRoot _for(&p  );
     UP_p = p;
     switch (p->tag()) {
       case part_value_e::String: {
@@ -44170,10 +48711,11 @@ List<List<runtime_asdl::Piece*>*>* _MakeWordFrames(List<runtime_asdl::part_value
         is_first = true;
         for (ListIter<BigStr*> it(p->strs); !it.Done(); it.Next()) {
           BigStr* s = it.Value();
+          StackRoot _for(&s        );
           if (s == nullptr) {
             continue;
           }
-          piece = Alloc<Piece>(s, p->quoted, !p->quoted);
+          piece = word_::MakePiece(s, p->quoted);
           if (is_first) {
             current->append(piece);
             is_first = false;
@@ -44197,9 +48739,16 @@ BigStr* _DecayPartValuesToString(List<runtime_asdl::part_value_t*>* part_vals, B
   List<BigStr*>* out = nullptr;
   runtime_asdl::part_value_t* UP_p = nullptr;
   List<BigStr*>* tmp = nullptr;
+  StackRoot _root0(&part_vals);
+  StackRoot _root1(&join_char);
+  StackRoot _root2(&out);
+  StackRoot _root3(&UP_p);
+  StackRoot _root4(&tmp);
+
   out = Alloc<List<BigStr*>>();
   for (ListIter<runtime_asdl::part_value_t*> it(part_vals); !it.Done(); it.Next()) {
     runtime_asdl::part_value_t* p = it.Value();
+    StackRoot _for(&p  );
     UP_p = p;
     switch (p->tag()) {
       case part_value_e::String: {
@@ -44244,6 +48793,17 @@ value_asdl::value_t* _PerformSlice(value_asdl::value_t* val, mops::BigInt offset
   int i;
   int count;
   List<BigStr*>* new_list = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&part);
+  StackRoot _root2(&arg0_val);
+  StackRoot _root3(&UP_val);
+  StackRoot _root4(&s);
+  StackRoot _root5(&substr);
+  StackRoot _root6(&result);
+  StackRoot _root7(&strs);
+  StackRoot _root8(&orig);
+  StackRoot _root9(&new_list);
+
   UP_val = val;
   switch (val->tag()) {
     case value_e::Str: {
@@ -44391,11 +48951,16 @@ StringWordEvaluator::StringWordEvaluator() {
 }
 
 value::Str* StringWordEvaluator::EvalWordToString(syntax_asdl::word_t* w, int eval_flags) {
+  StackRoot _root0(&w);
+
   FAIL(kNotImplemented);  // Python NotImplementedError
 }
 
 BigStr* _GetDollarHyphen(optview::Exec* exec_opts) {
   List<BigStr*>* chars = nullptr;
+  StackRoot _root0(&exec_opts);
+  StackRoot _root1(&chars);
+
   chars = Alloc<List<BigStr*>>();
   if (exec_opts->interactive()) {
     chars->append(S_eil);
@@ -44411,6 +48976,9 @@ BigStr* _GetDollarHyphen(optview::Exec* exec_opts) {
   }
   if (exec_opts->nounset()) {
     chars->append(S_rsz);
+  }
+  if (exec_opts->verbose()) {
+    chars->append(S_Ado);
   }
   if (exec_opts->xtrace()) {
     chars->append(S_rqD);
@@ -44428,6 +48996,8 @@ TildeEvaluator::TildeEvaluator(state::Mem* mem, optview::Exec* exec_opts) {
 
 BigStr* TildeEvaluator::GetMyHomeDir() {
   BigStr* s = nullptr;
+  StackRoot _root0(&s);
+
   s = this->mem->env_config->Get(S_xlm);
   if (s != nullptr) {
     return s;
@@ -44437,6 +49007,9 @@ BigStr* TildeEvaluator::GetMyHomeDir() {
 
 BigStr* TildeEvaluator::Eval(word_part::TildeSub* part) {
   BigStr* result = nullptr;
+  StackRoot _root0(&part);
+  StackRoot _root1(&result);
+
   if (part->user_name == nullptr) {
     result = this->GetMyHomeDir();
   }
@@ -44494,6 +49067,10 @@ value_asdl::value_t* AbstractWordEvaluator::_EvalVarNum(int var_num) {
 value_asdl::value_t* AbstractWordEvaluator::_EvalSpecialVar(int op_id, bool quoted, runtime_asdl::VarSubState* vsub_state) {
   List<BigStr*>* argv = nullptr;
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&vsub_state);
+  StackRoot _root1(&argv);
+  StackRoot _root2(&val);
+
   if ((op_id == Id::VSub_At || op_id == Id::VSub_Star)) {
     argv = this->mem->GetArgv();
     val = Alloc<value::InternalStringArray>(argv);
@@ -44539,6 +49116,18 @@ bool AbstractWordEvaluator::_ApplyTestOp(value_asdl::value_t* val, suffix_op::Un
   StackRoot _root4(&blame_token);
   StackRoot _root5(&vsub_state);
   StackRoot _root6(&tok);
+  StackRoot _root7(&UP_val);
+  StackRoot _root8(&strs);
+  StackRoot _root9(&assign_part_vals);
+  StackRoot _root10(&rhs_str);
+  StackRoot _root11(&lval);
+  StackRoot _root12(&var_name);
+  StackRoot _root13(&var_index);
+  StackRoot _root14(&UP_var_index);
+  StackRoot _root15(&error_part_vals);
+  StackRoot _root16(&error_str);
+  StackRoot _root17(&actual);
+  StackRoot _root18(&suffix);
 
   eval_flags = IS_SUBST;
   if (quoted) {
@@ -44594,6 +49183,7 @@ bool AbstractWordEvaluator::_ApplyTestOp(value_asdl::value_t* val, suffix_op::Un
           is_falsey = true;
           for (ListIter<BigStr*> it(strs); !it.Done(); it.Next()) {
             BigStr* s = it.Value();
+            StackRoot _for(&s          );
             if (len(s) != 0) {
               is_falsey = false;
               break;
@@ -44715,6 +49305,10 @@ bool AbstractWordEvaluator::_ApplyTestOp(value_asdl::value_t* val, suffix_op::Un
 int AbstractWordEvaluator::_Count(value_asdl::value_t* val, syntax_asdl::Token* token) {
   value_asdl::value_t* UP_val = nullptr;
   int count;
+  StackRoot _root0(&val);
+  StackRoot _root1(&token);
+  StackRoot _root2(&UP_val);
+
   UP_val = val;
   switch (val->tag()) {
     case value_e::Str: {
@@ -44760,6 +49354,12 @@ value_asdl::value_t* AbstractWordEvaluator::_Keys(value_asdl::value_t* val, synt
   value_asdl::value_t* UP_val = nullptr;
   List<BigStr*>* indices = nullptr;
   List<BigStr*>* keys = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&token);
+  StackRoot _root2(&UP_val);
+  StackRoot _root3(&indices);
+  StackRoot _root4(&keys);
+
   UP_val = val;
   switch (val->tag()) {
     case value_e::InternalStringArray: {
@@ -44802,7 +49402,9 @@ value_asdl::value_t* AbstractWordEvaluator::_EvalVarRef(value_asdl::value_t* val
   StackRoot _root1(&blame_tok);
   StackRoot _root2(&vsub_state);
   StackRoot _root3(&vtest_place);
-  StackRoot _root4(&bvs_part);
+  StackRoot _root4(&UP_val);
+  StackRoot _root5(&var_ref_str);
+  StackRoot _root6(&bvs_part);
 
   UP_val = val;
   switch (val->tag()) {
@@ -44855,8 +49457,11 @@ value_asdl::value_t* AbstractWordEvaluator::_ApplyUnarySuffixOp(value_asdl::valu
   StackRoot _root0(&val);
   StackRoot _root1(&op);
   StackRoot _root2(&arg_val);
-  StackRoot _root3(&s);
-  StackRoot _root4(&strs);
+  StackRoot _root3(&UP_val);
+  StackRoot _root4(&s);
+  StackRoot _root5(&new_val);
+  StackRoot _root6(&values);
+  StackRoot _root7(&strs);
 
   op_kind = consts::GetKind(op->op->id);
   if (op_kind == Kind::VOp1) {
@@ -44931,10 +49536,17 @@ value_asdl::value_t* AbstractWordEvaluator::_PatSub(value_asdl::value_t* val, su
   StackRoot _root1(&op);
   StackRoot _root2(&pat_val);
   StackRoot _root3(&replace_val);
-  StackRoot _root4(&regex);
-  StackRoot _root5(&warnings);
-  StackRoot _root6(&s);
-  StackRoot _root7(&strs);
+  StackRoot _root4(&replace_str);
+  StackRoot _root5(&regex);
+  StackRoot _root6(&warnings);
+  StackRoot _root7(&replacer);
+  StackRoot _root8(&str_val);
+  StackRoot _root9(&s);
+  StackRoot _root10(&array_val);
+  StackRoot _root11(&values);
+  StackRoot _root12(&sparse_val);
+  StackRoot _root13(&assoc_val);
+  StackRoot _root14(&strs);
 
   Tuple2<value::Str*, bool> tup3 = this->EvalWordToPattern(op->pat);
   pat_val = tup3.at0();
@@ -45009,6 +49621,7 @@ value_asdl::value_t* AbstractWordEvaluator::_Slice(value_asdl::value_t* val, suf
   StackRoot _root1(&op);
   StackRoot _root2(&var_name);
   StackRoot _root3(&part);
+  StackRoot _root4(&arg0_val);
 
   begin = this->arith_ev->EvalToBigInt(op->begin);
   has_length = false;
@@ -45065,9 +49678,14 @@ Tuple2<value_asdl::value_t*, bool> AbstractWordEvaluator::_Nullary(value_asdl::v
   StackRoot _root2(&var_name);
   StackRoot _root3(&vsub_token);
   StackRoot _root4(&vsub_state);
-  StackRoot _root5(&prompt);
-  StackRoot _root6(&values);
-  StackRoot _root7(&tmp);
+  StackRoot _root5(&UP_val);
+  StackRoot _root6(&result);
+  StackRoot _root7(&prompt);
+  StackRoot _root8(&p);
+  StackRoot _root9(&values);
+  StackRoot _root10(&tmp);
+  StackRoot _root11(&chars);
+  StackRoot _root12(&cell);
 
   quoted2 = false;
   op_id = op->id;
@@ -45253,6 +49871,11 @@ Tuple2<value_asdl::value_t*, bool> AbstractWordEvaluator::_Nullary(value_asdl::v
 value_asdl::value_t* AbstractWordEvaluator::_WholeArray(value_asdl::value_t* val, syntax_asdl::BracedVarSub* part, bool quoted, runtime_asdl::VarSubState* vsub_state) {
   int op_id;
   BigStr* op_str = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&part);
+  StackRoot _root2(&vsub_state);
+  StackRoot _root3(&op_str);
+
   op_id = static_cast<bracket_op::WholeArray*>(part->bracket_op)->op_id;
   if (op_id == Id::Lit_At) {
     op_str = S_AeE;
@@ -45303,8 +49926,10 @@ value_asdl::value_t* AbstractWordEvaluator::_ArrayIndex(value_asdl::value_t* val
   StackRoot _root0(&val);
   StackRoot _root1(&part);
   StackRoot _root2(&vtest_place);
-  StackRoot _root3(&UP_val);
-  StackRoot _root4(&s);
+  StackRoot _root3(&anode);
+  StackRoot _root4(&UP_val);
+  StackRoot _root5(&s);
+  StackRoot _root6(&key);
 
   anode = static_cast<bracket_op::ArrayIndex*>(part->bracket_op)->expr;
   UP_val = val;
@@ -45378,14 +50003,16 @@ void AbstractWordEvaluator::_EvalDoubleQuoted(List<syntax_asdl::word_part_t*>* p
   runtime_asdl::Piece* v = nullptr;
   StackRoot _root0(&parts);
   StackRoot _root1(&part_vals);
+  StackRoot _root2(&v);
 
   if (len(parts) == 0) {
-    v = Alloc<Piece>(S_Aoo, true, false);
+    v = word_::PieceQuoted(S_Aoo);
     part_vals->append(v);
     return ;
   }
   for (ListIter<syntax_asdl::word_part_t*> it(parts); !it.Done(); it.Next()) {
     syntax_asdl::word_part_t* p = it.Value();
+    StackRoot _for(&p  );
     this->_EvalWordPart(p, part_vals, QUOTED);
   }
 }
@@ -45393,6 +50020,7 @@ void AbstractWordEvaluator::_EvalDoubleQuoted(List<syntax_asdl::word_part_t*>* p
 BigStr* AbstractWordEvaluator::EvalDoubleQuotedToString(syntax_asdl::DoubleQuoted* dq_part) {
   List<runtime_asdl::part_value_t*>* part_vals = nullptr;
   StackRoot _root0(&dq_part);
+  StackRoot _root1(&part_vals);
 
   part_vals = Alloc<List<runtime_asdl::part_value_t*>>();
   this->_EvalDoubleQuoted(dq_part->parts, part_vals);
@@ -45400,11 +50028,16 @@ BigStr* AbstractWordEvaluator::EvalDoubleQuotedToString(syntax_asdl::DoubleQuote
 }
 
 value_asdl::value_t* AbstractWordEvaluator::_JoinArray(value_asdl::value_t* val, bool quoted, runtime_asdl::VarSubState* vsub_state) {
-  BigStr* sep = nullptr;
   List<BigStr*>* tmp = nullptr;
   value_asdl::value_t* UP_val = nullptr;
+  BigStr* sep = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&vsub_state);
+  StackRoot _root2(&tmp);
+  StackRoot _root3(&UP_val);
+  StackRoot _root4(&sep);
+
   if ((quoted and vsub_state->join_array)) {
-    sep = this->splitter->GetJoinChar();
     tmp = nullptr;
     UP_val = val;
     switch (val->tag()) {
@@ -45431,6 +50064,7 @@ value_asdl::value_t* AbstractWordEvaluator::_JoinArray(value_asdl::value_t* val,
         break;
     }
     if (tmp != nullptr) {
+      sep = this->splitter->GetJoinChar();
       return Alloc<value::Str>(sep->join(tmp));
     }
   }
@@ -45441,6 +50075,13 @@ value_asdl::value_t* AbstractWordEvaluator::_ProcessUndef(value_asdl::value_t* v
   syntax_asdl::Token* array_tok = nullptr;
   BigStr* tok_str = nullptr;
   BigStr* name = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&name_tok);
+  StackRoot _root2(&vsub_state);
+  StackRoot _root3(&array_tok);
+  StackRoot _root4(&tok_str);
+  StackRoot _root5(&name);
+
   if (val->tag() != value_e::Undef) {
     return val;
   }
@@ -45471,6 +50112,7 @@ value_asdl::value_t* AbstractWordEvaluator::_EvalBracketOp(value_asdl::value_t* 
   StackRoot _root1(&part);
   StackRoot _root2(&vsub_state);
   StackRoot _root3(&vtest_place);
+  StackRoot _root4(&var_name);
 
   if (part->bracket_op) {
     switch (part->bracket_op->tag()) {
@@ -45507,6 +50149,7 @@ value_asdl::value_t* AbstractWordEvaluator::_VarRefValue(syntax_asdl::BracedVarS
   StackRoot _root0(&part);
   StackRoot _root1(&vsub_state);
   StackRoot _root2(&vtest_place);
+  StackRoot _root3(&val);
 
   if (part->name_tok->id == Id::VSub_Name) {
     vtest_place->name = part->var_name;
@@ -45553,9 +50196,16 @@ void AbstractWordEvaluator::_EvalBracedVarSub(syntax_asdl::BracedVarSub* part, L
   StackRoot _root0(&part);
   StackRoot _root1(&part_vals);
   StackRoot _root2(&var_name);
-  StackRoot _root3(&vsub_state);
-  StackRoot _root4(&suffix_op_);
-  StackRoot _root5(&UP_op);
+  StackRoot _root3(&vtest_place);
+  StackRoot _root4(&vsub_state);
+  StackRoot _root5(&nullary_op);
+  StackRoot _root6(&names);
+  StackRoot _root7(&sep);
+  StackRoot _root8(&val);
+  StackRoot _root9(&suffix_op_);
+  StackRoot _root10(&UP_op);
+  StackRoot _root11(&op);
+  StackRoot _root12(&part_val);
 
   var_name = nullptr;
   vtest_place = Alloc<VTestPlace>(var_name, nullptr);
@@ -45568,7 +50218,7 @@ void AbstractWordEvaluator::_EvalBracedVarSub(syntax_asdl::BracedVarSub* part, L
         names->sort();
         if ((quoted and nullary_op->id == Id::VOp3_Star)) {
           sep = this->splitter->GetJoinChar();
-          part_vals->append(Alloc<Piece>(sep->join(names), quoted, true));
+          part_vals->append(word_::MakePiece(sep->join(names), quoted));
         }
         else {
           part_vals->append(Alloc<part_value::Array>(names, quoted));
@@ -45599,7 +50249,7 @@ void AbstractWordEvaluator::_EvalBracedVarSub(syntax_asdl::BracedVarSub* part, L
     if (part->prefix_op->id == Id::VSub_Pound) {
       val = this->_ProcessUndef(val, part->name_tok, vsub_state);
       n = this->_Count(val, part->name_tok);
-      part_vals->append(Alloc<Piece>(str(n), quoted, false));
+      part_vals->append(word_::MakePiece(str(n), quoted));
       return ;
     }
     else {
@@ -45678,9 +50328,17 @@ BigStr* AbstractWordEvaluator::_ConcatPartVals(List<runtime_asdl::part_value_t*>
   runtime_asdl::part_value_t* UP_part_val = nullptr;
   BigStr* s = nullptr;
   List<BigStr*>* tmp = nullptr;
+  StackRoot _root0(&part_vals);
+  StackRoot _root1(&location);
+  StackRoot _root2(&strs);
+  StackRoot _root3(&UP_part_val);
+  StackRoot _root4(&s);
+  StackRoot _root5(&tmp);
+
   strs = Alloc<List<BigStr*>>();
   for (ListIter<runtime_asdl::part_value_t*> it(part_vals); !it.Done(); it.Next()) {
     runtime_asdl::part_value_t* part_val = it.Value();
+    StackRoot _for(&part_val  );
     UP_part_val = part_val;
     switch (part_val->tag()) {
       case part_value_e::String: {
@@ -45717,6 +50375,7 @@ BigStr* AbstractWordEvaluator::_ConcatPartVals(List<runtime_asdl::part_value_t*>
 BigStr* AbstractWordEvaluator::EvalBracedVarSubToString(syntax_asdl::BracedVarSub* part) {
   List<runtime_asdl::part_value_t*>* part_vals = nullptr;
   StackRoot _root0(&part);
+  StackRoot _root1(&part_vals);
 
   part_vals = Alloc<List<runtime_asdl::part_value_t*>>();
   this->_EvalBracedVarSub(part, part_vals, false);
@@ -45730,6 +50389,14 @@ void AbstractWordEvaluator::_EvalSimpleVarSub(syntax_asdl::SimpleVarSub* part, L
   value_asdl::value_t* val = nullptr;
   int var_num;
   runtime_asdl::part_value_t* v = nullptr;
+  StackRoot _root0(&part);
+  StackRoot _root1(&part_vals);
+  StackRoot _root2(&token);
+  StackRoot _root3(&vsub_state);
+  StackRoot _root4(&var_name);
+  StackRoot _root5(&val);
+  StackRoot _root6(&v);
+
   token = part->tok;
   vsub_state = VarSubState::CreateNull();
   if (token->id == Id::VSub_DollarName) {
@@ -45761,6 +50428,9 @@ void AbstractWordEvaluator::_EvalSimpleVarSub(syntax_asdl::SimpleVarSub* part, L
 
 BigStr* AbstractWordEvaluator::EvalSimpleVarSubToString(syntax_asdl::SimpleVarSub* node) {
   List<runtime_asdl::part_value_t*>* part_vals = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&part_vals);
+
   part_vals = Alloc<List<runtime_asdl::part_value_t*>>();
   this->_EvalSimpleVarSub(node, part_vals, false);
   return this->_ConcatPartVals(part_vals, node->tok);
@@ -45772,6 +50442,8 @@ void AbstractWordEvaluator::_EvalExtGlob(word_part::ExtGlob* part, List<runtime_
   int i;
   StackRoot _root0(&part);
   StackRoot _root1(&part_vals);
+  StackRoot _root2(&op);
+  StackRoot _root3(&op_str);
 
   op = part->op;
   if (op->id == Id::ExtGlob_Comma) {
@@ -45780,30 +50452,41 @@ void AbstractWordEvaluator::_EvalExtGlob(word_part::ExtGlob* part, List<runtime_
   else {
     op_str = lexer::LazyStr(op);
   }
-  part_vals->append(Alloc<Piece>(op_str, false, false));
+  part_vals->append(word_::PieceOperator(op_str));
   i = 0;
   for (ListIter<syntax_asdl::CompoundWord*> it(part->arms); !it.Done(); it.Next(), ++i) {
     syntax_asdl::CompoundWord* w = it.Value();
+    StackRoot _for(&w  );
     if (i != 0) {
-      part_vals->append(Alloc<Piece>(S_Ebn, false, false));
+      part_vals->append(word_::PieceOperator(S_Ebn));
     }
     this->_EvalWordToParts(w, part_vals, EXTGLOB_NESTED);
   }
-  part_vals->append(Alloc<Piece>(S_hxb, false, false));
+  part_vals->append(word_::PieceOperator(S_hxb));
 }
 
 void AbstractWordEvaluator::_TranslateExtGlob(List<runtime_asdl::part_value_t*>* part_vals, syntax_asdl::CompoundWord* w, List<BigStr*>* glob_parts, List<BigStr*>* fnmatch_parts) {
+  bool will_glob;
   int i;
   runtime_asdl::part_value_t* UP_part_val = nullptr;
   BigStr* s = nullptr;
+  StackRoot _root0(&part_vals);
+  StackRoot _root1(&w);
+  StackRoot _root2(&glob_parts);
+  StackRoot _root3(&fnmatch_parts);
+  StackRoot _root4(&UP_part_val);
+  StackRoot _root5(&s);
+
+  will_glob = !this->exec_opts->noglob();
   i = 0;
   for (ListIter<runtime_asdl::part_value_t*> it(part_vals); !it.Done(); it.Next(), ++i) {
     runtime_asdl::part_value_t* part_val = it.Value();
+    StackRoot _for(&part_val  );
     UP_part_val = part_val;
     switch (part_val->tag()) {
       case part_value_e::String: {
         Piece* part_val = static_cast<Piece*>(UP_part_val);
-        if ((part_val->quoted and !this->exec_opts->noglob())) {
+        if ((will_glob and part_val->quoted)) {
           s = glob_::GlobEscape(part_val->s);
         }
         else {
@@ -45845,8 +50528,14 @@ void AbstractWordEvaluator::_EvalWordPart(syntax_asdl::word_part_t* part, List<r
   runtime_asdl::part_value_t* part_val = nullptr;
   StackRoot _root0(&part);
   StackRoot _root1(&part_vals);
-  StackRoot _root2(&sv);
-  StackRoot _root3(&part_val);
+  StackRoot _root2(&UP_part);
+  StackRoot _root3(&v);
+  StackRoot _root4(&sv);
+  StackRoot _root5(&s);
+  StackRoot _root6(&part_vals2);
+  StackRoot _root7(&val);
+  StackRoot _root8(&strs);
+  StackRoot _root9(&part_val);
 
   quoted = to_bool((flags & QUOTED));
   is_subst = to_bool((flags & IS_SUBST));
@@ -45864,25 +50553,25 @@ void AbstractWordEvaluator::_EvalWordPart(syntax_asdl::word_part_t* part, List<r
       break;
     case word_part_e::Literal: {
       Token* part = static_cast<Token*>(UP_part);
-      v = Alloc<Piece>(lexer::LazyStr(part), quoted, is_subst);
+      v = Alloc<Piece>(lexer::LazyStr(part), quoted, (!quoted and is_subst));
       part_vals->append(v);
     }
       break;
     case word_part_e::BracedRangeDigit: {
       word_part::BracedRangeDigit* part = static_cast<word_part::BracedRangeDigit*>(UP_part);
-      v = Alloc<Piece>(part->s, false, false);
+      v = word_::PieceQuoted(part->s);
       part_vals->append(v);
     }
       break;
     case word_part_e::EscapedLiteral: {
       word_part::EscapedLiteral* part = static_cast<word_part::EscapedLiteral*>(UP_part);
-      v = Alloc<Piece>(part->ch, true, false);
+      v = word_::PieceQuoted(part->ch);
       part_vals->append(v);
     }
       break;
     case word_part_e::SingleQuoted: {
       SingleQuoted* part = static_cast<SingleQuoted*>(UP_part);
-      v = Alloc<Piece>(part->sval, true, false);
+      v = word_::PieceQuoted(part->sval);
       part_vals->append(v);
     }
       break;
@@ -45921,14 +50610,14 @@ void AbstractWordEvaluator::_EvalWordPart(syntax_asdl::word_part_t* part, List<r
     case word_part_e::TildeSub: {
       word_part::TildeSub* part = static_cast<word_part::TildeSub*>(UP_part);
       s = this->tilde_ev->Eval(part);
-      v = Alloc<Piece>(s, true, false);
+      v = word_::PieceQuoted(s);
       part_vals->append(v);
     }
       break;
     case word_part_e::ArithSub: {
       word_part::ArithSub* part = static_cast<word_part::ArithSub*>(UP_part);
       num = this->arith_ev->EvalToBigInt(part->anode);
-      v = Alloc<Piece>(mops::ToStr(num), quoted, !quoted);
+      v = word_::MakePiece(mops::ToStr(num), quoted);
       part_vals->append(v);
     }
       break;
@@ -45941,11 +50630,11 @@ void AbstractWordEvaluator::_EvalWordPart(syntax_asdl::word_part_t* part, List<r
       break;
     case word_part_e::BashRegexGroup: {
       word_part::BashRegexGroup* part = static_cast<word_part::BashRegexGroup*>(UP_part);
-      part_vals->append(Alloc<Piece>(S_ijB, false, false));
+      part_vals->append(word_::PieceOperator(S_ijB));
       if (part->child) {
         this->_EvalWordToParts(part->child, part_vals, 0);
       }
-      part_vals->append(Alloc<Piece>(S_hxb, false, false));
+      part_vals->append(word_::PieceOperator(S_hxb));
     }
       break;
     case word_part_e::Splice: {
@@ -45977,12 +50666,13 @@ void AbstractWordEvaluator::_EvalRhsWordToParts(syntax_asdl::rhs_word_t* w, List
   syntax_asdl::rhs_word_t* UP_w = nullptr;
   StackRoot _root0(&w);
   StackRoot _root1(&part_vals);
+  StackRoot _root2(&UP_w);
 
   quoted = to_bool((eval_flags & QUOTED));
   UP_w = w;
   switch (w->tag()) {
     case rhs_word_e::Empty: {
-      part_vals->append(Alloc<Piece>(S_Aoo, quoted, !quoted));
+      part_vals->append(word_::MakePiece(S_Aoo, quoted));
     }
       break;
     case rhs_word_e::Compound: {
@@ -46007,11 +50697,18 @@ void AbstractWordEvaluator::_EvalWordToParts(syntax_asdl::CompoundWord* w, List<
   int n;
   StackRoot _root0(&w);
   StackRoot _root1(&part_vals);
+  StackRoot _root2(&word_part_vals);
+  StackRoot _root3(&glob_parts);
+  StackRoot _root4(&fnmatch_parts);
+  StackRoot _root5(&glob_pat);
+  StackRoot _root6(&fnmatch_pat);
+  StackRoot _root7(&results);
 
   word_part_vals = Alloc<List<runtime_asdl::part_value_t*>>();
   has_extglob = false;
   for (ListIter<syntax_asdl::word_part_t*> it(w->parts); !it.Done(); it.Next()) {
     syntax_asdl::word_part_t* p = it.Value();
+    StackRoot _for(&p  );
     if (p->tag() == word_part_e::ExtGlob) {
       has_extglob = true;
     }
@@ -46049,8 +50746,16 @@ void AbstractWordEvaluator::_PartValsToString(List<runtime_asdl::part_value_t*>*
   runtime_asdl::part_value_t* UP_part_val = nullptr;
   BigStr* s = nullptr;
   List<BigStr*>* tmp = nullptr;
+  StackRoot _root0(&part_vals);
+  StackRoot _root1(&w);
+  StackRoot _root2(&strs);
+  StackRoot _root3(&UP_part_val);
+  StackRoot _root4(&s);
+  StackRoot _root5(&tmp);
+
   for (ListIter<runtime_asdl::part_value_t*> it(part_vals); !it.Done(); it.Next()) {
     runtime_asdl::part_value_t* part_val = it.Value();
+    StackRoot _for(&part_val  );
     UP_part_val = part_val;
     switch (part_val->tag()) {
       case part_value_e::String: {
@@ -46107,6 +50812,9 @@ value::Str* AbstractWordEvaluator::EvalWordToString(syntax_asdl::word_t* UP_w, i
   List<runtime_asdl::part_value_t*>* part_vals = nullptr;
   List<BigStr*>* strs = nullptr;
   StackRoot _root0(&UP_w);
+  StackRoot _root1(&fast_str);
+  StackRoot _root2(&part_vals);
+  StackRoot _root3(&strs);
 
   CompoundWord* w = static_cast<CompoundWord*>(UP_w);
   if (eval_flags == 0) {
@@ -46118,6 +50826,7 @@ value::Str* AbstractWordEvaluator::EvalWordToString(syntax_asdl::word_t* UP_w, i
   part_vals = Alloc<List<runtime_asdl::part_value_t*>>();
   for (ListIter<syntax_asdl::word_part_t*> it(w->parts); !it.Done(); it.Next()) {
     syntax_asdl::word_part_t* p = it.Value();
+    StackRoot _for(&p  );
     this->_EvalWordPart(p, part_vals, 0);
   }
   strs = Alloc<List<BigStr*>>();
@@ -46130,6 +50839,8 @@ Tuple2<value::Str*, bool> AbstractWordEvaluator::EvalWordToPattern(syntax_asdl::
   List<runtime_asdl::part_value_t*>* part_vals = nullptr;
   List<BigStr*>* strs = nullptr;
   StackRoot _root0(&UP_w);
+  StackRoot _root1(&part_vals);
+  StackRoot _root2(&strs);
 
   if (UP_w->tag() == rhs_word_e::Empty) {
     return Tuple2<value::Str*, bool>(Alloc<value::Str>(S_Aoo), false);
@@ -46139,6 +50850,7 @@ Tuple2<value::Str*, bool> AbstractWordEvaluator::EvalWordToPattern(syntax_asdl::
   part_vals = Alloc<List<runtime_asdl::part_value_t*>>();
   for (ListIter<syntax_asdl::word_part_t*> it(w->parts); !it.Done(); it.Next()) {
     syntax_asdl::word_part_t* p = it.Value();
+    StackRoot _for(&p  );
     this->_EvalWordPart(p, part_vals, 0);
     if (p->tag() == word_part_e::ExtGlob) {
       has_extglob = true;
@@ -46184,10 +50896,12 @@ value_asdl::value_t* AbstractWordEvaluator::EvalRhsWord(syntax_asdl::rhs_word_t*
   BigStr* v = nullptr;
   StackRoot _root0(&UP_w);
   StackRoot _root1(&part0);
-  StackRoot _root2(&assigns);
-  StackRoot _root3(&words);
-  StackRoot _root4(&k);
-  StackRoot _root5(&v);
+  StackRoot _root2(&UP_part0);
+  StackRoot _root3(&assigns);
+  StackRoot _root4(&UP_pair);
+  StackRoot _root5(&words);
+  StackRoot _root6(&k);
+  StackRoot _root7(&v);
 
   if (UP_w->tag() == rhs_word_e::Empty) {
     return Alloc<value::Str>(S_Aoo);
@@ -46202,6 +50916,7 @@ value_asdl::value_t* AbstractWordEvaluator::EvalRhsWord(syntax_asdl::rhs_word_t*
       assigns = Alloc<List<value_asdl::InitializerValue*>>();
       for (ListIter<syntax_asdl::InitializerWord_t*> it(part0->pairs); !it.Done(); it.Next()) {
         syntax_asdl::InitializerWord_t* pair = it.Value();
+        StackRoot _for(&pair      );
         UP_pair = pair;
         switch (pair->tag()) {
           case InitializerWord_e::ArrayWord: {
@@ -46209,6 +50924,7 @@ value_asdl::value_t* AbstractWordEvaluator::EvalRhsWord(syntax_asdl::rhs_word_t*
             words = braces::BraceExpandWords(NewList<syntax_asdl::word_t*>(std::initializer_list<syntax_asdl::word_t*>{pair->w}));
             for (ListIter<BigStr*> it(this->EvalWordSequence(words)); !it.Done(); it.Next()) {
               BigStr* v = it.Value();
+              StackRoot _for(&v            );
               assigns->append(Alloc<InitializerValue>(nullptr, v, false));
             }
           }
@@ -46237,16 +50953,23 @@ void AbstractWordEvaluator::_EvalWordFrame(List<runtime_asdl::Piece*>* frame, Li
   bool any_quoted;
   List<BigStr*>* tmp = nullptr;
   bool will_glob;
-  List<BigStr*>* frags = nullptr;
-  BigStr* frag = nullptr;
-  BigStr* flat = nullptr;
+  split::IfsSplitterState* sp = nullptr;
   List<BigStr*>* args = nullptr;
-  int n;
+  BigStr* glob_pat = nullptr;
+  int num_appended;
+  StackRoot _root0(&frame);
+  StackRoot _root1(&argv);
+  StackRoot _root2(&tmp);
+  StackRoot _root3(&sp);
+  StackRoot _root4(&args);
+  StackRoot _root5(&glob_pat);
+
   all_empty = true;
   all_quoted = true;
   any_quoted = false;
   for (ListIter<runtime_asdl::Piece*> it(frame); !it.Done(); it.Next()) {
     runtime_asdl::Piece* piece = it.Value();
+    StackRoot _for(&piece  );
     if (len(piece->s)) {
       all_empty = false;
     }
@@ -46270,35 +50993,36 @@ void AbstractWordEvaluator::_EvalWordFrame(List<runtime_asdl::Piece*>* frame, Li
     return ;
   }
   will_glob = !this->exec_opts->noglob();
-  frags = Alloc<List<BigStr*>>();
+  sp = this->splitter->CreateSplitterState();
+  sp->SetGlobEscape(true);
   for (ListIter<runtime_asdl::Piece*> it(frame); !it.Done(); it.Next()) {
     runtime_asdl::Piece* piece = it.Value();
-    if ((will_glob and piece->quoted)) {
-      frag = glob_::GlobEscape(piece->s);
-    }
-    else {
-      frag = _BackslashEscape(piece->s);
-    }
+    StackRoot _for(&piece  );
     if (piece->do_split) {
-      frag = _BackslashEscape(frag);
+      sp->PushFragment(piece->s);
     }
     else {
-      frag = this->splitter->Escape(frag);
+      if ((will_glob and piece->quoted)) {
+        sp->PushLiteral(glob_::GlobEscape(piece->s));
+      }
+      else {
+        sp->PushLiteral(glob_::GlobEscapeBackslash(piece->s));
+      }
     }
-    frags->append(frag);
   }
-  flat = S_Aoo->join(frags);
-  args = this->splitter->SplitForWordEval(flat);
-  if ((len(args) == 0 and any_quoted)) {
-    argv->append(S_Aoo);
-    return ;
-  }
+  args = sp->PushTerminator();
   for (ListIter<BigStr*> it(args); !it.Done(); it.Next()) {
     BigStr* a = it.Value();
-    if (glob_::LooksLikeGlob(a)) {
-      n = this->globber->Expand(a, argv);
-      if (n < 0) {
-        throw Alloc<error::FailGlob>(StrFormat("Pattern %r matched no files", a), loc::Missing);
+    StackRoot _for(&a  );
+    if (!will_glob) {
+      argv->append(glob_::GlobUnescape(a));
+      continue;
+    }
+    glob_pat = glob_::GlobUnescapeBackslash(a);
+    if (glob_::LooksLikeGlob(glob_pat)) {
+      num_appended = this->globber->Expand(glob_pat, argv, loc::Missing);
+      if (num_appended < 0) {
+        argv->append(glob_::GlobUnescape(a));
       }
     }
     else {
@@ -46313,7 +51037,10 @@ List<BigStr*>* AbstractWordEvaluator::_EvalWordToArgv(syntax_asdl::CompoundWord*
   List<BigStr*>* argv = nullptr;
   List<BigStr*>* tmp = nullptr;
   StackRoot _root0(&w);
-  StackRoot _root1(&tmp);
+  StackRoot _root1(&part_vals);
+  StackRoot _root2(&frames);
+  StackRoot _root3(&argv);
+  StackRoot _root4(&tmp);
 
   part_vals = Alloc<List<runtime_asdl::part_value_t*>>();
   this->_EvalWordToParts(w, part_vals, 0);
@@ -46321,6 +51048,7 @@ List<BigStr*>* AbstractWordEvaluator::_EvalWordToArgv(syntax_asdl::CompoundWord*
   argv = Alloc<List<BigStr*>>();
   for (ListIter<List<runtime_asdl::Piece*>*> it(frames); !it.Done(); it.Next()) {
     List<runtime_asdl::Piece*>* frame = it.Value();
+    StackRoot _for(&frame  );
     if (len(frame)) {
       tmp = Alloc<List<BigStr*>>();
       for (ListIter<runtime_asdl::Piece*> it(frame); !it.Done(); it.Next()) {
@@ -46360,8 +51088,11 @@ cmd_value::Assign* AbstractWordEvaluator::_EvalAssignBuiltin(int builtin_id, Big
   StackRoot _root6(&left_token);
   StackRoot _root7(&close_token);
   StackRoot _root8(&var_name);
-  StackRoot _root9(&right);
-  StackRoot _root10(&argv);
+  StackRoot _root9(&rhs);
+  StackRoot _root10(&tmp);
+  StackRoot _root11(&right);
+  StackRoot _root12(&arg2);
+  StackRoot _root13(&argv);
 
   eval_to_pairs = true;
   started_pairs = false;
@@ -46411,6 +51142,7 @@ cmd_value::Assign* AbstractWordEvaluator::_EvalAssignBuiltin(int builtin_id, Big
         argv = this->_EvalWordToArgv(w);
         for (ListIter<BigStr*> it(argv); !it.Done(); it.Next()) {
           BigStr* arg = it.Value();
+          StackRoot _for(&arg        );
           arg2 = _SplitAssignArg(arg, w);
           assign_args->append(arg2);
         }
@@ -46420,6 +51152,7 @@ cmd_value::Assign* AbstractWordEvaluator::_EvalAssignBuiltin(int builtin_id, Big
       argv = this->_EvalWordToArgv(w);
       for (ListIter<BigStr*> it(argv); !it.Done(); it.Next()) {
         BigStr* arg = it.Value();
+        StackRoot _for(&arg      );
         if ((arg->startswith(S_Bjq) or arg->startswith(S_jnE))) {
           flags->append(arg);
           flag_locs->append(w);
@@ -46473,7 +51206,9 @@ runtime_asdl::cmd_value_t* AbstractWordEvaluator::SimpleEvalWordSequence2(List<s
   StackRoot _root3(&strs0);
   StackRoot _root4(&cmd_val);
   StackRoot _root5(&val);
-  StackRoot _root6(&tmp);
+  StackRoot _root6(&part_vals);
+  StackRoot _root7(&frames);
+  StackRoot _root8(&tmp);
 
   strs = Alloc<List<BigStr*>>();
   locs = Alloc<List<syntax_asdl::CompoundWord*>>();
@@ -46481,6 +51216,7 @@ runtime_asdl::cmd_value_t* AbstractWordEvaluator::SimpleEvalWordSequence2(List<s
   i = 0;
   for (ListIter<syntax_asdl::CompoundWord*> it(words); !it.Done(); it.Next(), ++i) {
     syntax_asdl::CompoundWord* w = it.Value();
+    StackRoot _for(&w  );
     if ((i == meta_offset and allow_assign)) {
       strs0 = this->_EvalWordToArgv(w);
       if (len(strs0) == 1) {
@@ -46492,15 +51228,18 @@ runtime_asdl::cmd_value_t* AbstractWordEvaluator::SimpleEvalWordSequence2(List<s
       strs->extend(strs0);
       for (ListIter<BigStr*> it(strs0); !it.Done(); it.Next()) {
         BigStr* _ = it.Value();
+        StackRoot _for(&_      );
         locs->append(w);
       }
       continue;
     }
     if (glob_::LooksLikeStaticGlob(w)) {
       val = this->EvalWordToString(w);
-      num_appended = this->globber->Expand(val->s, strs);
+      num_appended = this->globber->Expand(val->s, strs, w);
       if (num_appended < 0) {
-        throw Alloc<error::FailGlob>(StrFormat("Pattern %r matched no files", val->s), w);
+        strs->append(glob_::GlobUnescape(val->s));
+        locs->append(w);
+        continue;
       }
       for (int _ = 0; _ < num_appended; ++_) {
         locs->append(w);
@@ -46512,6 +51251,7 @@ runtime_asdl::cmd_value_t* AbstractWordEvaluator::SimpleEvalWordSequence2(List<s
     frames = _MakeWordFrames(part_vals);
     for (ListIter<List<runtime_asdl::Piece*>*> it(frames); !it.Done(); it.Next()) {
       List<runtime_asdl::Piece*>* frame = it.Value();
+      StackRoot _for(&frame    );
       if (len(frame)) {
         tmp = Alloc<List<BigStr*>>();
         for (ListIter<runtime_asdl::Piece*> it(frame); !it.Done(); it.Next()) {
@@ -46543,9 +51283,13 @@ runtime_asdl::cmd_value_t* AbstractWordEvaluator::EvalWordSequence2(List<syntax_
   StackRoot _root0(&words);
   StackRoot _root1(&strs);
   StackRoot _root2(&locs);
-  StackRoot _root3(&cmd_val);
-  StackRoot _root4(&frames);
-  StackRoot _root5(&hint_buf);
+  StackRoot _root3(&fast_str);
+  StackRoot _root4(&cmd_val);
+  StackRoot _root5(&part_vals);
+  StackRoot _root6(&frames);
+  StackRoot _root7(&frame0);
+  StackRoot _root8(&hint_buf);
+  StackRoot _root9(&hint_str);
 
   if (this->exec_opts->simple_word_eval()) {
     return this->SimpleEvalWordSequence2(words, is_last_cmd, allow_assign);
@@ -46557,6 +51301,7 @@ runtime_asdl::cmd_value_t* AbstractWordEvaluator::EvalWordSequence2(List<syntax_
   i = 0;
   for (ListIter<syntax_asdl::CompoundWord*> it(words); !it.Done(); it.Next(), ++i) {
     syntax_asdl::CompoundWord* w = it.Value();
+    StackRoot _for(&w  );
     fast_str = word_::FastStrEval(w);
     if (fast_str != nullptr) {
       strs->append(fast_str);
@@ -46598,6 +51343,7 @@ runtime_asdl::cmd_value_t* AbstractWordEvaluator::EvalWordSequence2(List<syntax_
     }
     for (ListIter<List<runtime_asdl::Piece*>*> it(frames); !it.Done(); it.Next()) {
       List<runtime_asdl::Piece*>* frame = it.Value();
+      StackRoot _for(&frame    );
       this->_EvalWordFrame(frame, strs);
     }
     n_next = len(strs);
@@ -46630,6 +51376,7 @@ runtime_asdl::part_value_t* NormalWordEvaluator::_EvalCommandSub(syntax_asdl::Co
   List<BigStr*>* strs = nullptr;
   StackRoot _root0(&cs_part);
   StackRoot _root1(&stdout_str);
+  StackRoot _root2(&strs);
 
   stdout_str = this->shell_ex->RunCommandSub(cs_part);
   if (cs_part->left_token->id == Id::Left_AtParen) {
@@ -46642,7 +51389,7 @@ runtime_asdl::part_value_t* NormalWordEvaluator::_EvalCommandSub(syntax_asdl::Co
     return Alloc<part_value::Array>(strs, true);
   }
   else {
-    return Alloc<Piece>(stdout_str, quoted, !quoted);
+    return word_::MakePiece(stdout_str, quoted);
   }
 }
 
@@ -46652,7 +51399,7 @@ runtime_asdl::Piece* NormalWordEvaluator::_EvalProcessSub(syntax_asdl::CommandSu
   StackRoot _root1(&dev_path);
 
   dev_path = this->shell_ex->RunProcessSub(cs_part);
-  return Alloc<Piece>(dev_path, true, false);
+  return word_::PieceQuoted(dev_path);
 }
 BigStr* _DUMMY = S_FwA;
 
@@ -46663,16 +51410,20 @@ void CompletionWordEvaluator::CheckCircularDeps() {
 }
 
 runtime_asdl::part_value_t* CompletionWordEvaluator::_EvalCommandSub(syntax_asdl::CommandSub* cs_part, bool quoted) {
+  StackRoot _root0(&cs_part);
+
   if (cs_part->left_token->id == Id::Left_AtParen) {
     return Alloc<part_value::Array>(NewList<BigStr*>(std::initializer_list<BigStr*>{_DUMMY}), quoted);
   }
   else {
-    return Alloc<Piece>(_DUMMY, quoted, !quoted);
+    return word_::MakePiece(_DUMMY, quoted);
   }
 }
 
 runtime_asdl::Piece* CompletionWordEvaluator::_EvalProcessSub(syntax_asdl::CommandSub* cs_part) {
-  return Alloc<Piece>(S_Chb, true, false);
+  StackRoot _root0(&cs_part);
+
+  return word_::PieceQuoted(S_Chb);
 }
 
 }  // define namespace word_eval
@@ -46731,6 +51482,13 @@ bool _IsValidYshWord(syntax_asdl::CompoundWord* w) {
   List<syntax_asdl::word_part_t*>* parts = nullptr;
   int n;
   bool ok;
+  syntax_asdl::word_part_t* part0 = nullptr;
+  syntax_asdl::SingleQuoted* sq = nullptr;
+  StackRoot _root0(&w);
+  StackRoot _root1(&parts);
+  StackRoot _root2(&part0);
+  StackRoot _root3(&sq);
+
   parts = w->parts;
   n = len(parts);
   if ((n != 0 and word_::LiteralId(parts->at(0)) == Id::Lit_Tilde)) {
@@ -46738,8 +51496,16 @@ bool _IsValidYshWord(syntax_asdl::CompoundWord* w) {
   }
   ok = true;
   if (n >= 2) {
+    part0 = parts->at(0);
+    if (part0->tag() == word_part_e::SingleQuoted) {
+      sq = static_cast<SingleQuoted*>(part0);
+      if ((sq->left->id == Id::Left_SingleQuote and len(sq->sval) == 0)) {
+        return true;
+      }
+    }
     for (ListIter<syntax_asdl::word_part_t*> it(parts); !it.Done(); it.Next()) {
       syntax_asdl::word_part_t* part = it.Value();
+      StackRoot _for(&part    );
       if ((part->tag() == word_part_e::SingleQuoted || part->tag() == word_part_e::DoubleQuoted)) {
         ok = false;
       }
@@ -46839,6 +51605,7 @@ syntax_asdl::CompoundWord* WordParser::_ReadVarOpArg2(types_asdl::lex_mode_t arg
   syntax_asdl::CompoundWord* w = nullptr;
   syntax_asdl::CompoundWord* tilde = nullptr;
   StackRoot _root0(&w);
+  StackRoot _root1(&tilde);
 
   w = this->_ReadCompoundWord3(arg_lex_mode, eof_type, empty_ok);
   tilde = word_::TildeDetect(w);
@@ -46855,8 +51622,9 @@ suffix_op::Slice* WordParser::_ReadSliceVarOp() {
   syntax_asdl::Token* colon_tok = nullptr;
   syntax_asdl::arith_expr_t* length = nullptr;
   StackRoot _root0(&begin);
-  StackRoot _root1(&colon_tok);
-  StackRoot _root2(&length);
+  StackRoot _root1(&no_length);
+  StackRoot _root2(&colon_tok);
+  StackRoot _root3(&length);
 
   this->_NextNonSpace();
   cur_id = this->token_type;
@@ -46964,6 +51732,7 @@ syntax_asdl::BracedVarSub* WordParser::_ParseVarOf() {
   syntax_asdl::BracedVarSub* part = nullptr;
   StackRoot _root0(&name_token);
   StackRoot _root1(&bracket_op);
+  StackRoot _root2(&part);
 
   this->_GetToken();
   name_token = this->cur_token;
@@ -46995,8 +51764,9 @@ syntax_asdl::BracedVarSub* WordParser::_ParseVarExpr(types_asdl::lex_mode_t arg_
   StackRoot _root0(&part);
   StackRoot _root1(&tok);
   StackRoot _root2(&arg_word);
-  StackRoot _root3(&arg);
-  StackRoot _root4(&patsub_op);
+  StackRoot _root3(&UP_arg_word);
+  StackRoot _root4(&arg);
+  StackRoot _root5(&patsub_op);
 
   part = this->_ParseVarOf();
   this->_GetToken();
@@ -47110,6 +51880,7 @@ Tuple2<syntax_asdl::BracedVarSub*, syntax_asdl::Token*> WordParser::ReadBracedVa
   syntax_asdl::Token* last_token = nullptr;
   StackRoot _root0(&left_token);
   StackRoot _root1(&part);
+  StackRoot _root2(&last_token);
 
   part = this->_ReadBracedVarSub(left_token, false);
   last_token = this->cur_token;
@@ -47188,7 +51959,10 @@ syntax_asdl::SingleQuoted* WordParser::_ReadSingleQuoted(syntax_asdl::Token* lef
   BigStr* sval = nullptr;
   syntax_asdl::SingleQuoted* node = nullptr;
   StackRoot _root0(&left_token);
-  StackRoot _root1(&right_quote);
+  StackRoot _root1(&tokens);
+  StackRoot _root2(&right_quote);
+  StackRoot _root3(&sval);
+  StackRoot _root4(&node);
 
   tokens = Alloc<List<syntax_asdl::Token*>>();
   right_quote = this->ReadSingleQuoted(lex_mode, left_token, tokens, false);
@@ -47198,10 +51972,10 @@ syntax_asdl::SingleQuoted* WordParser::_ReadSingleQuoted(syntax_asdl::Token* lef
 }
 
 syntax_asdl::Token* WordParser::ReadSingleQuoted(types_asdl::lex_mode_t lex_mode, syntax_asdl::Token* left_token, List<syntax_asdl::Token*>* out_tokens, bool is_ysh_expr) {
-  List<syntax_asdl::Token*>* tokens = nullptr;
   bool no_backslashes;
   int expected_end_tokens;
   int num_end_tokens;
+  List<syntax_asdl::Token*>* tokens = nullptr;
   syntax_asdl::Token* tok = nullptr;
   bool is_u_string;
   StackRoot _root0(&left_token);
@@ -47209,10 +51983,13 @@ syntax_asdl::Token* WordParser::ReadSingleQuoted(types_asdl::lex_mode_t lex_mode
   StackRoot _root2(&tokens);
   StackRoot _root3(&tok);
 
-  tokens = Alloc<List<syntax_asdl::Token*>>();
+  if ((left_token->id == Id::Left_DollarSingleQuote and this->parse_opts->no_parse_osh())) {
+    p_die(S_die, left_token);
+  }
   no_backslashes = (is_ysh_expr and left_token->id == Id::Left_SingleQuote);
   expected_end_tokens = (left_token->id == Id::Left_TSingleQuote || left_token->id == Id::Left_RTSingleQuote || left_token->id == Id::Left_UTSingleQuote || left_token->id == Id::Left_BTSingleQuote) ? 3 : 1;
   num_end_tokens = 0;
+  tokens = Alloc<List<syntax_asdl::Token*>>();
   while (num_end_tokens < expected_end_tokens) {
     this->_SetNext(lex_mode);
     this->_GetToken();
@@ -47234,7 +52011,7 @@ syntax_asdl::Token* WordParser::ReadSingleQuoted(types_asdl::lex_mode_t lex_mode
     else {
       if (this->token_kind == Kind::Unknown) {
         tok = this->cur_token;
-        if ((is_ysh_expr or !this->parse_opts->parse_backslash())) {
+        if ((is_ysh_expr or this->parse_opts->no_parse_backslash())) {
           p_die(S_vla, tok);
         }
         tokens->append(tok);
@@ -47274,6 +52051,7 @@ syntax_asdl::Token* WordParser::ReadSingleQuoted(types_asdl::lex_mode_t lex_mode
   is_u_string = (left_token->id == Id::Left_USingleQuote || left_token->id == Id::Left_UTSingleQuote);
   for (ListIter<syntax_asdl::Token*> it(tokens); !it.Done(); it.Next()) {
     syntax_asdl::Token* tok = it.Value();
+    StackRoot _for(&tok  );
     if ((is_u_string and tok->id == Id::Char_YHex)) {
       p_die(StrFormat("%s escapes not allowed in u'' strings", lexer::TokenVal(tok)), tok);
     }
@@ -47306,7 +52084,8 @@ syntax_asdl::CompoundWord* WordParser::_ReadYshSingleQuoted(int left_id) {
   int triple_left_id;
   syntax_asdl::Token* left_tok = nullptr;
   syntax_asdl::SingleQuoted* sq_part = nullptr;
-  StackRoot _root0(&sq_part);
+  StackRoot _root0(&left_tok);
+  StackRoot _root1(&sq_part);
 
   if (left_id == Id::Left_RSingleQuote) {
     lexer_mode = lex_mode_e::SQ_Raw;
@@ -47354,7 +52133,9 @@ syntax_asdl::word_part_t* WordParser::_ReadUnquotedLeftParts(syntax_asdl::BoolPa
   syntax_asdl::Token* left_sq_token = nullptr;
   StackRoot _root0(&triple_out);
   StackRoot _root1(&dq_part);
-  StackRoot _root2(&sq_part);
+  StackRoot _root2(&left_dq_token);
+  StackRoot _root3(&sq_part);
+  StackRoot _root4(&left_sq_token);
 
   if ((this->token_type == Id::Left_DoubleQuote || this->token_type == Id::Left_DollarDoubleQuote)) {
     dq_part = this->_ReadDoubleQuoted(this->cur_token);
@@ -47502,7 +52283,9 @@ void WordParser::_ReadLikeDQ(syntax_asdl::Token* left_token, bool is_ysh_expr, L
   syntax_asdl::word_part_t* part = nullptr;
   StackRoot _root0(&left_token);
   StackRoot _root1(&out_parts);
-  StackRoot _root2(&part);
+  StackRoot _root2(&tok);
+  StackRoot _root3(&ch);
+  StackRoot _root4(&part);
 
   if (left_token) {
     if ((left_token->id == Id::Left_TDoubleQuote || left_token->id == Id::Left_DollarTDoubleQuote)) {
@@ -47527,13 +52310,13 @@ void WordParser::_ReadLikeDQ(syntax_asdl::Token* left_token, bool is_ysh_expr, L
       }
       else {
         if (this->token_type == Id::Lit_BadBackslash) {
-          if ((is_ysh_expr or !this->parse_opts->parse_backslash())) {
+          if ((is_ysh_expr or this->parse_opts->no_parse_backslash())) {
             p_die(S_Bpn, this->cur_token);
           }
         }
         else {
           if (this->token_type == Id::Lit_Dollar) {
-            if ((is_ysh_expr or !this->parse_opts->parse_dollar())) {
+            if ((is_ysh_expr or this->parse_opts->no_parse_dollar())) {
               p_die(S_oex, this->cur_token);
             }
           }
@@ -47545,7 +52328,7 @@ void WordParser::_ReadLikeDQ(syntax_asdl::Token* left_token, bool is_ysh_expr, L
     else {
       if (this->token_kind == Kind::Left) {
         if ((this->token_type == Id::Left_Backtick and is_ysh_expr)) {
-          p_die(S_bio, this->cur_token);
+          p_die(S_ruF, this->cur_token);
         }
         part = this->_ReadDoubleQuotedLeftParts();
         out_parts->append(part);
@@ -47602,6 +52385,8 @@ syntax_asdl::DoubleQuoted* WordParser::_ReadDoubleQuoted(syntax_asdl::Token* lef
   List<syntax_asdl::word_part_t*>* parts = nullptr;
   syntax_asdl::Token* right_quote = nullptr;
   StackRoot _root0(&left_token);
+  StackRoot _root1(&parts);
+  StackRoot _root2(&right_quote);
 
   parts = Alloc<List<syntax_asdl::word_part_t*>>();
   this->_ReadLikeDQ(left_token, false, parts);
@@ -47633,6 +52418,10 @@ syntax_asdl::CommandSub* WordParser::_ReadCommandSub(int left_id, bool d_quoted)
   StackRoot _root2(&node);
   StackRoot _root3(&right_token);
   StackRoot _root4(&parts);
+  StackRoot _root5(&code_str);
+  StackRoot _root6(&arena);
+  StackRoot _root7(&line_reader);
+  StackRoot _root8(&src);
 
   left_token = this->cur_token;
   if ((left_id == Id::Left_DollarParen || left_id == Id::Left_AtParen || left_id == Id::Left_ProcSubIn || left_id == Id::Left_ProcSubOut)) {
@@ -47653,8 +52442,8 @@ syntax_asdl::CommandSub* WordParser::_ReadCommandSub(int left_id, bool d_quoted)
     }
     else {
       if (left_id == Id::Left_Backtick) {
-        if (!this->parse_opts->parse_backticks()) {
-          p_die(S_Aeo, left_token);
+        if (this->parse_opts->no_parse_backticks()) {
+          p_die(S_jee, left_token);
         }
         this->_SetNext(lex_mode_e::Backtick);
         parts = Alloc<List<BigStr*>>();
@@ -47758,6 +52547,8 @@ syntax_asdl::Mutation* WordParser::ParseMutation(syntax_asdl::Token* kw_token, c
   StackRoot _root1(&var_checker);
   StackRoot _root2(&enode);
   StackRoot _root3(&last_token);
+  StackRoot _root4(&UP_lhs);
+  StackRoot _root5(&v);
 
   this->_SetNext(lex_mode_e::Expr);
   Tuple2<syntax_asdl::Mutation*, syntax_asdl::Token*> tup3 = this->parse_ctx->ParseMutation(kw_token, this->lexer);
@@ -47768,6 +52559,7 @@ syntax_asdl::Mutation* WordParser::ParseMutation(syntax_asdl::Token* kw_token, c
   }
   for (ListIter<syntax_asdl::y_lhs_t*> it(enode->lhs); !it.Done(); it.Next()) {
     syntax_asdl::y_lhs_t* lhs = it.Value();
+    StackRoot _for(&lhs  );
     UP_lhs = lhs;
     switch (lhs->tag()) {
       case y_lhs_e::Var: {
@@ -47938,6 +52730,7 @@ word_part::ArithSub* WordParser::_ReadArithSub() {
   syntax_asdl::Token* right_tok = nullptr;
   StackRoot _root0(&left_tok);
   StackRoot _root1(&anode);
+  StackRoot _root2(&right_tok);
 
   left_tok = this->cur_token;
   this->lexer->PushHint(Id::Op_RParen, Id::Right_DollarDParen);
@@ -47959,6 +52752,7 @@ Tuple2<syntax_asdl::arith_expr_t*, syntax_asdl::Token*> WordParser::ReadDParen()
   syntax_asdl::arith_expr_t* anode = nullptr;
   syntax_asdl::Token* right = nullptr;
   StackRoot _root0(&anode);
+  StackRoot _root1(&right);
 
   anode = arith_expr::EmptyZero;
   this->lexer->PushHint(Id::Op_RParen, Id::Op_DRightParen);
@@ -47995,6 +52789,7 @@ command::ForExpr* WordParser::ReadForExpression() {
   StackRoot _root0(&init_node);
   StackRoot _root1(&cond_node);
   StackRoot _root2(&update_node);
+  StackRoot _root3(&node);
 
   this->_NextNonSpace();
   cur_id = this->token_type;
@@ -48057,6 +52852,11 @@ syntax_asdl::word_part_t* WordParser::_ReadArrayLiteral() {
   StackRoot _root2(&w_parser);
   StackRoot _root3(&words);
   StackRoot _root4(&w);
+  StackRoot _root5(&tok);
+  StackRoot _root6(&initializer_words);
+  StackRoot _root7(&pair);
+  StackRoot _root8(&w2);
+  StackRoot _root9(&w3);
 
   this->_SetNext(lex_mode_e::ShCommand);
   this->_GetToken();
@@ -48099,6 +52899,7 @@ syntax_asdl::word_part_t* WordParser::_ReadArrayLiteral() {
   initializer_words = Alloc<List<syntax_asdl::InitializerWord_t*>>();
   for (ListIter<syntax_asdl::CompoundWord*> it(words); !it.Done(); it.Next()) {
     syntax_asdl::CompoundWord* w = it.Value();
+    StackRoot _for(&w  );
     pair = word_::DetectAssocPair(w);
     if (pair != nullptr) {
       word_::TildeDetectAssign(pair->value);
@@ -48121,6 +52922,8 @@ syntax_asdl::word_part_t* WordParser::_ReadArrayLiteral() {
 
 syntax_asdl::ArgList* WordParser::ParseProcCallArgs(int start_symbol) {
   syntax_asdl::ArgList* arg_list = nullptr;
+  StackRoot _root0(&arg_list);
+
   this->lexer->MaybeUnreadOne();
   arg_list = ArgList::CreateNull(true);
   arg_list->left = this->cur_token;
@@ -48137,14 +52940,17 @@ bool WordParser::_MaybeReadWordPart(bool is_first, types_asdl::lex_mode_t lex_mo
   syntax_asdl::word_part_t* part2 = nullptr;
   syntax_asdl::Token* splice_tok = nullptr;
   StackRoot _root0(&parts);
-  StackRoot _root1(&part);
-  StackRoot _root2(&part2);
+  StackRoot _root1(&tok);
+  StackRoot _root2(&ch);
+  StackRoot _root3(&part);
+  StackRoot _root4(&part2);
+  StackRoot _root5(&splice_tok);
 
   done = false;
   if (this->token_type == Id::Lit_EscapedChar) {
     tok = this->cur_token;
     ch = lexer::TokenSliceLeft(tok, 1);
-    if (!this->parse_opts->parse_backslash()) {
+    if (this->parse_opts->no_parse_backslash()) {
       if (!pyutil::IsValidCharEscape(ch)) {
         p_die(S_dEh, this->cur_token);
       }
@@ -48228,8 +53034,10 @@ syntax_asdl::CompoundWord* WordParser::_ReadCompoundWord3(types_asdl::lex_mode_t
   bool try_triple_quote;
   StackRoot _root0(&w);
   StackRoot _root1(&is_triple_quoted);
-  StackRoot _root2(&part);
-  StackRoot _root3(&cs_part);
+  StackRoot _root2(&next_byte);
+  StackRoot _root3(&vsub_token);
+  StackRoot _root4(&part);
+  StackRoot _root5(&cs_part);
 
   w = Alloc<CompoundWord>(Alloc<List<syntax_asdl::word_part_t*>>());
   num_parts = 0;
@@ -48253,14 +53061,14 @@ syntax_asdl::CompoundWord* WordParser::_ReadCompoundWord3(types_asdl::lex_mode_t
           }
           else {
             if (this->token_type == Id::Lit_Dollar) {
-              if (!this->parse_opts->parse_dollar()) {
+              if (this->parse_opts->no_parse_dollar()) {
                 if ((num_parts == 0 and lex_mode == lex_mode_e::ShCommand)) {
                   next_byte = this->lexer->ByteLookAhead();
                   if (str_equals(next_byte, S_ckc)) {
                     ;  // pass
                   }
                 }
-                p_die(S_oex, this->cur_token);
+                p_die(S_ola, this->cur_token);
               }
             }
           }
@@ -48363,7 +53171,7 @@ syntax_asdl::CompoundWord* WordParser::_ReadCompoundWord3(types_asdl::lex_mode_t
   if ((is_triple_quoted and (is_triple_quoted->b and num_parts > 1))) {
     p_die(S_imw, Alloc<loc::WordPart>(w->parts->at(-1)));
   }
-  if ((!this->parse_opts->parse_word_join() and !_IsValidYshWord(w))) {
+  if ((this->parse_opts->no_parse_word_join() and !_IsValidYshWord(w))) {
     p_die(S_yzg, Alloc<loc::WordPart>(part));
   }
   return w;
@@ -48406,6 +53214,9 @@ syntax_asdl::word_t* WordParser::_ReadWord(types_asdl::lex_mode_t word_mode) {
   syntax_asdl::Token* bracket_word = nullptr;
   syntax_asdl::Token* tok = nullptr;
   int left_id;
+  StackRoot _root0(&bracket_word);
+  StackRoot _root1(&tok);
+
   if (word_mode == lex_mode_e::ShCommandFakeBrack) {
     lex_mode = lex_mode_e::ShCommand;
   }
@@ -48631,6 +53442,8 @@ Parser::Parser(grammar::Grammar* grammar) {
 
 void Parser::setup(int start, pnode::PNodeAllocator* pnode_alloc) {
   pnode::PNode* newnode = nullptr;
+  StackRoot _root0(&pnode_alloc);
+
   this->pnode_alloc = pnode_alloc;
   newnode = this->pnode_alloc->NewPNode(start, nullptr);
   this->stack = NewList<parse::_StackItem*>(std::initializer_list<parse::_StackItem*>{Alloc<_StackItem>(this->grammar->dfas->at(start), 0, newnode)});
@@ -48649,6 +53462,13 @@ bool Parser::addtoken(int typ, syntax_asdl::Token* opaque, int ilabel) {
   Tuple2<List<List<Tuple2<int, int>*>*>*, Dict<int, int>*>* itsdfa = nullptr;
   Dict<int, int>* itsfirst = nullptr;
   bool found2;
+  StackRoot _root0(&opaque);
+  StackRoot _root1(&top);
+  StackRoot _root2(&states);
+  StackRoot _root3(&arcs);
+  StackRoot _root4(&itsdfa);
+  StackRoot _root5(&itsfirst);
+
   while (true) {
     top = this->stack->at(-1);
     Tuple2<List<List<Tuple2<int, int>*>*>*, Dict<int, int>*>* tup0 = top->dfa;
@@ -48722,6 +53542,9 @@ bool Parser::addtoken(int typ, syntax_asdl::Token* opaque, int ilabel) {
 void Parser::shift(int typ, syntax_asdl::Token* opaque, int newstate) {
   parse::_StackItem* top = nullptr;
   pnode::PNode* newnode = nullptr;
+  StackRoot _root0(&opaque);
+  StackRoot _root1(&top);
+
   top = this->stack->at(-1);
   newnode = this->pnode_alloc->NewPNode(typ, opaque);
   top->node->AddChild(newnode);
@@ -48731,6 +53554,10 @@ void Parser::shift(int typ, syntax_asdl::Token* opaque, int newstate) {
 void Parser::push(int typ, syntax_asdl::Token* opaque, Tuple2<List<List<Tuple2<int, int>*>*>*, Dict<int, int>*>* newdfa, int newstate) {
   parse::_StackItem* top = nullptr;
   pnode::PNode* newnode = nullptr;
+  StackRoot _root0(&opaque);
+  StackRoot _root1(&newdfa);
+  StackRoot _root2(&top);
+
   top = this->stack->at(-1);
   newnode = this->pnode_alloc->NewPNode(typ, opaque);
   this->stack->at(-1)->state = newstate;
@@ -48741,6 +53568,9 @@ void Parser::pop() {
   parse::_StackItem* top = nullptr;
   pnode::PNode* newnode = nullptr;
   parse::_StackItem* top2 = nullptr;
+  StackRoot _root0(&top);
+  StackRoot _root1(&top2);
+
   top = this->stack->pop();
   newnode = top->node;
   if (len(this->stack)) {
@@ -48760,6 +53590,9 @@ BigStr* extsep = S_Aru;
 BigStr* sep = S_ckc;
 
 BigStr* join(BigStr* s1, BigStr* s2) {
+  StackRoot _root0(&s1);
+  StackRoot _root1(&s2);
+
   if ((s2->startswith(S_ckc) or len(s1) == 0)) {
     return s2;
   }
@@ -48773,6 +53606,10 @@ Tuple2<BigStr*, BigStr*> split(BigStr* p) {
   int i;
   BigStr* head = nullptr;
   BigStr* tail = nullptr;
+  StackRoot _root0(&p);
+  StackRoot _root1(&head);
+  StackRoot _root2(&tail);
+
   i = (p->rfind(S_ckc) + 1);
   head = p->slice(0, i);
   tail = p->slice(i);
@@ -48784,6 +53621,10 @@ Tuple2<BigStr*, BigStr*> _splitext(BigStr* p, BigStr* sep, BigStr* extsep) {
   int sepIndex;
   int dotIndex;
   int filenameIndex;
+  StackRoot _root0(&p);
+  StackRoot _root1(&sep);
+  StackRoot _root2(&extsep);
+
   sepIndex = p->rfind(sep);
   dotIndex = p->rfind(extsep);
   if (dotIndex > sepIndex) {
@@ -48799,11 +53640,15 @@ Tuple2<BigStr*, BigStr*> _splitext(BigStr* p, BigStr* sep, BigStr* extsep) {
 }
 
 Tuple2<BigStr*, BigStr*> splitext(BigStr* p) {
+  StackRoot _root0(&p);
+
   return _splitext(p, sep, extsep);
 }
 
 BigStr* basename(BigStr* p) {
   int i;
+  StackRoot _root0(&p);
+
   i = (p->rfind(S_ckc) + 1);
   return p->slice(i);
 }
@@ -48811,6 +53656,9 @@ BigStr* basename(BigStr* p) {
 BigStr* dirname(BigStr* p) {
   int i;
   BigStr* head = nullptr;
+  StackRoot _root0(&p);
+  StackRoot _root1(&head);
+
   i = (p->rfind(S_ckc) + 1);
   head = p->slice(0, i);
   head = rstrip_slashes(head);
@@ -48823,6 +53671,12 @@ BigStr* normpath(BigStr* path) {
   int initial_slashes;
   List<BigStr*>* comps = nullptr;
   List<BigStr*>* new_comps = nullptr;
+  StackRoot _root0(&path);
+  StackRoot _root1(&slash);
+  StackRoot _root2(&dot);
+  StackRoot _root3(&comps);
+  StackRoot _root4(&new_comps);
+
   slash = S_ckc;
   dot = S_Aru;
   if (str_equals(path, S_Aoo)) {
@@ -48836,6 +53690,7 @@ BigStr* normpath(BigStr* path) {
   new_comps = Alloc<List<BigStr*>>();
   for (ListIter<BigStr*> it(comps); !it.Done(); it.Next()) {
     BigStr* comp = it.Value();
+    StackRoot _for(&comp  );
     if ((len(comp) == 0 or str_equals(comp, S_Aru))) {
       continue;
     }
@@ -48857,11 +53712,16 @@ BigStr* normpath(BigStr* path) {
 }
 
 bool isabs(BigStr* s) {
+  StackRoot _root0(&s);
+
   return s->startswith(S_ckc);
 }
 
 BigStr* abspath(BigStr* path) {
   BigStr* cwd = nullptr;
+  StackRoot _root0(&path);
+  StackRoot _root1(&cwd);
+
   if (!isabs(path)) {
     cwd = posix::getcwd();
     path = join(cwd, path);
@@ -48876,6 +53736,10 @@ namespace fmt {  // define
 
 void Format(alloc::Arena* arena, syntax_asdl::command_t* node) {
   ysh_ify::Cursor* cursor = nullptr;
+  StackRoot _root0(&arena);
+  StackRoot _root1(&node);
+  StackRoot _root2(&cursor);
+
   cursor = Alloc<ysh_ify::Cursor>(arena, mylib::Stdout());
   cursor->PrintUntilEnd();
 }
@@ -48931,6 +53795,9 @@ void Cursor::_PrintUntilSpid(int until_span_id) {
   int start_index;
   int end_index;
   BigStr* piece = nullptr;
+  StackRoot _root0(&span);
+  StackRoot _root1(&piece);
+
   if (until_span_id == runtime::NO_SPID) {
   }
   for (int span_id = this->next_span_id; span_id < until_span_id; ++span_id) {
@@ -48954,24 +53821,32 @@ void Cursor::_SkipUntilSpid(int next_span_id) {
 
 void Cursor::SkipUntil(syntax_asdl::Token* tok) {
   int span_id;
+  StackRoot _root0(&tok);
+
   span_id = this->arena->GetSpanId(tok);
   this->_SkipUntilSpid(span_id);
 }
 
 void Cursor::SkipPast(syntax_asdl::Token* tok) {
   int span_id;
+  StackRoot _root0(&tok);
+
   span_id = this->arena->GetSpanId(tok);
   this->_SkipUntilSpid((span_id + 1));
 }
 
 void Cursor::PrintUntil(syntax_asdl::Token* tok) {
   int span_id;
+  StackRoot _root0(&tok);
+
   span_id = this->arena->GetSpanId(tok);
   this->_PrintUntilSpid(span_id);
 }
 
 void Cursor::PrintIncluding(syntax_asdl::Token* tok) {
   int span_id;
+  StackRoot _root0(&tok);
+
   span_id = this->arena->GetSpanId(tok);
   this->_PrintUntilSpid((span_id + 1));
 }
@@ -48982,6 +53857,9 @@ void Cursor::PrintUntilEnd() {
 
 void LosslessCat(alloc::Arena* arena) {
   ysh_ify::Cursor* cursor = nullptr;
+  StackRoot _root0(&arena);
+  StackRoot _root1(&cursor);
+
   cursor = Alloc<Cursor>(arena, mylib::Stdout());
   cursor->PrintUntilEnd();
 }
@@ -48989,6 +53867,9 @@ void LosslessCat(alloc::Arena* arena) {
 void PrintTokens(alloc::Arena* arena) {
   int i;
   BigStr* piece = nullptr;
+  StackRoot _root0(&arena);
+  StackRoot _root1(&piece);
+
   if (len(arena->tokens) == 1) {
     print(S_dyg);
     print(StrFormat("%s", arena->tokens->at(0)));
@@ -48997,6 +53878,7 @@ void PrintTokens(alloc::Arena* arena) {
   i = 0;
   for (ListIter<syntax_asdl::Token*> it(arena->tokens); !it.Done(); it.Next(), ++i) {
     syntax_asdl::Token* tok = it.Value();
+    StackRoot _for(&tok  );
     piece = tok->line->content->slice(tok->col, (tok->col + tok->length));
     print(StrFormat("%5d %-20s %r", i, Id_str(tok->id, false), piece));
   }
@@ -49005,6 +53887,11 @@ void PrintTokens(alloc::Arena* arena) {
 
 void TreeFind(alloc::Arena* arena, syntax_asdl::command_t* node, ui::ErrorFormatter* errfmt) {
   ysh_ify::Finder* fi = nullptr;
+  StackRoot _root0(&arena);
+  StackRoot _root1(&node);
+  StackRoot _root2(&errfmt);
+  StackRoot _root3(&fi);
+
   fi = Alloc<Finder>(arena, errfmt);
   fi->DoCommand(node);
 }
@@ -49016,6 +53903,9 @@ Finder::Finder(alloc::Arena* arena, ui::ErrorFormatter* errfmt) {
 
 void Finder::DoWordPart(syntax_asdl::word_part_t* p) {
   syntax_asdl::word_part_t* UP_p = nullptr;
+  StackRoot _root0(&p);
+  StackRoot _root1(&UP_p);
+
   UP_p = p;
   switch (p->tag()) {
     case word_part_e::Literal: {
@@ -49036,6 +53926,10 @@ void Finder::DoWordPart(syntax_asdl::word_part_t* p) {
 void Finder::DoWord(syntax_asdl::word_t* w) {
   syntax_asdl::word_t* UP_w = nullptr;
   syntax_asdl::word_part_t* part0 = nullptr;
+  StackRoot _root0(&w);
+  StackRoot _root1(&UP_w);
+  StackRoot _root2(&part0);
+
   UP_w = w;
   switch (w->tag()) {
     case word_e::Compound: {
@@ -49052,6 +53946,9 @@ void Finder::DoWord(syntax_asdl::word_t* w) {
 
 void Finder::DoRhsWord(syntax_asdl::rhs_word_t* w) {
   syntax_asdl::rhs_word_t* UP_w = nullptr;
+  StackRoot _root0(&w);
+  StackRoot _root1(&UP_w);
+
   UP_w = w;
   switch (w->tag()) {
     case rhs_word_e::Compound: {
@@ -49072,6 +53969,9 @@ void Finder::DoRhsWord(syntax_asdl::rhs_word_t* w) {
 void Finder::DoCommand(syntax_asdl::command_t* node) {
   syntax_asdl::command_t* UP_node = nullptr;
   int i;
+  StackRoot _root0(&node);
+  StackRoot _root1(&UP_node);
+
   UP_node = node;
   switch (node->tag()) {
     case command_e::Simple: {
@@ -49090,6 +53990,7 @@ void Finder::DoCommand(syntax_asdl::command_t* node) {
       command::ShAssignment* node = static_cast<command::ShAssignment*>(UP_node);
       for (ListIter<syntax_asdl::AssignPair*> it(node->pairs); !it.Done(); it.Next()) {
         syntax_asdl::AssignPair* pair = it.Value();
+        StackRoot _for(&pair      );
         this->DoRhsWord(pair->rhs);
       }
     }
@@ -49098,6 +53999,7 @@ void Finder::DoCommand(syntax_asdl::command_t* node) {
       command::CommandList* node = static_cast<command::CommandList*>(UP_node);
       for (ListIter<syntax_asdl::command_t*> it(node->children); !it.Done(); it.Next()) {
         syntax_asdl::command_t* child = it.Value();
+        StackRoot _for(&child      );
         this->DoCommand(child);
       }
     }
@@ -49111,6 +54013,7 @@ void Finder::DoCommand(syntax_asdl::command_t* node) {
       command::Pipeline* node = static_cast<command::Pipeline*>(UP_node);
       for (ListIter<syntax_asdl::command_t*> it(node->children); !it.Done(); it.Next()) {
         syntax_asdl::command_t* child = it.Value();
+        StackRoot _for(&child      );
         this->DoCommand(child);
       }
     }
@@ -49119,6 +54022,7 @@ void Finder::DoCommand(syntax_asdl::command_t* node) {
       command::AndOr* node = static_cast<command::AndOr*>(UP_node);
       for (ListIter<syntax_asdl::command_t*> it(node->children); !it.Done(); it.Next()) {
         syntax_asdl::command_t* child = it.Value();
+        StackRoot _for(&child      );
         this->DoCommand(child);
       }
     }
@@ -49127,6 +54031,7 @@ void Finder::DoCommand(syntax_asdl::command_t* node) {
       BraceGroup* node = static_cast<BraceGroup*>(UP_node);
       for (ListIter<syntax_asdl::command_t*> it(node->children); !it.Done(); it.Next()) {
         syntax_asdl::command_t* child = it.Value();
+        StackRoot _for(&child      );
         this->DoCommand(child);
       }
     }
@@ -49145,6 +54050,7 @@ void Finder::DoCommand(syntax_asdl::command_t* node) {
       command::DoGroup* node = static_cast<command::DoGroup*>(UP_node);
       for (ListIter<syntax_asdl::command_t*> it(node->children); !it.Done(); it.Next()) {
         syntax_asdl::command_t* child = it.Value();
+        StackRoot _for(&child      );
         this->DoCommand(child);
       }
     }
@@ -49164,14 +54070,17 @@ void Finder::DoCommand(syntax_asdl::command_t* node) {
       i = 0;
       for (ListIter<syntax_asdl::IfArm*> it(node->arms); !it.Done(); it.Next(), ++i) {
         syntax_asdl::IfArm* arm = it.Value();
+        StackRoot _for(&arm      );
         for (ListIter<syntax_asdl::command_t*> it(arm->action); !it.Done(); it.Next()) {
           syntax_asdl::command_t* child = it.Value();
+          StackRoot _for(&child        );
           this->DoCommand(child);
         }
       }
       if (len(node->else_action)) {
         for (ListIter<syntax_asdl::command_t*> it(node->else_action); !it.Done(); it.Next()) {
           syntax_asdl::command_t* child = it.Value();
+          StackRoot _for(&child        );
           this->DoCommand(child);
         }
       }
@@ -49181,8 +54090,10 @@ void Finder::DoCommand(syntax_asdl::command_t* node) {
       command::Case* node = static_cast<command::Case*>(UP_node);
       for (ListIter<syntax_asdl::CaseArm*> it(node->arms); !it.Done(); it.Next()) {
         syntax_asdl::CaseArm* case_arm = it.Value();
+        StackRoot _for(&case_arm      );
         for (ListIter<syntax_asdl::command_t*> it(case_arm->action); !it.Done(); it.Next()) {
           syntax_asdl::command_t* child = it.Value();
+          StackRoot _for(&child        );
           this->DoCommand(child);
         }
       }
@@ -49212,6 +54123,11 @@ void Finder::DoCommand(syntax_asdl::command_t* node) {
 void Ysh_ify(alloc::Arena* arena, syntax_asdl::command_t* node) {
   ysh_ify::Cursor* cursor = nullptr;
   ysh_ify::YshPrinter* fixer = nullptr;
+  StackRoot _root0(&arena);
+  StackRoot _root1(&node);
+  StackRoot _root2(&cursor);
+  StackRoot _root3(&fixer);
+
   cursor = Alloc<Cursor>(arena, mylib::Stdout());
   fixer = Alloc<YshPrinter>(cursor, arena, mylib::Stdout());
   fixer->DoCommand(node, nullptr, true);
@@ -49222,6 +54138,11 @@ runtime_asdl::word_style_t _GetRhsStyle(syntax_asdl::rhs_word_t* w) {
   syntax_asdl::rhs_word_t* UP_w = nullptr;
   syntax_asdl::word_part_t* part0 = nullptr;
   syntax_asdl::word_part_t* UP_part0 = nullptr;
+  StackRoot _root0(&w);
+  StackRoot _root1(&UP_w);
+  StackRoot _root2(&part0);
+  StackRoot _root3(&UP_part0);
+
   UP_w = w;
   switch (w->tag()) {
     case rhs_word_e::Empty: {
@@ -49282,6 +54203,9 @@ YshPrinter::YshPrinter(ysh_ify::Cursor* cursor, alloc::Arena* arena, mylib::Writ
 void YshPrinter::_DebugSpid(int spid) {
   syntax_asdl::Token* span = nullptr;
   BigStr* s = nullptr;
+  StackRoot _root0(&span);
+  StackRoot _root1(&s);
+
   span = this->arena->GetToken(spid);
   s = span->line->content->slice(span->col, (span->col + span->length));
   print_stderr(StrFormat("SPID %d = %r", spid, s));
@@ -49299,6 +54223,13 @@ void YshPrinter::DoRedirect(syntax_asdl::Redir* node, Dict<BigStr*, bool>* local
   BigStr* delimiter = nullptr;
   bool delim_quoted;
   syntax_asdl::Token* delim_end_tok = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&local_symbols);
+  StackRoot _root2(&here_doc);
+  StackRoot _root3(&here_begin);
+  StackRoot _root4(&delimiter);
+  StackRoot _root5(&delim_end_tok);
+
   op_id = node->op->id;
   this->cursor->PrintUntil(node->op);
   if (node->arg->tag() == redir_param_e::HereDoc) {
@@ -49322,6 +54253,7 @@ void YshPrinter::DoRedirect(syntax_asdl::Redir* node, Dict<BigStr*, bool>* local
     this->cursor->SkipPast(delim_end_tok);
     for (ListIter<syntax_asdl::word_part_t*> it(here_doc->stdin_parts); !it.Done(); it.Next()) {
       syntax_asdl::word_part_t* part = it.Value();
+      StackRoot _for(&part    );
       this->DoWordPart(part, local_symbols);
     }
     this->cursor->SkipPast(here_doc->here_end_tok);
@@ -49346,6 +54278,13 @@ void YshPrinter::DoShAssignment(command::ShAssignment* node, bool at_top_level, 
   int i;
   syntax_asdl::sh_lhs_t* lhs = nullptr;
   syntax_asdl::sh_lhs_t* UP_lhs = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&local_symbols);
+  StackRoot _root2(&lhs0);
+  StackRoot _root3(&has_array_index);
+  StackRoot _root4(&lhs);
+  StackRoot _root5(&UP_lhs);
+
   has_rhs = false;
   defined_locally = false;
   if (true) {
@@ -49374,6 +54313,7 @@ void YshPrinter::DoShAssignment(command::ShAssignment* node, bool at_top_level, 
   i = 0;
   for (ListIter<syntax_asdl::AssignPair*> it(node->pairs); !it.Done(); it.Next(), ++i) {
     syntax_asdl::AssignPair* pair = it.Value();
+    StackRoot _for(&pair  );
     lhs = pair->lhs;
     UP_lhs = lhs;
     switch (lhs->tag()) {
@@ -49415,9 +54355,20 @@ void YshPrinter::_DoSimple(command::Simple* node, Dict<BigStr*, bool>* local_sym
   syntax_asdl::word_t* last_word = nullptr;
   syntax_asdl::Token* tok2 = nullptr;
   syntax_asdl::Token* rbrack_tok = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&local_symbols);
+  StackRoot _root2(&first_word);
+  StackRoot _root3(&val);
+  StackRoot _root4(&word0_tok);
+  StackRoot _root5(&word2);
+  StackRoot _root6(&last_word);
+  StackRoot _root7(&tok2);
+  StackRoot _root8(&rbrack_tok);
+
   if (len(node->more_env)) {
     for (ListIter<syntax_asdl::EnvPair*> it(node->more_env); !it.Done(); it.Next()) {
       syntax_asdl::EnvPair* pair = it.Value();
+      StackRoot _for(&pair    );
       this->DoRhsWord(pair->val, local_symbols);
     }
   }
@@ -49442,6 +54393,7 @@ void YshPrinter::_DoSimple(command::Simple* node, Dict<BigStr*, bool>* local_sym
           this->f->write(S_jvs);
           for (ListIter<syntax_asdl::word_t*> it(node->words->slice(1, -1)); !it.Done(); it.Next()) {
             syntax_asdl::word_t* w = it.Value();
+            StackRoot _for(&w          );
             this->DoWordInCommand(w, local_symbols);
           }
           tok2 = location::RightTokenForWord(word2);
@@ -49466,6 +54418,7 @@ void YshPrinter::_DoSimple(command::Simple* node, Dict<BigStr*, bool>* local_sym
   }
   for (ListIter<syntax_asdl::word_t*> it(node->words); !it.Done(); it.Next()) {
     syntax_asdl::word_t* w = it.Value();
+    StackRoot _for(&w  );
     this->DoWordInCommand(w, local_symbols);
   }
 }
@@ -49489,12 +54442,32 @@ void YshPrinter::DoCommand(syntax_asdl::command_t* node, Dict<BigStr*, bool>* lo
   syntax_asdl::DoubleQuoted* dq_part = nullptr;
   syntax_asdl::word_part_t* dq_part0 = nullptr;
   bool missing_last_dsemi;
+  StackRoot _root0(&node);
+  StackRoot _root1(&local_symbols);
+  StackRoot _root2(&UP_node);
+  StackRoot _root3(&new_local_symbols);
+  StackRoot _root4(&UP_body);
+  StackRoot _root5(&UP_iterable);
+  StackRoot _root6(&body_tok);
+  StackRoot _root7(&commands);
+  StackRoot _root8(&sentence);
+  StackRoot _root9(&elif_tok);
+  StackRoot _root10(&then_tok);
+  StackRoot _root11(&cond);
+  StackRoot _root12(&to_match);
+  StackRoot _root13(&var_part);
+  StackRoot _root14(&w);
+  StackRoot _root15(&part0);
+  StackRoot _root16(&dq_part);
+  StackRoot _root17(&dq_part0);
+
   UP_node = node;
   switch (node->tag()) {
     case command_e::CommandList: {
       command::CommandList* node = static_cast<command::CommandList*>(UP_node);
       for (ListIter<syntax_asdl::command_t*> it(node->children); !it.Done(); it.Next()) {
         syntax_asdl::command_t* child = it.Value();
+        StackRoot _for(&child      );
         this->DoCommand(child, local_symbols, at_top_level);
       }
     }
@@ -49504,6 +54477,7 @@ void YshPrinter::DoCommand(syntax_asdl::command_t* node, Dict<BigStr*, bool>* lo
       this->DoCommand(node->child, local_symbols, at_top_level);
       for (ListIter<syntax_asdl::Redir*> it(node->redirects); !it.Done(); it.Next()) {
         syntax_asdl::Redir* r = it.Value();
+        StackRoot _for(&r      );
         this->DoRedirect(r, local_symbols);
       }
     }
@@ -49511,6 +54485,13 @@ void YshPrinter::DoCommand(syntax_asdl::command_t* node, Dict<BigStr*, bool>* lo
     case command_e::Simple: {
       command::Simple* node = static_cast<command::Simple*>(UP_node);
       this->_DoSimple(node, local_symbols);
+      if (node->redirects != nullptr) {
+        for (ListIter<syntax_asdl::Redir*> it(node->redirects); !it.Done(); it.Next()) {
+          syntax_asdl::Redir* r = it.Value();
+          StackRoot _for(&r        );
+          this->DoRedirect(r, local_symbols);
+        }
+      }
     }
       break;
     case command_e::ShAssignment: {
@@ -49522,6 +54503,7 @@ void YshPrinter::DoCommand(syntax_asdl::command_t* node, Dict<BigStr*, bool>* lo
       command::Pipeline* node = static_cast<command::Pipeline*>(UP_node);
       for (ListIter<syntax_asdl::command_t*> it(node->children); !it.Done(); it.Next()) {
         syntax_asdl::command_t* child = it.Value();
+        StackRoot _for(&child      );
         this->DoCommand(child, local_symbols);
       }
     }
@@ -49530,6 +54512,7 @@ void YshPrinter::DoCommand(syntax_asdl::command_t* node, Dict<BigStr*, bool>* lo
       command::AndOr* node = static_cast<command::AndOr*>(UP_node);
       for (ListIter<syntax_asdl::command_t*> it(node->children); !it.Done(); it.Next()) {
         syntax_asdl::command_t* child = it.Value();
+        StackRoot _for(&child      );
         this->DoCommand(child, local_symbols);
       }
     }
@@ -49546,6 +54529,7 @@ void YshPrinter::DoCommand(syntax_asdl::command_t* node, Dict<BigStr*, bool>* lo
       this->f->write(S_rrt);
       for (ListIter<syntax_asdl::command_t*> it(node->children); !it.Done(); it.Next()) {
         syntax_asdl::command_t* child = it.Value();
+        StackRoot _for(&child      );
         this->DoCommand(child, local_symbols);
       }
     }
@@ -49578,6 +54562,7 @@ void YshPrinter::DoCommand(syntax_asdl::command_t* node, Dict<BigStr*, bool>* lo
           this->cursor->SkipUntil(body->left);
           for (ListIter<syntax_asdl::command_t*> it(body->children); !it.Done(); it.Next()) {
             syntax_asdl::command_t* child = it.Value();
+            StackRoot _for(&child          );
             this->DoCommand(child, new_local_symbols);
           }
         }
@@ -49595,6 +54580,7 @@ void YshPrinter::DoCommand(syntax_asdl::command_t* node, Dict<BigStr*, bool>* lo
       this->f->write(S_ato);
       for (ListIter<syntax_asdl::command_t*> it(node->children); !it.Done(); it.Next()) {
         syntax_asdl::command_t* child = it.Value();
+        StackRoot _for(&child      );
         this->DoCommand(child, local_symbols);
       }
       this->cursor->PrintUntil(node->right);
@@ -49651,6 +54637,7 @@ void YshPrinter::DoCommand(syntax_asdl::command_t* node, Dict<BigStr*, bool>* lo
       i = 0;
       for (ListIter<syntax_asdl::IfArm*> it(node->arms); !it.Done(); it.Next(), ++i) {
         syntax_asdl::IfArm* arm = it.Value();
+        StackRoot _for(&arm      );
         elif_tok = arm->keyword;
         then_tok = arm->then_tok;
         if (i != 0) {
@@ -49669,6 +54656,7 @@ void YshPrinter::DoCommand(syntax_asdl::command_t* node, Dict<BigStr*, bool>* lo
           else {
             for (ListIter<syntax_asdl::command_t*> it(commands); !it.Done(); it.Next()) {
               syntax_asdl::command_t* child = it.Value();
+              StackRoot _for(&child            );
               this->DoCommand(child, local_symbols);
             }
           }
@@ -49678,6 +54666,7 @@ void YshPrinter::DoCommand(syntax_asdl::command_t* node, Dict<BigStr*, bool>* lo
         this->f->write(S_ato);
         for (ListIter<syntax_asdl::command_t*> it(arm->action); !it.Done(); it.Next()) {
           syntax_asdl::command_t* child = it.Value();
+          StackRoot _for(&child        );
           this->DoCommand(child, local_symbols);
         }
       }
@@ -49688,6 +54677,7 @@ void YshPrinter::DoCommand(syntax_asdl::command_t* node, Dict<BigStr*, bool>* lo
         this->f->write(S_iCo);
         for (ListIter<syntax_asdl::command_t*> it(node->else_action); !it.Done(); it.Next()) {
           syntax_asdl::command_t* child = it.Value();
+          StackRoot _for(&child        );
           this->DoCommand(child, local_symbols);
         }
       }
@@ -49750,11 +54740,13 @@ void YshPrinter::DoCommand(syntax_asdl::command_t* node, Dict<BigStr*, bool>* lo
       missing_last_dsemi = false;
       for (ListIter<syntax_asdl::CaseArm*> it(node->arms); !it.Done(); it.Next()) {
         syntax_asdl::CaseArm* case_arm = it.Value();
+        StackRoot _for(&case_arm      );
         this->cursor->PrintUntil(case_arm->middle);
         this->f->write(S_iCo);
         this->cursor->SkipPast(case_arm->middle);
         for (ListIter<syntax_asdl::command_t*> it(case_arm->action); !it.Done(); it.Next()) {
           syntax_asdl::command_t* child = it.Value();
+          StackRoot _for(&child        );
           this->DoCommand(child, local_symbols);
         }
         if (case_arm->right) {
@@ -49798,6 +54790,10 @@ void YshPrinter::DoCommand(syntax_asdl::command_t* node, Dict<BigStr*, bool>* lo
 void YshPrinter::DoRhsWord(syntax_asdl::rhs_word_t* node, Dict<BigStr*, bool>* local_symbols) {
   syntax_asdl::rhs_word_t* UP_node = nullptr;
   runtime_asdl::word_style_t style;
+  StackRoot _root0(&node);
+  StackRoot _root1(&local_symbols);
+  StackRoot _root2(&UP_node);
+
   UP_node = node;
   switch (node->tag()) {
     case rhs_word_e::Empty: {
@@ -49835,6 +54831,13 @@ void YshPrinter::DoWordInCommand(syntax_asdl::word_t* node, Dict<BigStr*, bool>*
   syntax_asdl::DoubleQuoted* dq_part = nullptr;
   syntax_asdl::word_part_t* part0 = nullptr;
   syntax_asdl::SimpleVarSub* vsub_part = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&local_symbols);
+  StackRoot _root2(&UP_node);
+  StackRoot _root3(&dq_part);
+  StackRoot _root4(&part0);
+  StackRoot _root5(&vsub_part);
+
   UP_node = node;
   switch (node->tag()) {
     case word_e::Compound: {
@@ -49880,6 +54883,7 @@ void YshPrinter::DoWordInCommand(syntax_asdl::word_t* node, Dict<BigStr*, bool>*
       }
       for (ListIter<syntax_asdl::word_part_t*> it(node->parts); !it.Done(); it.Next()) {
         syntax_asdl::word_part_t* part = it.Value();
+        StackRoot _for(&part      );
         this->DoWordPart(part, local_symbols);
       }
     }
@@ -49900,6 +54904,13 @@ void YshPrinter::DoWordPart(syntax_asdl::word_part_t* node, Dict<BigStr*, bool>*
   syntax_asdl::Token* t = nullptr;
   BigStr* val = nullptr;
   int op_id;
+  StackRoot _root0(&node);
+  StackRoot _root1(&local_symbols);
+  StackRoot _root2(&left_tok);
+  StackRoot _root3(&UP_node);
+  StackRoot _root4(&t);
+  StackRoot _root5(&val);
+
   left_tok = location::LeftTokenForWordPart(node);
   if (left_tok) {
     this->cursor->PrintUntil(left_tok);
@@ -49943,6 +54954,7 @@ void YshPrinter::DoWordPart(syntax_asdl::word_part_t* node, Dict<BigStr*, bool>*
       DoubleQuoted* node = static_cast<DoubleQuoted*>(UP_node);
       for (ListIter<syntax_asdl::word_part_t*> it(node->parts); !it.Done(); it.Next()) {
         syntax_asdl::word_part_t* part = it.Value();
+        StackRoot _for(&part      );
         this->DoWordPart(part, local_symbols, true);
       }
     }
@@ -50062,7 +55074,6 @@ using runtime_asdl::scope_e;
 using runtime_asdl::scope_t;
 using runtime_asdl::part_value;
 using runtime_asdl::part_value_t;
-using runtime_asdl::Piece;
 using value_asdl::value;
 using value_asdl::value_e;
 using value_asdl::value_t;
@@ -50079,6 +55090,11 @@ using mylib::print_stderr;
 
 value_asdl::value_t* LookupVar(state::Mem* mem, BigStr* var_name, runtime_asdl::scope_t which_scopes, syntax_asdl::loc_t* var_loc) {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&mem);
+  StackRoot _root1(&var_name);
+  StackRoot _root2(&var_loc);
+  StackRoot _root3(&val);
+
   val = mem->GetValue(var_name, which_scopes);
   if (val->tag() == value_e::Undef) {
     e_die(StrFormat("Undefined variable %r", var_name), var_loc);
@@ -50091,6 +55107,12 @@ mops::BigInt _ConvertToInt(value_asdl::value_t* val, BigStr* msg, syntax_asdl::l
   BigStr* s = nullptr;
   bool ok;
   mops::BigInt i;
+  StackRoot _root0(&val);
+  StackRoot _root1(&msg);
+  StackRoot _root2(&blame_loc);
+  StackRoot _root3(&UP_val);
+  StackRoot _root4(&s);
+
   UP_val = val;
   switch (val->tag()) {
     case value_e::Int: {
@@ -50121,6 +55143,10 @@ Tuple3<runtime_asdl::coerced_t, mops::BigInt, double> _ConvertToNumber(value_asd
   BigStr* s = nullptr;
   bool ok;
   mops::BigInt i;
+  StackRoot _root0(&val);
+  StackRoot _root1(&UP_val);
+  StackRoot _root2(&s);
+
   UP_val = val;
   switch (val->tag()) {
     case value_e::Int: {
@@ -50163,6 +55189,9 @@ Tuple5<runtime_asdl::coerced_t, mops::BigInt, mops::BigInt, double, double> _Con
   mops::BigInt i2;
   double f2;
   mops::BigInt nope;
+  StackRoot _root0(&left);
+  StackRoot _root1(&right);
+
   Tuple3<runtime_asdl::coerced_t, mops::BigInt, double> tup2 = _ConvertToNumber(left);
   c1 = tup2.at0();
   i1 = tup2.at1();
@@ -50210,6 +55239,9 @@ void ExprEvaluator::CheckCircularDeps() {
 }
 
 value_asdl::value_t* ExprEvaluator::_LookupVar(BigStr* name, syntax_asdl::loc_t* var_loc) {
+  StackRoot _root0(&name);
+  StackRoot _root1(&var_loc);
+
   return LookupVar(this->mem, name, scope_e::LocalOrGlobal, var_loc);
 }
 
@@ -50224,6 +55256,18 @@ void ExprEvaluator::EvalAugmented(value_asdl::y_lvalue_t* lval, value_asdl::valu
   int index;
   BigStr* key = nullptr;
   value_asdl::value_t* new_val_ = nullptr;
+  StackRoot _root0(&lval);
+  StackRoot _root1(&rhs_val);
+  StackRoot _root2(&op);
+  StackRoot _root3(&UP_lval);
+  StackRoot _root4(&lhs_val);
+  StackRoot _root5(&new_val);
+  StackRoot _root6(&obj);
+  StackRoot _root7(&UP_obj);
+  StackRoot _root8(&lhs_val_);
+  StackRoot _root9(&key);
+  StackRoot _root10(&new_val_);
+
   UP_lval = lval;
   switch (lval->tag()) {
     case y_lvalue_e::Local: {
@@ -50323,8 +55367,9 @@ value_asdl::value_t* ExprEvaluator::_EvalLeftLocalOrGlobal(syntax_asdl::expr_t* 
   value_asdl::value_t* obj = nullptr;
   value_asdl::value_t* index = nullptr;
   StackRoot _root0(&lhs);
-  StackRoot _root1(&obj);
-  StackRoot _root2(&index);
+  StackRoot _root1(&UP_lhs);
+  StackRoot _root2(&obj);
+  StackRoot _root3(&index);
 
   UP_lhs = lhs;
   switch (lhs->tag()) {
@@ -50358,8 +55403,10 @@ value_asdl::y_lvalue_t* ExprEvaluator::_EvalLhsExpr(syntax_asdl::y_lhs_t* lhs, r
   value_asdl::value_t* index = nullptr;
   value::Str* attr = nullptr;
   StackRoot _root0(&lhs);
-  StackRoot _root1(&lval);
-  StackRoot _root2(&index);
+  StackRoot _root1(&UP_lhs);
+  StackRoot _root2(&lval);
+  StackRoot _root3(&index);
+  StackRoot _root4(&attr);
 
   UP_lhs = lhs;
   switch (lhs->tag()) {
@@ -50433,12 +55480,14 @@ runtime_asdl::part_value_t* ExprEvaluator::EvalExprSub(word_part::ExprSub* part)
   List<BigStr*>* strs = nullptr;
   StackRoot _root0(&part);
   StackRoot _root1(&val);
+  StackRoot _root2(&s);
+  StackRoot _root3(&strs);
 
   val = this->EvalExpr(part->child, part->left);
   switch (part->left->id) {
     case Id::Left_DollarBracket: {
       s = val_ops::Stringify(val, Alloc<loc::WordPart>(part), S_wjw);
-      return Alloc<Piece>(s, false, false);
+      return word_::PieceQuoted(s);
     }
       break;
     case Id::Lit_AtLBracket: {
@@ -50459,7 +55508,10 @@ value_asdl::value_t* ExprEvaluator::PluginCall(value::Func* func_val, List<value
   value_asdl::value_t* val = nullptr;
   StackRoot _root0(&func_val);
   StackRoot _root1(&pos_args);
-  StackRoot _root2(&val);
+  StackRoot _root2(&named_args);
+  StackRoot _root3(&arg_list);
+  StackRoot _root4(&rd);
+  StackRoot _root5(&val);
 
   {  // with
     state::ctx_YshExpr ctx{this->mutable_opts};
@@ -50498,7 +55550,12 @@ value_asdl::value_t* ExprEvaluator::CallConvertFunc(value_asdl::value_t* func_va
   StackRoot _root1(&arg);
   StackRoot _root2(&convert_tok);
   StackRoot _root3(&call_loc);
-  StackRoot _root4(&val);
+  StackRoot _root4(&pos_args);
+  StackRoot _root5(&named_args);
+  StackRoot _root6(&arg_list);
+  StackRoot _root7(&rd);
+  StackRoot _root8(&val);
+  StackRoot _root9(&func_name);
 
   {  // with
     state::ctx_YshExpr ctx{this->mutable_opts};
@@ -50528,6 +55585,9 @@ value_asdl::value_t* ExprEvaluator::_CallMetaMethod(value_asdl::value_t* func_va
   StackRoot _root0(&func_val);
   StackRoot _root1(&pos_args);
   StackRoot _root2(&blame_loc);
+  StackRoot _root3(&named_args);
+  StackRoot _root4(&arg_list);
+  StackRoot _root5(&rd);
 
   named_args = Alloc<Dict<BigStr*, value_asdl::value_t*>>();
   arg_list = ArgList::CreateNull();
@@ -50537,10 +55597,15 @@ value_asdl::value_t* ExprEvaluator::_CallMetaMethod(value_asdl::value_t* func_va
 }
 
 List<BigStr*>* ExprEvaluator::SpliceValue(value_asdl::value_t* val, word_part::Splice* part) {
+  StackRoot _root0(&val);
+  StackRoot _root1(&part);
+
   return val_ops::ToShellArray(val, Alloc<loc::WordPart>(part), S_etk);
 }
 
 value_asdl::value_t* ExprEvaluator::_EvalConst(expr::Const* node) {
+  StackRoot _root0(&node);
+
   return node->val;
 }
 
@@ -50598,6 +55663,10 @@ value_asdl::value_t* ExprEvaluator::_ArithIntFloat(value_asdl::value_t* left, va
   double f1;
   double f2;
   int op_id;
+  StackRoot _root0(&left);
+  StackRoot _root1(&right);
+  StackRoot _root2(&op);
+
   Tuple5<runtime_asdl::coerced_t, mops::BigInt, mops::BigInt, double, double> tup5 = _ConvertForBinaryOp(left, right);
   c = tup5.at0();
   i1 = tup5.at1();
@@ -50675,6 +55744,10 @@ value_asdl::value_t* ExprEvaluator::_ArithIntFloat(value_asdl::value_t* left, va
 value_asdl::value_t* ExprEvaluator::_ArithIntOnly(value_asdl::value_t* left, value_asdl::value_t* right, syntax_asdl::Token* op) {
   mops::BigInt i1;
   mops::BigInt i2;
+  StackRoot _root0(&left);
+  StackRoot _root1(&right);
+  StackRoot _root2(&op);
+
   i1 = _ConvertToInt(left, S_avA_1, op);
   i2 = _ConvertToInt(right, S_Epo, op);
   switch (op->id) {
@@ -50746,6 +55819,13 @@ value_asdl::value_t* ExprEvaluator::_Concat(value_asdl::value_t* left, value_asd
   value_asdl::value_t* UP_left = nullptr;
   value_asdl::value_t* UP_right = nullptr;
   List<value_asdl::value_t*>* c = nullptr;
+  StackRoot _root0(&left);
+  StackRoot _root1(&right);
+  StackRoot _root2(&op);
+  StackRoot _root3(&UP_left);
+  StackRoot _root4(&UP_right);
+  StackRoot _root5(&c);
+
   UP_left = left;
   UP_right = right;
   if ((left->tag() == value_e::Str and right->tag() == value_e::Str)) {
@@ -50820,6 +55900,10 @@ bool ExprEvaluator::_CompareNumeric(value_asdl::value_t* left, value_asdl::value
   mops::BigInt i2;
   double f1;
   double f2;
+  StackRoot _root0(&left);
+  StackRoot _root1(&right);
+  StackRoot _root2(&op);
+
   Tuple5<runtime_asdl::coerced_t, mops::BigInt, mops::BigInt, double, double> tup6 = _ConvertForBinaryOp(left, right);
   c = tup6.at0();
   i1 = tup6.at1();
@@ -50894,13 +55978,18 @@ value_asdl::value_t* ExprEvaluator::_EvalCompare(expr::Compare* node) {
   bool eq;
   StackRoot _root0(&node);
   StackRoot _root1(&left);
-  StackRoot _root2(&right);
+  StackRoot _root2(&right_expr);
+  StackRoot _root3(&right);
+  StackRoot _root4(&UP_left);
+  StackRoot _root5(&UP_right);
+  StackRoot _root6(&left2);
 
   left = this->_EvalExpr(node->left);
   result = true;
   i = 0;
   for (ListIter<syntax_asdl::Token*> it(node->ops); !it.Done(); it.Next(), ++i) {
     syntax_asdl::Token* op = it.Value();
+    StackRoot _for(&op  );
     right_expr = node->comparators->at(i);
     right = this->_EvalExpr(right_expr);
     if ((op->id == Id::Arith_Less || op->id == Id::Arith_Great || op->id == Id::Arith_LessEqual || op->id == Id::Arith_GreatEqual)) {
@@ -51050,6 +56139,8 @@ value_asdl::value_t* ExprEvaluator::_CallFunc(value_asdl::value_t* to_call, type
   vm::_Callable* f = nullptr;
   StackRoot _root0(&to_call);
   StackRoot _root1(&rd);
+  StackRoot _root2(&UP_to_call);
+  StackRoot _root3(&f);
 
   UP_to_call = to_call;
   switch (to_call->tag()) {
@@ -51079,9 +56170,11 @@ value_asdl::value_t* ExprEvaluator::_EvalFuncCall(expr::FuncCall* node) {
   typed_args::Reader* rd = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&func);
-  StackRoot _root2(&to_call);
-  StackRoot _root3(&pos_args);
-  StackRoot _root4(&named_args);
+  StackRoot _root2(&UP_func);
+  StackRoot _root3(&to_call);
+  StackRoot _root4(&pos_args);
+  StackRoot _root5(&named_args);
+  StackRoot _root6(&rd);
 
   func = this->_EvalExpr(node->func);
   UP_func = func;
@@ -51123,6 +56216,10 @@ value_asdl::value_t* ExprEvaluator::_EvalSubscript(value_asdl::value_t* obj, val
   StackRoot _root0(&obj);
   StackRoot _root1(&index);
   StackRoot _root2(&blame_loc);
+  StackRoot _root3(&UP_obj);
+  StackRoot _root4(&UP_index);
+  StackRoot _root5(&index_method);
+  StackRoot _root6(&pos_args);
 
   UP_obj = obj;
   UP_index = index;
@@ -51217,6 +56314,11 @@ value_asdl::value_t* ExprEvaluator::_EvalSubscript(value_asdl::value_t* obj, val
 
 value_asdl::value_t* ExprEvaluator::_ChainedLookup(value_asdl::Obj* obj, value_asdl::Obj* current, BigStr* attr_name) {
   value_asdl::value_t* val = nullptr;
+  StackRoot _root0(&obj);
+  StackRoot _root1(&current);
+  StackRoot _root2(&attr_name);
+  StackRoot _root3(&val);
+
   val = current->d->get(attr_name);
   if (val != nullptr) {
     if ((val->tag() == value_e::Func || val->tag() == value_e::BuiltinFunc)) {
@@ -51240,6 +56342,16 @@ value_asdl::value_t* ExprEvaluator::_EvalDot(syntax_asdl::Attribute* node, value
   BigStr* name = nullptr;
   vm::_Callable* vm_callable = nullptr;
   value::BuiltinFunc* func_val = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&val);
+  StackRoot _root2(&UP_val);
+  StackRoot _root3(&attr_name);
+  StackRoot _root4(&result);
+  StackRoot _root5(&type_methods);
+  StackRoot _root6(&name);
+  StackRoot _root7(&vm_callable);
+  StackRoot _root8(&func_val);
+
   UP_val = val;
   switch (val->tag()) {
     case value_e::Dict: {
@@ -51289,6 +56401,15 @@ value_asdl::value_t* ExprEvaluator::_EvalRArrow(syntax_asdl::Attribute* node, va
   Dict<BigStr*, vm::_Callable*>* type_methods = nullptr;
   vm::_Callable* vm_callable = nullptr;
   value::BuiltinFunc* func_val = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&val);
+  StackRoot _root2(&mut_name);
+  StackRoot _root3(&UP_val);
+  StackRoot _root4(&result);
+  StackRoot _root5(&type_methods);
+  StackRoot _root6(&vm_callable);
+  StackRoot _root7(&func_val);
+
   mut_name = str_concat(S_qiD, node->attr_name);
   UP_val = val;
   switch (val->tag()) {
@@ -51325,6 +56446,11 @@ value_asdl::value_t* ExprEvaluator::_EvalAttribute(syntax_asdl::Attribute* node)
   value_asdl::value_t* val2 = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&val);
+  StackRoot _root2(&name);
+  StackRoot _root3(&type_methods);
+  StackRoot _root4(&vm_callable);
+  StackRoot _root5(&func_val);
+  StackRoot _root6(&val2);
 
   val = this->_EvalExpr(node->obj);
   switch (node->op->id) {
@@ -51388,16 +56514,21 @@ value_asdl::value_t* ExprEvaluator::_EvalExpr(syntax_asdl::expr_t* node) {
   value_asdl::value_t* index = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&UP_node);
-  StackRoot _root2(&stdout_str);
-  StackRoot _root3(&strs);
-  StackRoot _root4(&items);
-  StackRoot _root5(&words);
-  StackRoot _root6(&lower);
-  StackRoot _root7(&kvals);
-  StackRoot _root8(&values);
-  StackRoot _root9(&v);
-  StackRoot _root10(&obj);
-  StackRoot _root11(&index);
+  StackRoot _root2(&frame);
+  StackRoot _root3(&stdout_str);
+  StackRoot _root4(&strs);
+  StackRoot _root5(&items);
+  StackRoot _root6(&words);
+  StackRoot _root7(&lower);
+  StackRoot _root8(&upper);
+  StackRoot _root9(&kvals);
+  StackRoot _root10(&values);
+  StackRoot _root11(&key);
+  StackRoot _root12(&v);
+  StackRoot _root13(&d);
+  StackRoot _root14(&k);
+  StackRoot _root15(&obj);
+  StackRoot _root16(&index);
 
   UP_node = node;
   switch (node->tag()) {
@@ -51559,6 +56690,7 @@ value_asdl::value_t* ExprEvaluator::_EvalExpr(syntax_asdl::expr_t* node) {
       i = 0;
       for (ListIter<syntax_asdl::expr_t*> it(node->values); !it.Done(); it.Next(), ++i) {
         syntax_asdl::expr_t* value_expr = it.Value();
+        StackRoot _for(&value_expr      );
         if (value_expr->tag() == expr_e::Implicit) {
           key = static_cast<value::Str*>(kvals->at(i));
           v = this->_LookupVar(key->s, loc::Missing);
@@ -51572,6 +56704,7 @@ value_asdl::value_t* ExprEvaluator::_EvalExpr(syntax_asdl::expr_t* node) {
       i = 0;
       for (ListIter<value_asdl::value_t*> it(kvals); !it.Done(); it.Next(), ++i) {
         value_asdl::value_t* kval = it.Value();
+        StackRoot _for(&kval      );
         k = val_ops::ToStr(kval, S_mbB, loc::Missing);
         d->set(k, values->at(i));
       }
@@ -51626,6 +56759,10 @@ value_asdl::value_t* ExprEvaluator::_EvalExpr(syntax_asdl::expr_t* node) {
 value::Eggex* ExprEvaluator::EvalEggex(syntax_asdl::Eggex* node) {
   expr_eval::EggexEvaluator* ev = nullptr;
   syntax_asdl::re_t* spliced = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&ev);
+  StackRoot _root2(&spliced);
+
   ev = Alloc<EggexEvaluator>(this->mem, node->canonical_flags);
   spliced = ev->EvalE(node->regex);
   return Alloc<value::Eggex>(spliced, node->canonical_flags, ev->convert_funcs, ev->convert_toks, nullptr, Alloc<List<BigStr*>>());
@@ -51639,6 +56776,9 @@ EggexEvaluator::EggexEvaluator(state::Mem* mem, BigStr* canonical_flags) {
 }
 
 value_asdl::value_t* EggexEvaluator::_LookupVar(BigStr* name, syntax_asdl::loc_t* var_loc) {
+  StackRoot _root0(&name);
+  StackRoot _root1(&var_loc);
+
   return LookupVar(this->mem, name, scope_e::LocalOrGlobal, var_loc);
 }
 
@@ -51648,6 +56788,13 @@ void EggexEvaluator::_EvalClassLiteralTerm(syntax_asdl::class_literal_term_t* te
   syntax_asdl::Token* char_code_tok = nullptr;
   value_asdl::value_t* val = nullptr;
   int char_int;
+  StackRoot _root0(&term);
+  StackRoot _root1(&out);
+  StackRoot _root2(&UP_term);
+  StackRoot _root3(&s);
+  StackRoot _root4(&char_code_tok);
+  StackRoot _root5(&val);
+
   UP_term = term;
   s = nullptr;
   char_code_tok = nullptr;
@@ -51692,6 +56839,7 @@ void EggexEvaluator::_EvalClassLiteralTerm(syntax_asdl::class_literal_term_t* te
   }
   for (StrIter it(s); !it.Done(); it.Next()) {
     BigStr* ch = it.Value();
+    StackRoot _for(&ch  );
     char_int = ord(ch);
     if (char_int >= 128) {
       e_die(StrFormat("Use unquoted char literal for byte %d, which is >= 128 (avoid confusing a set of bytes with a sequence)", char_int), char_code_tok);
@@ -51712,6 +56860,19 @@ syntax_asdl::re_t* EggexEvaluator::EvalE(syntax_asdl::re_t* node) {
   value_asdl::value_t* val = nullptr;
   value_asdl::value_t* UP_val = nullptr;
   syntax_asdl::re_t* to_splice = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&UP_node);
+  StackRoot _root2(&new_children);
+  StackRoot _root3(&convert_func);
+  StackRoot _root4(&convert_tok);
+  StackRoot _root5(&func_name);
+  StackRoot _root6(&func_val);
+  StackRoot _root7(&new_terms);
+  StackRoot _root8(&s);
+  StackRoot _root9(&val);
+  StackRoot _root10(&UP_val);
+  StackRoot _root11(&to_splice);
+
   UP_node = node;
   switch (node->tag()) {
     case re_e::Seq: {
@@ -51775,6 +56936,7 @@ syntax_asdl::re_t* EggexEvaluator::EvalE(syntax_asdl::re_t* node) {
       new_terms = Alloc<List<syntax_asdl::char_class_term_t*>>();
       for (ListIter<syntax_asdl::class_literal_term_t*> it(node->terms); !it.Done(); it.Next()) {
         syntax_asdl::class_literal_term_t* t = it.Value();
+        StackRoot _for(&t      );
         this->_EvalClassLiteralTerm(t, new_terms);
       }
       return Alloc<re::CharClass>(node->negated, new_terms);
@@ -51842,6 +57004,10 @@ using pnode::PNodeAllocator;
 int _Classify(grammar::Grammar* gr, syntax_asdl::Token* tok) {
   int id_;
   BigStr* type_str = nullptr;
+  StackRoot _root0(&gr);
+  StackRoot _root1(&tok);
+  StackRoot _root2(&type_str);
+
   id_ = tok->id;
   if (dict_contains(gr->tokens, id_)) {
     return gr->tokens->at(id_);
@@ -51905,14 +57071,26 @@ syntax_asdl::Token* _PushYshTokens(parse_lib::ParseContext* parse_ctx, grammar::
   StackRoot _root4(&last_token);
   StackRoot _root5(&tok);
   StackRoot _root6(&left_tok);
-  StackRoot _root7(&w_parser);
-  StackRoot _root8(&words);
-  StackRoot _root9(&close_tok);
-  StackRoot _root10(&w);
-  StackRoot _root11(&left_token);
-  StackRoot _root12(&c_parser);
-  StackRoot _root13(&node);
-  StackRoot _root14(&part);
+  StackRoot _root7(&line_reader);
+  StackRoot _root8(&w_parser);
+  StackRoot _root9(&words);
+  StackRoot _root10(&close_tok);
+  StackRoot _root11(&w);
+  StackRoot _root12(&words2);
+  StackRoot _root13(&words3);
+  StackRoot _root14(&lit_part);
+  StackRoot _root15(&opaque);
+  StackRoot _root16(&left_token);
+  StackRoot _root17(&c_parser);
+  StackRoot _root18(&node);
+  StackRoot _root19(&right_token);
+  StackRoot _root20(&cs_part);
+  StackRoot _root21(&parts);
+  StackRoot _root22(&expr_dq_part);
+  StackRoot _root23(&part);
+  StackRoot _root24(&tokens);
+  StackRoot _root25(&sval);
+  StackRoot _root26(&sq_part);
 
   last_token = nullptr;
   prev_was_newline = false;
@@ -52178,6 +57356,9 @@ syntax_asdl::expr_t* Transformer::_LeftAssoc(pnode::PNode* p_node) {
   syntax_asdl::expr_t* left = nullptr;
   pnode::PNode* op = nullptr;
   syntax_asdl::expr_t* right = nullptr;
+  StackRoot _root0(&left);
+  StackRoot _root1(&right);
+
   i = 1;
   n = p_node->NumChildren();
   left = this->Expr(p_node->GetChild(0));
@@ -52203,6 +57384,16 @@ syntax_asdl::expr_t* Transformer::_Trailer(syntax_asdl::expr_t* base, pnode::PNo
   List<syntax_asdl::expr_t*>* slices = nullptr;
   syntax_asdl::Token* comma_tok = nullptr;
   syntax_asdl::Token* attr = nullptr;
+  StackRoot _root0(&base);
+  StackRoot _root1(&tok0);
+  StackRoot _root2(&lparen);
+  StackRoot _root3(&rparen);
+  StackRoot _root4(&arglist);
+  StackRoot _root5(&subscript);
+  StackRoot _root6(&slices);
+  StackRoot _root7(&comma_tok);
+  StackRoot _root8(&attr);
+
   tok0 = p_trailer->GetChild(0)->tok;
   typ0 = p_trailer->GetChild(0)->typ;
   if (typ0 == Id::Op_LParen) {
@@ -52246,6 +57437,11 @@ Tuple2<syntax_asdl::expr_t*, syntax_asdl::expr_t*> Transformer::_DictPair(pnode:
   syntax_asdl::Token* tok0 = nullptr;
   int id_;
   value::Str* key_str = nullptr;
+  StackRoot _root0(&key);
+  StackRoot _root1(&val);
+  StackRoot _root2(&tok0);
+  StackRoot _root3(&key_str);
+
   typ = p_node->GetChild(0)->typ;
   if ((typ == grammar_nt::sq_string || typ == grammar_nt::dq_string)) {
     key = this->Expr(p_node->GetChild(0));
@@ -52278,6 +57474,11 @@ expr::Dict* Transformer::_Dict(pnode::PNode* parent, pnode::PNode* p_node) {
   int n;
   syntax_asdl::expr_t* key = nullptr;
   syntax_asdl::expr_t* val = nullptr;
+  StackRoot _root0(&keys);
+  StackRoot _root1(&values);
+  StackRoot _root2(&key);
+  StackRoot _root3(&val);
+
   if (p_node->typ == Id::Op_RBrace) {
     return Alloc<expr::Dict>(parent->tok, Alloc<List<syntax_asdl::expr_t*>>(), Alloc<List<syntax_asdl::expr_t*>>());
   }
@@ -52298,6 +57499,8 @@ syntax_asdl::expr_t* Transformer::_Tuple(pnode::PNode* parent) {
   int n;
   List<syntax_asdl::expr_t*>* elts = nullptr;
   pnode::PNode* p_node = nullptr;
+  StackRoot _root0(&elts);
+
   n = parent->NumChildren();
   if (n == 1) {
     return this->Expr(parent->GetChild(0));
@@ -52320,6 +57523,10 @@ syntax_asdl::expr_t* Transformer::_TestlistComp(pnode::PNode* parent, pnode::PNo
   syntax_asdl::Comprehension* comp = nullptr;
   List<syntax_asdl::expr_t*>* elts = nullptr;
   pnode::PNode* child = nullptr;
+  StackRoot _root0(&elt);
+  StackRoot _root1(&comp);
+  StackRoot _root2(&elts);
+
   n = p_node->NumChildren();
   if ((n > 1 and p_node->GetChild(1)->typ == grammar_nt::comp_for)) {
     child0 = p_node->GetChild(0);
@@ -52366,6 +57573,10 @@ syntax_asdl::expr_t* Transformer::_Atom(pnode::PNode* parent) {
   syntax_asdl::expr_t* child = nullptr;
   int i;
   syntax_asdl::Token* name_tok = nullptr;
+  StackRoot _root0(&tok);
+  StackRoot _root1(&child);
+  StackRoot _root2(&name_tok);
+
   tok = parent->GetChild(0)->tok;
   id_ = tok->id;
   n = parent->NumChildren();
@@ -52416,6 +57627,9 @@ syntax_asdl::NameType* Transformer::_NameType(pnode::PNode* p_node) {
   syntax_asdl::Token* name_tok = nullptr;
   syntax_asdl::TypeExpr* typ = nullptr;
   int n;
+  StackRoot _root0(&name_tok);
+  StackRoot _root1(&typ);
+
   name_tok = p_node->GetChild(0)->tok;
   typ = nullptr;
   n = p_node->NumChildren();
@@ -52431,6 +57645,8 @@ syntax_asdl::NameType* Transformer::_NameType(pnode::PNode* p_node) {
 List<syntax_asdl::NameType*>* Transformer::_NameTypeList(pnode::PNode* p_node) {
   List<syntax_asdl::NameType*>* results = nullptr;
   int n;
+  StackRoot _root0(&results);
+
   results = Alloc<List<syntax_asdl::NameType*>>();
   n = p_node->NumChildren();
   for (int i = 0; i < n; i += 2) {
@@ -52443,6 +57659,10 @@ syntax_asdl::Comprehension* Transformer::_CompFor(pnode::PNode* p_node) {
   List<syntax_asdl::NameType*>* lhs = nullptr;
   syntax_asdl::expr_t* iterable = nullptr;
   syntax_asdl::expr_t* cond = nullptr;
+  StackRoot _root0(&lhs);
+  StackRoot _root1(&iterable);
+  StackRoot _root2(&cond);
+
   lhs = this->_NameTypeList(p_node->GetChild(1));
   iterable = this->Expr(p_node->GetChild(3));
   if (p_node->NumChildren() >= 6) {
@@ -52462,6 +57682,11 @@ syntax_asdl::expr_t* Transformer::_CompareChain(pnode::PNode* parent) {
   int n;
   pnode::PNode* p = nullptr;
   syntax_asdl::Token* op = nullptr;
+  StackRoot _root0(&cmp_ops);
+  StackRoot _root1(&comparators);
+  StackRoot _root2(&left);
+  StackRoot _root3(&op);
+
   cmp_ops = Alloc<List<syntax_asdl::Token*>>();
   comparators = Alloc<List<syntax_asdl::expr_t*>>();
   left = this->Expr(parent->GetChild(0));
@@ -52500,6 +57725,10 @@ syntax_asdl::expr_t* Transformer::_Subscript(pnode::PNode* parent) {
   syntax_asdl::expr_t* lower = nullptr;
   syntax_asdl::Token* op_tok = nullptr;
   syntax_asdl::expr_t* upper = nullptr;
+  StackRoot _root0(&lower);
+  StackRoot _root1(&op_tok);
+  StackRoot _root2(&upper);
+
   typ0 = parent->GetChild(0)->typ;
   n = parent->NumChildren();
   if (typ0 == grammar_nt::expr) {
@@ -52557,6 +57786,22 @@ syntax_asdl::expr_t* Transformer::Expr(pnode::PNode* pnode) {
   BigStr* s = nullptr;
   BigStr* hex_str = nullptr;
   int code_point;
+  StackRoot _root0(&test);
+  StackRoot _root1(&body);
+  StackRoot _root2(&orelse);
+  StackRoot _root3(&params);
+  StackRoot _root4(&op_tok);
+  StackRoot _root5(&node);
+  StackRoot _root6(&factor);
+  StackRoot _root7(&dq);
+  StackRoot _root8(&tok);
+  StackRoot _root9(&bare);
+  StackRoot _root10(&tok_str);
+  StackRoot _root11(&c_under);
+  StackRoot _root12(&cval);
+  StackRoot _root13(&s);
+  StackRoot _root14(&hex_str);
+
   typ = pnode->typ;
   if (typ == grammar_nt::ysh_expr) {
     return this->Expr(pnode->GetChild(1));
@@ -52833,6 +58078,9 @@ syntax_asdl::expr_t* Transformer::Expr(pnode::PNode* pnode) {
 
 void Transformer::_CheckLhs(syntax_asdl::expr_t* lhs) {
   syntax_asdl::expr_t* UP_lhs = nullptr;
+  StackRoot _root0(&lhs);
+  StackRoot _root1(&UP_lhs);
+
   UP_lhs = lhs;
   switch (lhs->tag()) {
     case expr_e::Var: {
@@ -52862,6 +58110,11 @@ List<syntax_asdl::y_lhs_t*>* Transformer::_LhsExprList(pnode::PNode* p_node) {
   syntax_asdl::expr_t* e = nullptr;
   syntax_asdl::expr_t* UP_e = nullptr;
   syntax_asdl::loc_t* blame = nullptr;
+  StackRoot _root0(&lhs_list);
+  StackRoot _root1(&e);
+  StackRoot _root2(&UP_e);
+  StackRoot _root3(&blame);
+
   lhs_list = Alloc<List<syntax_asdl::y_lhs_t*>>();
   n = p_node->NumChildren();
   for (int i = 0; i < n; i += 2) {
@@ -52908,6 +58161,9 @@ syntax_asdl::VarDecl* Transformer::MakeVarDecl(pnode::PNode* p_node) {
   List<syntax_asdl::NameType*>* lhs = nullptr;
   int n;
   syntax_asdl::expr_t* rhs = nullptr;
+  StackRoot _root0(&lhs);
+  StackRoot _root1(&rhs);
+
   lhs = this->_NameTypeList(p_node->GetChild(0));
   n = p_node->NumChildren();
   if (n >= 3) {
@@ -52923,6 +58179,10 @@ syntax_asdl::Mutation* Transformer::MakeMutation(pnode::PNode* p_node) {
   List<syntax_asdl::y_lhs_t*>* lhs_list = nullptr;
   syntax_asdl::Token* op_tok = nullptr;
   syntax_asdl::expr_t* rhs = nullptr;
+  StackRoot _root0(&lhs_list);
+  StackRoot _root1(&op_tok);
+  StackRoot _root2(&rhs);
+
   lhs_list = this->_LhsExprList(p_node->GetChild(0));
   op_tok = p_node->GetChild(1)->tok;
   if ((len(lhs_list) > 1 and op_tok->id != Id::Arith_Equal)) {
@@ -52956,6 +58216,12 @@ syntax_asdl::Eggex* Transformer::_Eggex(pnode::PNode* p_node) {
   int i;
   pnode::PNode* current = nullptr;
   BigStr* canonical_flags = nullptr;
+  StackRoot _root0(&left);
+  StackRoot _root1(&regex);
+  StackRoot _root2(&flags);
+  StackRoot _root3(&trans_pref);
+  StackRoot _root4(&canonical_flags);
+
   left = p_node->GetChild(0)->tok;
   regex = this->_Regex(p_node->GetChild(1));
   flags = Alloc<List<syntax_asdl::EggexFlag*>>();
@@ -52992,6 +58258,9 @@ syntax_asdl::pat_t* Transformer::YshCasePattern(pnode::PNode* pnode) {
   List<syntax_asdl::expr_t*>* exprs = nullptr;
   pnode::PNode* child = nullptr;
   syntax_asdl::expr_t* expr = nullptr;
+  StackRoot _root0(&exprs);
+  StackRoot _root1(&expr);
+
   pattern = pnode->GetChild(0);
   typ = pattern->typ;
   if (typ == Id::Op_LParen) {
@@ -53040,6 +58309,16 @@ void Transformer::_Argument(pnode::PNode* p_node, bool after_semi, syntax_asdl::
   syntax_asdl::expr_t* elt = nullptr;
   syntax_asdl::Comprehension* comp = nullptr;
   syntax_asdl::NamedArg* n1 = nullptr;
+  StackRoot _root0(&arglist);
+  StackRoot _root1(&pos_args);
+  StackRoot _root2(&named_args);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&tok0);
+  StackRoot _root5(&spread_expr);
+  StackRoot _root6(&elt);
+  StackRoot _root7(&comp);
+  StackRoot _root8(&n1);
+
   pos_args = arglist->pos_args;
   named_args = arglist->named_args;
   n = p_node->NumChildren();
@@ -53087,6 +58366,8 @@ void Transformer::_Argument(pnode::PNode* p_node, bool after_semi, syntax_asdl::
 
 void Transformer::_ArgGroup(pnode::PNode* p_node, bool after_semi, syntax_asdl::ArgList* arglist) {
   pnode::PNode* p_child = nullptr;
+  StackRoot _root0(&arglist);
+
   for (int i = 0; i < p_node->NumChildren(); ++i) {
     p_child = p_node->GetChild(i);
     if (p_child->typ == grammar_nt::argument) {
@@ -53099,6 +58380,8 @@ void Transformer::_ArgList(pnode::PNode* p_node, syntax_asdl::ArgList* arglist) 
   int n;
   int i;
   pnode::PNode* child = nullptr;
+  StackRoot _root0(&arglist);
+
   n = p_node->NumChildren();
   if (n == 0) {
     return ;
@@ -53149,6 +58432,8 @@ void Transformer::_ArgList(pnode::PNode* p_node, syntax_asdl::ArgList* arglist) 
 void Transformer::ProcCallArgs(pnode::PNode* pnode, syntax_asdl::ArgList* arglist) {
   int n;
   pnode::PNode* child1 = nullptr;
+  StackRoot _root0(&arglist);
+
   n = pnode->NumChildren();
   if (n == 2) {
     return ;
@@ -53166,6 +58451,9 @@ syntax_asdl::TypeExpr* Transformer::_TypeExpr(pnode::PNode* pnode) {
   int n;
   int i;
   syntax_asdl::TypeExpr* p = nullptr;
+  StackRoot _root0(&ty);
+  StackRoot _root1(&p);
+
   ty = TypeExpr::CreateNull();
   ty->tok = pnode->GetChild(0)->tok;
   ty->name = lexer::TokenVal(ty->tok);
@@ -53188,6 +58476,10 @@ syntax_asdl::Param* Transformer::_Param(pnode::PNode* pnode) {
   int n;
   syntax_asdl::expr_t* default_val = nullptr;
   syntax_asdl::TypeExpr* type_ = nullptr;
+  StackRoot _root0(&name_tok);
+  StackRoot _root1(&default_val);
+  StackRoot _root2(&type_);
+
   name_tok = pnode->GetChild(0)->tok;
   n = pnode->NumChildren();
   default_val = nullptr;
@@ -53221,6 +58513,10 @@ syntax_asdl::ParamGroup* Transformer::_ParamGroup(pnode::PNode* p_node) {
   int i;
   pnode::PNode* child = nullptr;
   syntax_asdl::Token* tok = nullptr;
+  StackRoot _root0(&params);
+  StackRoot _root1(&rest_of);
+  StackRoot _root2(&tok);
+
   params = Alloc<List<syntax_asdl::Param*>>();
   rest_of = nullptr;
   n = p_node->NumChildren();
@@ -53248,6 +58544,10 @@ syntax_asdl::proc_sig_t* Transformer::Proc(pnode::PNode* p_node) {
   pnode::PNode* child = nullptr;
   syntax_asdl::ParamGroup* group = nullptr;
   List<syntax_asdl::Param*>* params = nullptr;
+  StackRoot _root0(&sig);
+  StackRoot _root1(&group);
+  StackRoot _root2(&params);
+
   n = p_node->NumChildren();
   if (n == 1) {
     return proc_sig::Open;
@@ -53262,6 +58562,7 @@ syntax_asdl::proc_sig_t* Transformer::Proc(pnode::PNode* p_node) {
     sig->word = this->_ParamGroup(p_node->GetChild(i));
     for (ListIter<syntax_asdl::Param*> it(sig->word->params); !it.Done(); it.Next()) {
       syntax_asdl::Param* word = it.Value();
+      StackRoot _for(&word    );
       if (word->type) {
         if ((!str_equals(word->type->name, S_DsF) && !str_equals(word->type->name, S_ioh))) {
           p_die(S_Bej, word->type->tok);
@@ -53330,6 +58631,8 @@ void Transformer::YshFunc(pnode::PNode* p_node, syntax_asdl::Func* out) {
   int n;
   int i;
   pnode::PNode* child = nullptr;
+  StackRoot _root0(&out);
+
   out->name = p_node->GetChild(0)->tok;
   n = p_node->NumChildren();
   i = 2;
@@ -53354,6 +58657,8 @@ syntax_asdl::CharCode* Transformer::_RangeCharSingleQuoted(pnode::PNode* p_node)
   pnode::PNode* child0 = nullptr;
   syntax_asdl::SingleQuoted* sq_part = nullptr;
   int n;
+  StackRoot _root0(&sq_part);
+
   child0 = p_node->GetChild(0);
   if (child0->typ == grammar_nt::sq_string) {
     sq_part = reinterpret_cast<SingleQuoted*>(child0->GetChild(1)->tok);
@@ -53376,6 +58681,8 @@ syntax_asdl::CharCode* Transformer::_RangeCharSingleQuoted(pnode::PNode* p_node)
 syntax_asdl::Token* Transformer::_OtherRangeToken(pnode::PNode* p_node) {
   pnode::PNode* child0 = nullptr;
   syntax_asdl::Token* tok = nullptr;
+  StackRoot _root0(&tok);
+
   child0 = p_node->GetChild(0);
   if (child0->typ == grammar_nt::char_literal) {
     tok = child0->GetChild(0)->tok;
@@ -53414,6 +58721,11 @@ syntax_asdl::class_literal_term_t* Transformer::_ClassLiteralTerm(pnode::PNode* 
   syntax_asdl::Token* tok1 = nullptr;
   syntax_asdl::CharCode* code2 = nullptr;
   syntax_asdl::Token* tok2 = nullptr;
+  StackRoot _root0(&code1);
+  StackRoot _root1(&tok1);
+  StackRoot _root2(&code2);
+  StackRoot _root3(&tok2);
+
   typ0 = p_node->GetChild(0)->typ;
   if (typ0 == grammar_nt::range_char) {
     n = p_node->NumChildren();
@@ -53449,6 +58761,8 @@ syntax_asdl::class_literal_term_t* Transformer::_ClassLiteralTerm(pnode::PNode* 
 
 List<syntax_asdl::class_literal_term_t*>* Transformer::_ClassLiteral(pnode::PNode* p_node) {
   List<syntax_asdl::class_literal_term_t*>* terms = nullptr;
+  StackRoot _root0(&terms);
+
   terms = Alloc<List<syntax_asdl::class_literal_term_t*>>();
   for (int i = 1; i < (p_node->NumChildren() - 1); ++i) {
     terms->append(this->_ClassLiteralTerm(p_node->GetChild(i)));
@@ -53459,6 +58773,11 @@ List<syntax_asdl::class_literal_term_t*>* Transformer::_ClassLiteral(pnode::PNod
 syntax_asdl::re_t* Transformer::_NameInRegex(syntax_asdl::Token* negated_tok, syntax_asdl::Token* tok) {
   BigStr* tok_str = nullptr;
   BigStr* perl = nullptr;
+  StackRoot _root0(&negated_tok);
+  StackRoot _root1(&tok);
+  StackRoot _root2(&tok_str);
+  StackRoot _root3(&perl);
+
   tok_str = lexer::TokenVal(tok);
   if (str_equals(tok_str, S_urc)) {
     if (negated_tok) {
@@ -53482,6 +58801,11 @@ syntax_asdl::re_t* Transformer::_NameInRegex(syntax_asdl::Token* negated_tok, sy
 syntax_asdl::class_literal_term_t* Transformer::_NameInClass(syntax_asdl::Token* negated_tok, syntax_asdl::Token* tok) {
   BigStr* tok_str = nullptr;
   BigStr* perl = nullptr;
+  StackRoot _root0(&negated_tok);
+  StackRoot _root1(&tok);
+  StackRoot _root2(&tok_str);
+  StackRoot _root3(&perl);
+
   tok_str = lexer::TokenVal(tok);
   if (len(tok_str) == 1) {
     if (negated_tok) {
@@ -53513,6 +58837,14 @@ syntax_asdl::re_t* Transformer::_ReAtom(pnode::PNode* p_atom) {
   syntax_asdl::Token* func_name = nullptr;
   int i;
   int typ;
+  StackRoot _root0(&tok0);
+  StackRoot _root1(&s);
+  StackRoot _root2(&tok_str);
+  StackRoot _root3(&tok1);
+  StackRoot _root4(&regex);
+  StackRoot _root5(&as_name);
+  StackRoot _root6(&func_name);
+
   child0 = p_atom->GetChild(0);
   typ0 = p_atom->GetChild(0)->typ;
   tok0 = p_atom->GetChild(0)->tok;
@@ -53597,6 +58929,10 @@ syntax_asdl::re_repeat_t* Transformer::_RepeatOp(pnode::PNode* p_repeat) {
   int n;
   syntax_asdl::Token* left = nullptr;
   syntax_asdl::Token* right = nullptr;
+  StackRoot _root0(&tok);
+  StackRoot _root1(&left);
+  StackRoot _root2(&right);
+
   tok = p_repeat->GetChild(0)->tok;
   id_ = tok->id;
   if ((id_ == Id::Arith_Plus || id_ == Id::Arith_Star || id_ == Id::Arith_QMark)) {
@@ -53638,6 +58974,10 @@ syntax_asdl::re_t* Transformer::_ReAlt(pnode::PNode* p_node) {
   List<syntax_asdl::re_t*>* seq = nullptr;
   syntax_asdl::re_t* r = nullptr;
   syntax_asdl::re_repeat_t* repeat_op = nullptr;
+  StackRoot _root0(&seq);
+  StackRoot _root1(&r);
+  StackRoot _root2(&repeat_op);
+
   i = 0;
   n = p_node->NumChildren();
   seq = Alloc<List<syntax_asdl::re_t*>>();
@@ -53663,6 +59003,8 @@ syntax_asdl::re_t* Transformer::_Regex(pnode::PNode* p_node) {
   int n;
   List<syntax_asdl::re_t*>* alts = nullptr;
   pnode::PNode* c = nullptr;
+  StackRoot _root0(&alts);
+
   n = p_node->NumChildren();
   alts = Alloc<List<syntax_asdl::re_t*>>();
   for (int i = 0; i < n; i += 2) {
@@ -53704,6 +59046,9 @@ using value_asdl::LeftName;
 using error::e_die;
 
 void _DisallowMutableDefault(value_asdl::value_t* val, syntax_asdl::loc_t* blame_loc) {
+  StackRoot _root0(&val);
+  StackRoot _root1(&blame_loc);
+
   if ((val->tag() == value_e::List || val->tag() == value_e::Dict)) {
     throw Alloc<error::TypeErr>(val, S_BCt, blame_loc);
   }
@@ -53716,14 +59061,16 @@ List<value_asdl::value_t*>* _EvalPosDefaults(expr_eval::ExprEvaluator* expr_ev, 
   value_asdl::value_t* val = nullptr;
   StackRoot _root0(&expr_ev);
   StackRoot _root1(&pos_params);
-  StackRoot _root2(&pos_defaults);
-  StackRoot _root3(&val);
+  StackRoot _root2(&no_val);
+  StackRoot _root3(&pos_defaults);
+  StackRoot _root4(&val);
 
   no_val = nullptr;
   pos_defaults = list_repeat(no_val, len(pos_params));
   i = 0;
   for (ListIter<syntax_asdl::Param*> it(pos_params); !it.Done(); it.Next(), ++i) {
     syntax_asdl::Param* p = it.Value();
+    StackRoot _for(&p  );
     if (p->default_val) {
       val = expr_ev->EvalExpr(p->default_val, p->blame_tok);
       _DisallowMutableDefault(val, p->blame_tok);
@@ -53746,6 +59093,7 @@ Dict<BigStr*, value_asdl::value_t*>* _EvalNamedDefaults(expr_eval::ExprEvaluator
   i = 0;
   for (ListIter<syntax_asdl::Param*> it(named_params); !it.Done(); it.Next(), ++i) {
     syntax_asdl::Param* p = it.Value();
+    StackRoot _for(&p  );
     if (p->default_val) {
       val = expr_ev->EvalExpr(p->default_val, p->blame_tok);
       _DisallowMutableDefault(val, p->blame_tok);
@@ -53789,11 +59137,13 @@ value_asdl::ProcDefaults* EvalProcDefaults(expr_eval::ExprEvaluator* expr_ev, pr
   value_asdl::value_t* block_default = nullptr;
   StackRoot _root0(&expr_ev);
   StackRoot _root1(&sig);
-  StackRoot _root2(&word_defaults);
-  StackRoot _root3(&val);
-  StackRoot _root4(&pos_defaults);
-  StackRoot _root5(&named_defaults);
-  StackRoot _root6(&block_default);
+  StackRoot _root2(&no_val);
+  StackRoot _root3(&word_defaults);
+  StackRoot _root4(&val);
+  StackRoot _root5(&pos_defaults);
+  StackRoot _root6(&named_defaults);
+  StackRoot _root7(&exp);
+  StackRoot _root8(&block_default);
 
   no_val = nullptr;
   if (sig->word) {
@@ -53801,6 +59151,7 @@ value_asdl::ProcDefaults* EvalProcDefaults(expr_eval::ExprEvaluator* expr_ev, pr
     i = 0;
     for (ListIter<syntax_asdl::Param*> it(sig->word->params); !it.Done(); it.Next(), ++i) {
       syntax_asdl::Param* p = it.Value();
+      StackRoot _for(&p    );
       if (p->default_val) {
         val = expr_ev->EvalExpr(p->default_val, p->blame_tok);
         if (val->tag() != value_e::Str) {
@@ -53849,10 +59200,12 @@ void _EvalPosArgs(expr_eval::ExprEvaluator* expr_ev, List<syntax_asdl::expr_t*>*
   StackRoot _root0(&expr_ev);
   StackRoot _root1(&exprs);
   StackRoot _root2(&pos_args);
-  StackRoot _root3(&val);
+  StackRoot _root3(&UP_e);
+  StackRoot _root4(&val);
 
   for (ListIter<syntax_asdl::expr_t*> it(exprs); !it.Done(); it.Next()) {
     syntax_asdl::expr_t* e = it.Value();
+    StackRoot _for(&e  );
     UP_e = e;
     if (e->tag() == expr_e::Spread) {
       expr::Spread* e = static_cast<expr::Spread*>(UP_e);
@@ -53878,11 +59231,14 @@ Dict<BigStr*, value_asdl::value_t*>* _EvalNamedArgs(expr_eval::ExprEvaluator* ex
   StackRoot _root1(&named_exprs);
   StackRoot _root2(&named_args);
   StackRoot _root3(&val_expr);
-  StackRoot _root4(&val);
+  StackRoot _root4(&UP_val_expr);
+  StackRoot _root5(&val);
+  StackRoot _root6(&name);
 
   named_args = Alloc<Dict<BigStr*, value_asdl::value_t*>>();
   for (ListIter<syntax_asdl::NamedArg*> it(named_exprs); !it.Done(); it.Next()) {
     syntax_asdl::NamedArg* n = it.Value();
+    StackRoot _for(&n  );
     val_expr = n->value;
     UP_val_expr = val_expr;
     if (val_expr->tag() == expr_e::Spread) {
@@ -53934,6 +59290,8 @@ void EvalTypedArgsToProc(expr_eval::ExprEvaluator* expr_ev, Dict<BigStr*, runtim
   StackRoot _root4(&node);
   StackRoot _root5(&proc_args);
   StackRoot _root6(&ty);
+  StackRoot _root7(&n1);
+  StackRoot _root8(&name);
 
   proc_args->typed_args = node->typed_args;
   proc_args->pos_args = Alloc<List<value_asdl::value_t*>>();
@@ -53942,6 +59300,7 @@ void EvalTypedArgsToProc(expr_eval::ExprEvaluator* expr_ev, Dict<BigStr*, runtim
     if (ty->left->id == Id::Op_LBracket) {
       for (ListIter<syntax_asdl::expr_t*> it(ty->pos_args); !it.Done(); it.Next()) {
         syntax_asdl::expr_t* exp = it.Value();
+        StackRoot _for(&exp      );
         proc_args->pos_args->append(Alloc<value::Expr>(exp, current_frame, module_frame));
       }
       n1 = ty->named_args;
@@ -53949,6 +59308,7 @@ void EvalTypedArgsToProc(expr_eval::ExprEvaluator* expr_ev, Dict<BigStr*, runtim
         proc_args->named_args = Alloc<Dict<BigStr*, value_asdl::value_t*>>();
         for (ListIter<syntax_asdl::NamedArg*> it(n1); !it.Done(); it.Next()) {
           syntax_asdl::NamedArg* named_arg = it.Value();
+          StackRoot _for(&named_arg        );
           name = lexer::TokenVal(named_arg->name);
           proc_args->named_args->set(name, Alloc<value::Expr>(named_arg->value, current_frame, module_frame));
         }
@@ -53992,11 +59352,26 @@ void _BindWords(BigStr* proc_name, syntax_asdl::ParamGroup* group, List<value_as
   List<value_asdl::value_t*>* items = nullptr;
   value::List* rest_val = nullptr;
   syntax_asdl::loc_t* extra_loc = nullptr;
+  StackRoot _root0(&proc_name);
+  StackRoot _root1(&group);
+  StackRoot _root2(&defaults);
+  StackRoot _root3(&cmd_val);
+  StackRoot _root4(&mem);
+  StackRoot _root5(&blame_loc);
+  StackRoot _root6(&argv);
+  StackRoot _root7(&val);
+  StackRoot _root8(&rest);
+  StackRoot _root9(&lval);
+  StackRoot _root10(&items);
+  StackRoot _root11(&rest_val);
+  StackRoot _root12(&extra_loc);
+
   argv = cmd_val->argv->slice(1);
   num_args = len(argv);
   i = 0;
   for (ListIter<syntax_asdl::Param*> it(group->params); !it.Done(); it.Next(), ++i) {
     syntax_asdl::Param* p = it.Value();
+    StackRoot _for(&p  );
     if (i < num_args) {
       val = Alloc<value::Str>(argv->at(i));
     }
@@ -54041,6 +59416,17 @@ void _BindTyped(BigStr* code_name, syntax_asdl::ParamGroup* group, List<value_as
   syntax_asdl::RestParam* rest = nullptr;
   value_asdl::LeftName* lval = nullptr;
   value::List* rest_val = nullptr;
+  StackRoot _root0(&code_name);
+  StackRoot _root1(&group);
+  StackRoot _root2(&defaults);
+  StackRoot _root3(&pos_args);
+  StackRoot _root4(&mem);
+  StackRoot _root5(&blame_loc);
+  StackRoot _root6(&val);
+  StackRoot _root7(&rest);
+  StackRoot _root8(&lval);
+  StackRoot _root9(&rest_val);
+
   if (pos_args == nullptr) {
     pos_args = Alloc<List<value_asdl::value_t*>>();
   }
@@ -54050,6 +59436,7 @@ void _BindTyped(BigStr* code_name, syntax_asdl::ParamGroup* group, List<value_as
   if (group) {
     for (ListIter<syntax_asdl::Param*> it(group->params); !it.Done(); it.Next()) {
       syntax_asdl::Param* p = it.Value();
+      StackRoot _for(&p    );
       if (i < num_args) {
         val = pos_args->at(i);
       }
@@ -54085,11 +59472,22 @@ void _BindNamed(BigStr* code_name, syntax_asdl::ParamGroup* group, Dict<BigStr*,
   value_asdl::LeftName* lval = nullptr;
   int num_args;
   int num_params;
+  StackRoot _root0(&code_name);
+  StackRoot _root1(&group);
+  StackRoot _root2(&defaults);
+  StackRoot _root3(&named_args);
+  StackRoot _root4(&mem);
+  StackRoot _root5(&blame_loc);
+  StackRoot _root6(&val);
+  StackRoot _root7(&rest);
+  StackRoot _root8(&lval);
+
   if (named_args == nullptr) {
     named_args = Alloc<Dict<BigStr*, value_asdl::value_t*>>();
   }
   for (ListIter<syntax_asdl::Param*> it(group->params); !it.Done(); it.Next()) {
     syntax_asdl::Param* p = it.Value();
+    StackRoot _for(&p  );
     val = named_args->get(p->name);
     if (val == nullptr) {
       val = defaults->get(p->name);
@@ -54120,6 +59518,13 @@ void _BindFuncArgs(value::Func* func, typed_args::Reader* rd, state::Mem* mem) {
   int num_pos;
   syntax_asdl::Token* semi = nullptr;
   int num_named;
+  StackRoot _root0(&func);
+  StackRoot _root1(&rd);
+  StackRoot _root2(&mem);
+  StackRoot _root3(&node);
+  StackRoot _root4(&blame_loc);
+  StackRoot _root5(&semi);
+
   node = func->parsed;
   blame_loc = rd->LeftParenToken();
   if (node->positional) {
@@ -54162,6 +59567,18 @@ void BindProcArgs(value::Proc* proc, cmd_value::Argv* cmd_val, state::Mem* mem) 
   int num_named;
   syntax_asdl::Param* block_param = nullptr;
   value_asdl::value_t* block_arg = nullptr;
+  StackRoot _root0(&proc);
+  StackRoot _root1(&cmd_val);
+  StackRoot _root2(&mem);
+  StackRoot _root3(&proc_args);
+  StackRoot _root4(&UP_sig);
+  StackRoot _root5(&blame_loc);
+  StackRoot _root6(&pos_args);
+  StackRoot _root7(&semi);
+  StackRoot _root8(&named_args);
+  StackRoot _root9(&block_param);
+  StackRoot _root10(&block_arg);
+
   proc_args = cmd_val->proc_args;
   UP_sig = proc->sig;
   if (UP_sig->tag() != proc_sig_e::Closed) {
@@ -54314,9 +59731,23 @@ int FLAG_HYPHEN = 8;
 void _CharCodeToEre(syntax_asdl::CharCode* term, List<BigStr*>* parts, List<int>* special_char_flags) {
   int char_int;
   int mask;
+  BigStr* s = nullptr;
+  StackRoot _root0(&term);
+  StackRoot _root1(&parts);
+  StackRoot _root2(&special_char_flags);
+  StackRoot _root3(&s);
+
   char_int = term->i;
-  if ((char_int >= 128 and term->u_braced)) {
+  if (char_int == 0) {
     e_die(StrFormat("ERE can't express char code %d", char_int), term->blame_tok);
+  }
+  if (term->u_braced) {
+    ;  // pass
+  }
+  else {
+    if (char_int >= 128) {
+      e_die(StrFormat("ERE can't express high bytes %d", char_int), term->blame_tok);
+    }
   }
   mask = special_char_flags->at(0);
   if (char_int == CH_HYPHEN) {
@@ -54335,7 +59766,8 @@ void _CharCodeToEre(syntax_asdl::CharCode* term, List<BigStr*>* parts, List<int>
           mask |= FLAG_BACKSLASH;
         }
         else {
-          parts->append(chr(char_int));
+          s = j8::Utf8Encode(char_int);
+          parts->append(s);
         }
       }
     }
@@ -54349,6 +59781,15 @@ void _CharClassTermToEre(syntax_asdl::char_class_term_t* term, List<BigStr*>* pa
   BigStr* n = nullptr;
   BigStr* chars = nullptr;
   BigStr* pat = nullptr;
+  StackRoot _root0(&term);
+  StackRoot _root1(&parts);
+  StackRoot _root2(&special_char_flags);
+  StackRoot _root3(&UP_term);
+  StackRoot _root4(&range_no_special);
+  StackRoot _root5(&n);
+  StackRoot _root6(&chars);
+  StackRoot _root7(&pat);
+
   UP_term = term;
   switch (term->tag()) {
     case char_class_term_e::CharRange: {
@@ -54415,6 +59856,20 @@ void _AsPosixEre(syntax_asdl::re_t* node, List<BigStr*>* parts, List<BigStr*>* c
   BigStr* pat = nullptr;
   List<int>* special_char_flags = nullptr;
   List<BigStr*>* non_special_parts = nullptr;
+  StackRoot _root0(&node);
+  StackRoot _root1(&parts);
+  StackRoot _root2(&capture_names);
+  StackRoot _root3(&UP_node);
+  StackRoot _root4(&child);
+  StackRoot _root5(&op);
+  StackRoot _root6(&UP_op);
+  StackRoot _root7(&capture_str);
+  StackRoot _root8(&n);
+  StackRoot _root9(&chars);
+  StackRoot _root10(&pat);
+  StackRoot _root11(&special_char_flags);
+  StackRoot _root12(&non_special_parts);
+
   UP_node = node;
   tag = node->tag();
   if (tag == re_e::Primitive) {
@@ -54446,6 +59901,7 @@ void _AsPosixEre(syntax_asdl::re_t* node, List<BigStr*>* parts, List<BigStr*>* c
     re::Seq* node = static_cast<re::Seq*>(UP_node);
     for (ListIter<syntax_asdl::re_t*> it(node->children); !it.Done(); it.Next()) {
       syntax_asdl::re_t* c = it.Value();
+      StackRoot _for(&c    );
       _AsPosixEre(c, parts, capture_names);
     }
     return ;
@@ -54455,6 +59911,7 @@ void _AsPosixEre(syntax_asdl::re_t* node, List<BigStr*>* parts, List<BigStr*>* c
     i = 0;
     for (ListIter<syntax_asdl::re_t*> it(node->children); !it.Done(); it.Next(), ++i) {
       syntax_asdl::re_t* c = it.Value();
+      StackRoot _for(&c    );
       if (i != 0) {
         parts->append(S_Ebn);
       }
@@ -54554,6 +60011,7 @@ void _AsPosixEre(syntax_asdl::re_t* node, List<BigStr*>* parts, List<BigStr*>* c
     non_special_parts = Alloc<List<BigStr*>>();
     for (ListIter<syntax_asdl::char_class_term_t*> it(node->terms); !it.Done(); it.Next()) {
       syntax_asdl::char_class_term_t* term = it.Value();
+      StackRoot _for(&term    );
       _CharClassTermToEre(term, non_special_parts, special_char_flags);
     }
     parts->append(S_Eax);
@@ -54581,6 +60039,9 @@ void _AsPosixEre(syntax_asdl::re_t* node, List<BigStr*>* parts, List<BigStr*>* c
 
 BigStr* AsPosixEre(value::Eggex* eggex) {
   List<BigStr*>* parts = nullptr;
+  StackRoot _root0(&eggex);
+  StackRoot _root1(&parts);
+
   if (eggex->as_ere != nullptr) {
     return eggex->as_ere;
   }
@@ -54593,9 +60054,14 @@ BigStr* AsPosixEre(value::Eggex* eggex) {
 BigStr* CanonicalFlags(List<syntax_asdl::EggexFlag*>* flags) {
   List<BigStr*>* letters = nullptr;
   BigStr* flag_name = nullptr;
+  StackRoot _root0(&flags);
+  StackRoot _root1(&letters);
+  StackRoot _root2(&flag_name);
+
   letters = Alloc<List<BigStr*>>();
   for (ListIter<syntax_asdl::EggexFlag*> it(flags); !it.Done(); it.Next()) {
     syntax_asdl::EggexFlag* flag = it.Value();
+    StackRoot _for(&flag  );
     if (flag->negated) {
       p_die(S_dwl, flag->flag);
     }
@@ -54618,12 +60084,15 @@ BigStr* CanonicalFlags(List<syntax_asdl::EggexFlag*>* flags) {
 
 int LibcFlags(BigStr* canonical_flags) {
   int libc_flags;
+  StackRoot _root0(&canonical_flags);
+
   if (canonical_flags == nullptr) {
     return 0;
   }
   libc_flags = 0;
   for (StrIter it(canonical_flags); !it.Done(); it.Next()) {
     BigStr* ch = it.Value();
+    StackRoot _for(&ch  );
     if (str_equals(ch, S_eil)) {
       libc_flags |= REG_ICASE;
     }
@@ -54658,6 +60127,11 @@ using error::e_die;
 
 int ToInt(value_asdl::value_t* val, BigStr* msg, syntax_asdl::loc_t* blame_loc) {
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&msg);
+  StackRoot _root2(&blame_loc);
+  StackRoot _root3(&UP_val);
+
   UP_val = val;
   if (val->tag() == value_e::Int) {
     value::Int* val = static_cast<value::Int*>(UP_val);
@@ -54668,6 +60142,11 @@ int ToInt(value_asdl::value_t* val, BigStr* msg, syntax_asdl::loc_t* blame_loc) 
 
 double ToFloat(value_asdl::value_t* val, BigStr* msg, syntax_asdl::loc_t* blame_loc) {
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&msg);
+  StackRoot _root2(&blame_loc);
+  StackRoot _root3(&UP_val);
+
   UP_val = val;
   if (val->tag() == value_e::Float) {
     value::Float* val = static_cast<value::Float*>(UP_val);
@@ -54678,6 +60157,11 @@ double ToFloat(value_asdl::value_t* val, BigStr* msg, syntax_asdl::loc_t* blame_
 
 BigStr* ToStr(value_asdl::value_t* val, BigStr* msg, syntax_asdl::loc_t* blame_loc) {
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&msg);
+  StackRoot _root2(&blame_loc);
+  StackRoot _root3(&UP_val);
+
   UP_val = val;
   if (val->tag() == value_e::Str) {
     value::Str* val = static_cast<value::Str*>(UP_val);
@@ -54688,6 +60172,11 @@ BigStr* ToStr(value_asdl::value_t* val, BigStr* msg, syntax_asdl::loc_t* blame_l
 
 List<value_asdl::value_t*>* ToList(value_asdl::value_t* val, BigStr* msg, syntax_asdl::loc_t* blame_loc) {
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&msg);
+  StackRoot _root2(&blame_loc);
+  StackRoot _root3(&UP_val);
+
   UP_val = val;
   if (val->tag() == value_e::List) {
     value::List* val = static_cast<value::List*>(UP_val);
@@ -54698,6 +60187,11 @@ List<value_asdl::value_t*>* ToList(value_asdl::value_t* val, BigStr* msg, syntax
 
 Dict<BigStr*, value_asdl::value_t*>* ToDict(value_asdl::value_t* val, BigStr* msg, syntax_asdl::loc_t* blame_loc) {
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&msg);
+  StackRoot _root2(&blame_loc);
+  StackRoot _root3(&UP_val);
+
   UP_val = val;
   if (val->tag() == value_e::Dict) {
     value::Dict* val = static_cast<value::Dict*>(UP_val);
@@ -54708,6 +60202,11 @@ Dict<BigStr*, value_asdl::value_t*>* ToDict(value_asdl::value_t* val, BigStr* ms
 
 syntax_asdl::command_t* ToCommandFrag(value_asdl::value_t* val, BigStr* msg, syntax_asdl::loc_t* blame_loc) {
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&msg);
+  StackRoot _root2(&blame_loc);
+  StackRoot _root3(&UP_val);
+
   UP_val = val;
   if (val->tag() == value_e::CommandFrag) {
     value::CommandFrag* val = static_cast<value::CommandFrag*>(UP_val);
@@ -54719,6 +60218,12 @@ syntax_asdl::command_t* ToCommandFrag(value_asdl::value_t* val, BigStr* msg, syn
 BigStr* Stringify(value_asdl::value_t* val, syntax_asdl::loc_t* blame_loc, BigStr* op_desc) {
   value_asdl::value_t* UP_val = nullptr;
   BigStr* s = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&blame_loc);
+  StackRoot _root2(&op_desc);
+  StackRoot _root3(&UP_val);
+  StackRoot _root4(&s);
+
   if (blame_loc == nullptr) {
     blame_loc = loc::Missing;
   }
@@ -54767,6 +60272,12 @@ BigStr* Stringify(value_asdl::value_t* val, syntax_asdl::loc_t* blame_loc, BigSt
 List<BigStr*>* ToShellArray(value_asdl::value_t* val, syntax_asdl::loc_t* blame_loc, BigStr* prefix) {
   value_asdl::value_t* UP_val = nullptr;
   List<BigStr*>* strs = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&blame_loc);
+  StackRoot _root2(&prefix);
+  StackRoot _root3(&UP_val);
+  StackRoot _root4(&strs);
+
   UP_val = val;
   switch (val->tag()) {
     case value_e::List: {
@@ -54774,6 +60285,7 @@ List<BigStr*>* ToShellArray(value_asdl::value_t* val, syntax_asdl::loc_t* blame_
       strs = Alloc<List<BigStr*>>();
       for (ListIter<value_asdl::value_t*> it(val->items); !it.Done(); it.Next()) {
         value_asdl::value_t* item = it.Value();
+        StackRoot _for(&item      );
         strs->append(Stringify(item, blame_loc, prefix));
       }
     }
@@ -54822,6 +60334,8 @@ StdinIterator::StdinIterator(syntax_asdl::loc_t* blame_loc) : ::val_ops::Iterato
 
 value_asdl::value_t* StdinIterator::FirstValue() {
   BigStr* line = nullptr;
+  StackRoot _root0(&line);
+
   try {
     line = this->f->readline();
   }
@@ -54897,6 +60411,9 @@ value_asdl::value_t* DictIterator::SecondValue() {
 
 bool ToBool(value_asdl::value_t* val) {
   value_asdl::value_t* UP_val = nullptr;
+  StackRoot _root0(&val);
+  StackRoot _root1(&UP_val);
+
   UP_val = val;
   switch (val->tag()) {
     case value_e::Undef: {
@@ -54961,6 +60478,12 @@ bool ToBool(value_asdl::value_t* val) {
 bool ExactlyEqual(value_asdl::value_t* left, value_asdl::value_t* right, syntax_asdl::loc_t* blame_loc) {
   value_asdl::value_t* UP_left = nullptr;
   value_asdl::value_t* UP_right = nullptr;
+  StackRoot _root0(&left);
+  StackRoot _root1(&right);
+  StackRoot _root2(&blame_loc);
+  StackRoot _root3(&UP_left);
+  StackRoot _root4(&UP_right);
+
   if ((left->tag() == value_e::Float or right->tag() == value_e::Float)) {
     throw Alloc<error::TypeErrVerbose>(S_ilD, blame_loc);
   }
@@ -55040,6 +60563,7 @@ bool ExactlyEqual(value_asdl::value_t* left, value_asdl::value_t* right, syntax_
       }
       for (DictIter<BigStr*, value_asdl::value_t*> it(left->d); !it.Done(); it.Next()) {
         BigStr* k = it.Key();
+        StackRoot _for(&k      );
         if ((!dict_contains(right->d, k) or !ExactlyEqual(right->d->at(k), left->d->at(k), blame_loc))) {
           return false;
         }
@@ -55054,6 +60578,11 @@ bool ExactlyEqual(value_asdl::value_t* left, value_asdl::value_t* right, syntax_
 bool Contains(value_asdl::value_t* needle, value_asdl::value_t* haystack) {
   value_asdl::value_t* UP_haystack = nullptr;
   BigStr* s = nullptr;
+  StackRoot _root0(&needle);
+  StackRoot _root1(&haystack);
+  StackRoot _root2(&UP_haystack);
+  StackRoot _root3(&s);
+
   UP_haystack = haystack;
   switch (haystack->tag()) {
     case value_e::Dict: {
@@ -55077,6 +60606,16 @@ bool MatchRegex(value_asdl::value_t* left, value_asdl::value_t* right, state::Me
   value_asdl::value_t* UP_left = nullptr;
   BigStr* left_s = nullptr;
   List<int>* indices = nullptr;
+  StackRoot _root0(&left);
+  StackRoot _root1(&right);
+  StackRoot _root2(&mem);
+  StackRoot _root3(&UP_right);
+  StackRoot _root4(&right_s);
+  StackRoot _root5(&capture);
+  StackRoot _root6(&UP_left);
+  StackRoot _root7(&left_s);
+  StackRoot _root8(&indices);
+
   UP_right = right;
   switch (right->tag()) {
     case value_e::Str: {
@@ -55126,6 +60665,9 @@ bool MatchRegex(value_asdl::value_t* left, value_asdl::value_t* right, state::Me
 
 value_asdl::value_t* IndexMetaMethod(value_asdl::Obj* obj) {
   value_asdl::value_t* index_val = nullptr;
+  StackRoot _root0(&obj);
+  StackRoot _root1(&index_val);
+
   if (!obj->prototype) {
     return nullptr;
   }
@@ -55165,6 +60707,10 @@ word::String* _StringWordEmitter::ReadWord(types_asdl::lex_mode_t unused_lex_mod
   BigStr* s = nullptr;
   syntax_asdl::CompoundWord* arg_loc = nullptr;
   int id_;
+  StackRoot _root0(&w);
+  StackRoot _root1(&s);
+  StackRoot _root2(&arg_loc);
+
   if (this->i == this->n) {
     w = Alloc<word::String>(Id::Eof_Real, S_Aoo, nullptr);
     return w;
@@ -55202,6 +60748,9 @@ _WordEvaluator::_WordEvaluator() : ::word_eval::StringWordEvaluator() {
 
 value::Str* _WordEvaluator::EvalWordToString(syntax_asdl::word_t* w, int eval_flags) {
   word::String* string_word = nullptr;
+  StackRoot _root0(&w);
+  StackRoot _root1(&string_word);
+
   string_word = static_cast<word::String*>(w);
   return Alloc<value::Str>(string_word->s);
 }
@@ -55211,6 +60760,11 @@ syntax_asdl::bool_expr_t* _TwoArgs(bracket_osh::_StringWordEmitter* w_parser) {
   word::String* w1 = nullptr;
   BigStr* s0 = nullptr;
   int unary_id;
+  StackRoot _root0(&w_parser);
+  StackRoot _root1(&w0);
+  StackRoot _root2(&w1);
+  StackRoot _root3(&s0);
+
   w0 = w_parser->Read();
   w1 = w_parser->Read();
   s0 = w0->s;
@@ -55263,6 +60817,12 @@ syntax_asdl::bool_expr_t* _ThreeArgs(bracket_osh::_StringWordEmitter* w_parser) 
   word::String* w2 = nullptr;
   int binary_id;
   syntax_asdl::bool_expr_t* child = nullptr;
+  StackRoot _root0(&w_parser);
+  StackRoot _root1(&w0);
+  StackRoot _root2(&w1);
+  StackRoot _root3(&w2);
+  StackRoot _root4(&child);
+
   w0 = w_parser->Read();
   w1 = w_parser->Read();
   w2 = w_parser->Read();
@@ -55307,6 +60867,17 @@ int Test::Run(cmd_value::Argv* cmd_val) {
   sh_expr_eval::BoolEvaluator* bool_ev = nullptr;
   bool b;
   int status;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&strs);
+  StackRoot _root2(&w_parser);
+  StackRoot _root3(&b_parser);
+  StackRoot _root4(&bool_node);
+  StackRoot _root5(&w);
+  StackRoot _root6(&a0);
+  StackRoot _root7(&child);
+  StackRoot _root8(&word_ev);
+  StackRoot _root9(&bool_ev);
+
   typed_args::DoesNotAccept(cmd_val->proc_args);
   if (this->need_right_bracket) {
     if (this->exec_opts->simple_test_builtin()) {
@@ -55325,8 +60896,8 @@ int Test::Run(cmd_value::Argv* cmd_val) {
   b_parser = Alloc<bool_parse::BoolParser>(w_parser);
   bool_node = nullptr;
   n = (len(cmd_val->argv) - 1);
-  if ((this->exec_opts->simple_test_builtin() and n > 3)) {
-    e_usage(S_Ajx, loc::Missing);
+  if ((this->exec_opts->simple_test_builtin() and (n != 2 && n != 3))) {
+    e_usage(S_rBr, loc::Missing);
   }
   try {
     if (n == 0) {
@@ -55402,8 +60973,11 @@ _FixedWordsAction::_FixedWordsAction(List<BigStr*>* d) {
 }
 
 void _FixedWordsAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
+  StackRoot _root0(&comp);
+
   for (ListIter<BigStr*> it(sorted(this->d)); !it.Done(); it.Next()) {
     BigStr* name = it.Value();
+    StackRoot _for(&name  );
     if (name->startswith(comp->to_complete)) {
       YIELD->append(name);
     }
@@ -55411,6 +60985,8 @@ void _FixedWordsAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
 }
 
 void _FixedWordsAction::Print(mylib::BufWriter* f) {
+  StackRoot _root0(&f);
+
   f->write(S_Ekf);
 }
 
@@ -55419,8 +60995,11 @@ _DynamicProcDictAction::_DynamicProcDictAction(state::Procs* d) {
 }
 
 void _DynamicProcDictAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
+  StackRoot _root0(&comp);
+
   for (ListIter<BigStr*> it(this->d->InvokableNames()); !it.Done(); it.Next()) {
     BigStr* name = it.Value();
+    StackRoot _for(&name  );
     if (name->startswith(comp->to_complete)) {
       YIELD->append(name);
     }
@@ -55428,6 +61007,8 @@ void _DynamicProcDictAction::Matches(completion::Api* comp, List<BigStr*>* YIELD
 }
 
 void _DynamicProcDictAction::Print(mylib::BufWriter* f) {
+  StackRoot _root0(&f);
+
   f->write(S_koi);
 }
 
@@ -55436,8 +61017,11 @@ _DynamicStrDictAction::_DynamicStrDictAction(Dict<BigStr*, BigStr*>* d) {
 }
 
 void _DynamicStrDictAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
+  StackRoot _root0(&comp);
+
   for (ListIter<BigStr*> it(sorted(this->d)); !it.Done(); it.Next()) {
     BigStr* name = it.Value();
+    StackRoot _for(&name  );
     if (name->startswith(comp->to_complete)) {
       YIELD->append(name);
     }
@@ -55445,6 +61029,8 @@ void _DynamicStrDictAction::Matches(completion::Api* comp, List<BigStr*>* YIELD)
 }
 
 void _DynamicStrDictAction::Print(mylib::BufWriter* f) {
+  StackRoot _root0(&f);
+
   f->write(S_mdp);
 }
 
@@ -55478,9 +61064,21 @@ completion::UserSpec* SpecBuilder::Build(List<BigStr*>* argv, args::_Attributes*
   StackRoot _root0(&argv);
   StackRoot _root1(&attrs);
   StackRoot _root2(&base_opts);
-  StackRoot _root3(&arg);
-  StackRoot _root4(&actions);
-  StackRoot _root5(&arg_word);
+  StackRoot _root3(&cmd_ev);
+  StackRoot _root4(&arg);
+  StackRoot _root5(&actions);
+  StackRoot _root6(&func_name);
+  StackRoot _root7(&func);
+  StackRoot _root8(&command);
+  StackRoot _root9(&a);
+  StackRoot _root10(&w_parser);
+  StackRoot _root11(&arg_word);
+  StackRoot _root12(&extra_actions);
+  StackRoot _root13(&else_actions);
+  StackRoot _root14(&p);
+  StackRoot _root15(&filter_pat);
+  StackRoot _root16(&prefix);
+  StackRoot _root17(&suffix);
 
   cmd_ev = this->cmd_ev;
   arg = Alloc<arg_types::compgen>(attrs->attrs);
@@ -55500,6 +61098,7 @@ completion::UserSpec* SpecBuilder::Build(List<BigStr*>* argv, args::_Attributes*
   }
   for (ListIter<BigStr*> it(attrs->actions); !it.Done(); it.Next()) {
     BigStr* name = it.Value();
+    StackRoot _for(&name  );
     if (str_equals(name, S_nwn)) {
       a = Alloc<_DynamicStrDictAction>(this->parse_ctx->aliases);
     }
@@ -55657,8 +61256,13 @@ int Complete::Run(cmd_value::Argv* cmd_val) {
   completion::UserSpec* user_spec = nullptr;
   List<BigStr*>* patterns = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&commands);
-  StackRoot _root2(&user_spec);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&attrs);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&commands);
+  StackRoot _root5(&base_opts);
+  StackRoot _root6(&user_spec);
+  StackRoot _root7(&patterns);
 
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
@@ -55689,11 +61293,13 @@ int Complete::Run(cmd_value::Argv* cmd_val) {
   }
   for (ListIter<BigStr*> it(commands); !it.Done(); it.Next()) {
     BigStr* command = it.Value();
+    StackRoot _for(&command  );
     this->comp_lookup->RegisterName(command, base_opts, user_spec);
   }
   patterns = Alloc<List<BigStr*>>();
   for (ListIter<BigStr*> it(patterns); !it.Done(); it.Next()) {
     BigStr* pat = it.Value();
+    StackRoot _for(&pat  );
     this->comp_lookup->RegisterGlob(pat, base_opts, user_spec);
   }
   return 0;
@@ -55712,8 +61318,12 @@ int CompGen::Run(cmd_value::Argv* cmd_val) {
   completion::UserSpec* user_spec = nullptr;
   completion::Api* comp = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&to_complete);
-  StackRoot _root2(&user_spec);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&arg);
+  StackRoot _root3(&to_complete);
+  StackRoot _root4(&base_opts);
+  StackRoot _root5(&user_spec);
+  StackRoot _root6(&comp);
 
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
@@ -55742,6 +61352,7 @@ int CompGen::Run(cmd_value::Argv* cmd_val) {
     for (ListIter<Tuple2<BigStr*, runtime_asdl::comp_action_t>*> it(&YIELD_for_0); !it.Done(); it.Next()) {
       Tuple2<BigStr*, runtime_asdl::comp_action_t>* tup1 = it.Value();
       BigStr* m = tup1->at0();
+      StackRoot _unpack_0(&m);
       matched = true;
       print(m);
     }
@@ -55760,6 +61371,10 @@ CompOpt::CompOpt(completion::OptionState* comp_state, ui::ErrorFormatter* errfmt
 int CompOpt::Run(cmd_value::Argv* cmd_val) {
   args::Reader* arg_r = nullptr;
   args::_Attributes* arg = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&arg);
+
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
   arg = flag_util::ParseMore(S_ore, arg_r);
@@ -55789,6 +61404,20 @@ int CompAdjust::Run(cmd_value::Argv* cmd_val) {
   BigStr* cur = nullptr;
   BigStr* prev = nullptr;
   BigStr* split = nullptr;
+  StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&attrs);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&var_names);
+  StackRoot _root5(&val);
+  StackRoot _root6(&comp_argv);
+  StackRoot _root7(&break_chars);
+  StackRoot _root8(&omit_chars);
+  StackRoot _root9(&adjusted_argv);
+  StackRoot _root10(&cur);
+  StackRoot _root11(&prev);
+  StackRoot _root12(&split);
+
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
   attrs = flag_util::ParseMore(S_qxt, arg_r);
@@ -55796,6 +61425,7 @@ int CompAdjust::Run(cmd_value::Argv* cmd_val) {
   var_names = arg_r->Rest();
   for (ListIter<BigStr*> it(var_names); !it.Done(); it.Next()) {
     BigStr* name = it.Value();
+    StackRoot _for(&name  );
     if (!list_contains(NewList<BigStr*>(std::initializer_list<BigStr*>{S_CgA, S_fmh, S_pho, S_CBu}), name)) {
       throw Alloc<error::Usage>(StrFormat("Invalid output variable name %r", name), loc::Missing);
     }
@@ -55822,6 +61452,7 @@ int CompAdjust::Run(cmd_value::Argv* cmd_val) {
   }
   for (StrIter it(omit_chars); !it.Done(); it.Next()) {
     BigStr* c = it.Value();
+    StackRoot _for(&c  );
     if (list_contains(break_chars, c)) {
       break_chars->remove(c);
     }
@@ -55829,6 +61460,7 @@ int CompAdjust::Run(cmd_value::Argv* cmd_val) {
   adjusted_argv = Alloc<List<BigStr*>>();
   for (ListIter<BigStr*> it(comp_argv); !it.Done(); it.Next()) {
     BigStr* a = it.Value();
+    StackRoot _for(&a  );
     if (a != nullptr) {
       completion::AdjustArg(a, break_chars, adjusted_argv);
     }
@@ -55896,6 +61528,12 @@ void _CompletionDemo(completion::Lookup* comp_lookup) {
   List<BigStr*>* l = nullptr;
   completion::TestAction* A2 = nullptr;
   completion::UserSpec* C1 = nullptr;
+  StackRoot _root0(&comp_lookup);
+  StackRoot _root1(&A1);
+  StackRoot _root2(&l);
+  StackRoot _root3(&A2);
+  StackRoot _root4(&C1);
+
   A1 = Alloc<completion::TestAction>(NewList<BigStr*>(std::initializer_list<BigStr*>{S_paw, S_lqB, S_sdC}), 0.0);
   l = Alloc<List<BigStr*>>();
   for (int i = 0; i < 5; ++i) {
@@ -55920,6 +61558,9 @@ void SourceStartupFile(process::FdState* fd_state, BigStr* rc_path, BigStr* lang
   StackRoot _root4(&cmd_ev);
   StackRoot _root5(&errfmt);
   StackRoot _root6(&f);
+  StackRoot _root7(&arena);
+  StackRoot _root8(&rc_line_reader);
+  StackRoot _root9(&rc_c_parser);
 
   try {
     f = fd_state->Open(rc_path);
@@ -55946,6 +61587,9 @@ ShellOptHook::ShellOptHook(py_readline::Readline* readline) {
 }
 
 bool ShellOptHook::OnChange(List<bool>* opt0_array, BigStr* opt_name, bool b) {
+  StackRoot _root0(&opt0_array);
+  StackRoot _root1(&opt_name);
+
   if ((str_equals(opt_name, S_dmp) or str_equals(opt_name, S_lcm))) {
     if (this->readline) {
       this->readline->parse_and_bind(str_concat(S_akf, opt_name));
@@ -55967,12 +61611,24 @@ bool ShellOptHook::OnChange(List<bool>* opt0_array, BigStr* opt_name, bool b) {
 }
 
 void _AddBuiltinFunc(state::Mem* mem, BigStr* name, vm::_Callable* func) {
+  StackRoot _root0(&mem);
+  StackRoot _root1(&name);
+  StackRoot _root2(&func);
+
   mem->AddBuiltin(name, Alloc<value::BuiltinFunc>(func));
 }
 
 Dict<int, vm::_AssignBuiltin*>* InitAssignmentBuiltins(state::Mem* mem, state::Procs* procs, optview::Exec* exec_opts, sh_expr_eval::ArithEvaluator* arith_ev, ui::ErrorFormatter* errfmt) {
   Dict<int, vm::_AssignBuiltin*>* assign_b = nullptr;
   assign_osh::NewVar* new_var = nullptr;
+  StackRoot _root0(&mem);
+  StackRoot _root1(&procs);
+  StackRoot _root2(&exec_opts);
+  StackRoot _root3(&arith_ev);
+  StackRoot _root4(&errfmt);
+  StackRoot _root5(&assign_b);
+  StackRoot _root6(&new_var);
+
   assign_b = Alloc<Dict<int, vm::_AssignBuiltin*>>();
   new_var = Alloc<assign_osh::NewVar>(mem, procs, exec_opts, arith_ev, errfmt);
   assign_b->set(builtin_i::declare, new_var);
@@ -55983,7 +61639,7 @@ Dict<int, vm::_AssignBuiltin*>* InitAssignmentBuiltins(state::Mem* mem, state::P
   return assign_b;
 }
 
-int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, bool login_shell, pyutil::_ResourceLoader* loader, py_readline::Readline* readline) {
+int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, bool login_shell, pyutil::_ResourceLoader* loader, py_readline::Readline* readline, bool bash_compat) {
   BigStr* argv0 = nullptr;
   args::_Attributes* attrs = nullptr;
   arg_types::main* flag = nullptr;
@@ -56087,6 +61743,7 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
   private_ysh::Cat* cat = nullptr;
   io_osh::MapFile* mapfile = nullptr;
   dirs_osh::DirStack* dir_stack = nullptr;
+  dirs_osh::Cd* cd_builtin = nullptr;
   readline_osh::BindXCallback* bindx_cb = nullptr;
   completion_osh::SpecBuilder* spec_builder = nullptr;
   completion_osh::Complete* complete_builtin = nullptr;
@@ -56122,38 +61779,133 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
   StackRoot _root2(&environ);
   StackRoot _root3(&loader);
   StackRoot _root4(&readline);
-  StackRoot _root5(&attrs);
-  StackRoot _root6(&flag);
-  StackRoot _root7(&arena);
-  StackRoot _root8(&errfmt);
-  StackRoot _root9(&script_name);
-  StackRoot _root10(&mem);
-  StackRoot _root11(&exec_opts);
-  StackRoot _root12(&mutable_opts);
-  StackRoot _root13(&parse_ctx);
-  StackRoot _root14(&hist_ctx);
-  StackRoot _root15(&job_control);
-  StackRoot _root16(&fd_state);
-  StackRoot _root17(&debug_f);
-  StackRoot _root18(&multi_trace);
-  StackRoot _root19(&signal_safe);
-  StackRoot _root20(&waiter);
-  StackRoot _root21(&comp_lookup);
-  StackRoot _root22(&comp_ui_state);
-  StackRoot _root23(&prompt_state);
-  StackRoot _root24(&home_dir);
-  StackRoot _root25(&sh_files);
-  StackRoot _root26(&pure_ex);
-  StackRoot _root27(&cmd_ev);
-  StackRoot _root28(&prompt_ev);
-  StackRoot _root29(&complete_builtin);
-  StackRoot _root30(&root_comp);
-  StackRoot _root31(&line_reader);
-  StackRoot _root32(&rc_paths);
-  StackRoot _root33(&rc_path);
-  StackRoot _root34(&c_parser);
-  StackRoot _root35(&tool_name);
-  StackRoot _root36(&node);
+  StackRoot _root5(&argv0);
+  StackRoot _root6(&attrs);
+  StackRoot _root7(&flag);
+  StackRoot _root8(&arena);
+  StackRoot _root9(&errfmt);
+  StackRoot _root10(&paths);
+  StackRoot _root11(&contents);
+  StackRoot _root12(&script_name);
+  StackRoot _root13(&dollar0);
+  StackRoot _root14(&frame0);
+  StackRoot _root15(&debug_stack);
+  StackRoot _root16(&argv);
+  StackRoot _root17(&env_dict);
+  StackRoot _root18(&defaults);
+  StackRoot _root19(&mem);
+  StackRoot _root20(&opt_hook);
+  StackRoot _root21(&parse_opts);
+  StackRoot _root22(&exec_opts);
+  StackRoot _root23(&mutable_opts);
+  StackRoot _root24(&version_str);
+  StackRoot _root25(&aliases);
+  StackRoot _root26(&ysh_grammar);
+  StackRoot _root27(&parse_ctx);
+  StackRoot _root28(&comp_arena);
+  StackRoot _root29(&trail1);
+  StackRoot _root30(&comp_ctx);
+  StackRoot _root31(&hist_arena);
+  StackRoot _root32(&trail2);
+  StackRoot _root33(&hist_ctx);
+  StackRoot _root34(&cmd_deps);
+  StackRoot _root35(&job_control);
+  StackRoot _root36(&job_list);
+  StackRoot _root37(&fd_state);
+  StackRoot _root38(&debug_path);
+  StackRoot _root39(&debug_dir);
+  StackRoot _root40(&debug_f);
+  StackRoot _root41(&trace_f);
+  StackRoot _root42(&trace_dir);
+  StackRoot _root43(&dumps);
+  StackRoot _root44(&streams);
+  StackRoot _root45(&multi_trace);
+  StackRoot _root46(&tracer);
+  StackRoot _root47(&signal_safe);
+  StackRoot _root48(&trap_state);
+  StackRoot _root49(&waiter);
+  StackRoot _root50(&cflow_builtin);
+  StackRoot _root51(&iso_stamp);
+  StackRoot _root52(&argv_buf);
+  StackRoot _root53(&interp);
+  StackRoot _root54(&search_path);
+  StackRoot _root55(&ext_prog);
+  StackRoot _root56(&splitter);
+  StackRoot _root57(&globber);
+  StackRoot _root58(&crash_dump_dir);
+  StackRoot _root59(&comp_lookup);
+  StackRoot _root60(&compopt_state);
+  StackRoot _root61(&comp_ui_state);
+  StackRoot _root62(&prompt_state);
+  StackRoot _root63(&tilde_ev);
+  StackRoot _root64(&home_dir);
+  StackRoot _root65(&sh_files);
+  StackRoot _root66(&procs);
+  StackRoot _root67(&builtins);
+  StackRoot _root68(&methods);
+  StackRoot _root69(&hay_state);
+  StackRoot _root70(&shell_ex);
+  StackRoot _root71(&pure_ex);
+  StackRoot _root72(&arith_ev);
+  StackRoot _root73(&bool_ev);
+  StackRoot _root74(&expr_ev);
+  StackRoot _root75(&word_ev);
+  StackRoot _root76(&assign_b);
+  StackRoot _root77(&cmd_ev);
+  StackRoot _root78(&prompt_ev);
+  StackRoot _root79(&io_methods);
+  StackRoot _root80(&io_props);
+  StackRoot _root81(&io_obj);
+  StackRoot _root82(&vm_methods);
+  StackRoot _root83(&vm_props);
+  StackRoot _root84(&vm_obj);
+  StackRoot _root85(&i_func);
+  StackRoot _root86(&type_m);
+  StackRoot _root87(&type_obj_methods);
+  StackRoot _root88(&type_name);
+  StackRoot _root89(&type_obj);
+  StackRoot _root90(&type_props);
+  StackRoot _root91(&unsafe_arith);
+  StackRoot _root92(&b);
+  StackRoot _root93(&help_data);
+  StackRoot _root94(&module_invoke);
+  StackRoot _root95(&source_builtin);
+  StackRoot _root96(&eval_builtin);
+  StackRoot _root97(&guards);
+  StackRoot _root98(&true_);
+  StackRoot _root99(&redir_builtin);
+  StackRoot _root100(&cat);
+  StackRoot _root101(&mapfile);
+  StackRoot _root102(&dir_stack);
+  StackRoot _root103(&cd_builtin);
+  StackRoot _root104(&bindx_cb);
+  StackRoot _root105(&spec_builder);
+  StackRoot _root106(&complete_builtin);
+  StackRoot _root107(&comp_ev);
+  StackRoot _root108(&root_comp);
+  StackRoot _root109(&parse_hay);
+  StackRoot _root110(&eval_hay);
+  StackRoot _root111(&hay_func);
+  StackRoot _root112(&g);
+  StackRoot _root113(&ex);
+  StackRoot _root114(&hist_ev);
+  StackRoot _root115(&src);
+  StackRoot _root116(&line_reader);
+  StackRoot _root117(&stdin_);
+  StackRoot _root118(&f);
+  StackRoot _root119(&config_dir);
+  StackRoot _root120(&rc_paths);
+  StackRoot _root121(&rc_path);
+  StackRoot _root122(&rc_dir);
+  StackRoot _root123(&loop);
+  StackRoot _root124(&mut_status);
+  StackRoot _root125(&c_parser);
+  StackRoot _root126(&completion_display);
+  StackRoot _root127(&display);
+  StackRoot _root128(&prompt_plugin);
+  StackRoot _root129(&hist_file);
+  StackRoot _root130(&tool_name);
+  StackRoot _root131(&node);
 
   argv0 = arg_r->Peek();
   arg_r->Next();
@@ -56180,6 +61932,7 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
     status = 0;
     for (ListIter<BigStr*> it(paths); !it.Done(); it.Next()) {
       BigStr* p = it.Value();
+      StackRoot _for(&p    );
       try {
         contents = loader->Get(p);
         print(contents);
@@ -56219,6 +61972,9 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
   version_str = pyutil::GetVersion(loader);
   sh_init::InitBuiltins(mem, version_str, defaults);
   sh_init::InitDefaultVars(mem, argv);
+  if (bash_compat) {
+    state::SetGlobalString(mem, S_eAF, S_hhe);
+  }
   sh_init::CopyVarsFromEnv(exec_opts, environ, mem);
   sh_init::InitVarsAfterEnv(mem, mutable_opts);
   if (attrs->show_options) {
@@ -56435,7 +62191,9 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
   b->set(builtin_i::mapfile, mapfile);
   b->set(builtin_i::readarray, mapfile);
   dir_stack = Alloc<dirs_osh::DirStack>();
-  b->set(builtin_i::cd, Alloc<dirs_osh::Cd>(mem, dir_stack, cmd_ev, errfmt));
+  cd_builtin = Alloc<dirs_osh::Cd>(mem, dir_stack, cmd_ev, errfmt);
+  b->set(builtin_i::cd, cd_builtin);
+  b->set(builtin_i::chdir, cd_builtin);
   b->set(builtin_i::pushd, Alloc<dirs_osh::Pushd>(mem, dir_stack, errfmt));
   b->set(builtin_i::popd, Alloc<dirs_osh::Popd>(mem, dir_stack, errfmt));
   b->set(builtin_i::dirs, Alloc<dirs_osh::Dirs>(mem, dir_stack, errfmt));
@@ -56455,6 +62213,7 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
   bindx_cb = Alloc<readline_osh::BindXCallback>(eval_builtin, mem, errfmt);
   b->set(builtin_i::bind, Alloc<readline_osh::Bind>(readline, errfmt, bindx_cb));
   b->set(builtin_i::history, Alloc<readline_osh::History>(readline, sh_files, errfmt, mylib::Stdout()));
+  b->set(builtin_i::fc, Alloc<readline_osh::Fc>(readline, mylib::Stdout()));
   spec_builder = Alloc<completion_osh::SpecBuilder>(cmd_ev, parse_ctx, word_ev, splitter, comp_lookup, help_data, errfmt);
   complete_builtin = Alloc<completion_osh::Complete>(spec_builder, comp_lookup);
   b->set(builtin_i::complete, complete_builtin);
@@ -56531,6 +62290,7 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
   for (ListIter<Tuple2<BigStr*, bool>*> it(attrs->eval_flags); !it.Done(); it.Next()) {
     Tuple2<BigStr*, bool>* tup1 = it.Value();
     BigStr* path = tup1->at0();
+    StackRoot _unpack_0(&path);
     bool is_pure = tup1->at1();
     ex = is_pure ? pure_ex : nullptr;
     {  // with
@@ -56639,6 +62399,7 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
     mutable_opts->set_redefine_source();
     for (ListIter<BigStr*> it(rc_paths); !it.Done(); it.Next()) {
       BigStr* rc_path = it.Value();
+      StackRoot _for(&rc_path    );
       {  // with
         state::ctx_ThisDir ctx{mem, rc_path};
 
@@ -56670,6 +62431,7 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
     mutable_opts->set_redefine_source();
     for (ListIter<BigStr*> it(rc_paths); !it.Done(); it.Next()) {
       BigStr* rc_path = it.Value();
+      StackRoot _for(&rc_path    );
       {  // with
         state::ctx_ThisDir ctx{mem, rc_path};
 

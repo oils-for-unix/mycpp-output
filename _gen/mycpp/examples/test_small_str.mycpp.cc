@@ -19,11 +19,15 @@ namespace test_small_str {  // define
 
 
 BigStr* f(BigStr* s) {
+  StackRoot _root0(&s);
+
   return s->at(1)->upper();
 }
 
 void run_tests() {
   BigStr* a = nullptr;
+  StackRoot _root0(&a);
+
   a = S_zbt;
   print(a->upper());
   print(f(a));

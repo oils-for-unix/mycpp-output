@@ -36,6 +36,8 @@ BigStr* BACKSLASH = S_iyu;
 BigStr* RAW_BACKSLASH = S_jrm;
 
 BigStr* escape(BigStr* s, bool quote) {
+  StackRoot _root0(&s);
+
   s = s->replace(S_Clt, S_usD);
   s = s->replace(S_eox, S_Dcl);
   s = s->replace(S_jye, S_dyr);
@@ -47,6 +49,8 @@ BigStr* escape(BigStr* s, bool quote) {
 
 void run_tests() {
   BigStr* mystr = nullptr;
+  StackRoot _root0(&mystr);
+
   mystr = S_lmB;
   mylib::print_stderr(StrFormat("s: %s", mystr));
   mylib::print_stderr(StrFormat("escaped: %s", escape(S_pay, true)));

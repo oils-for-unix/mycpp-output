@@ -72,6 +72,8 @@ ParseError::ParseError(BigStr* reason) {
 }
 
 BigStr* f(BigStr* s) {
+  StackRoot _root0(&s);
+
   if (str_equals(s->at(0), S_ksc)) {
     throw Alloc<ParseError>(S_wfa);
   }
@@ -81,10 +83,14 @@ BigStr* f(BigStr* s) {
 void ExceptDemo() {
   BigStr* result = nullptr;
   List<BigStr*>* tmp = nullptr;
+  StackRoot _root0(&result);
+  StackRoot _root1(&tmp);
+
   result = S_Aoo;
   tmp = NewList<BigStr*>(std::initializer_list<BigStr*>{S_lqB, S_clt});
   for (ListIter<BigStr*> it(tmp); !it.Done(); it.Next()) {
     BigStr* prog = it.Value();
+    StackRoot _for(&prog  );
     try {
       result = f(prog);
     }
@@ -98,6 +104,8 @@ void ExceptDemo() {
 
 void run_tests() {
   List<int>* tmp = nullptr;
+  StackRoot _root0(&tmp);
+
   tmp = NewList<int>(std::initializer_list<int>{1, 2, 3, 4, 5});
   for (ListIter<int> it(tmp); !it.Done(); it.Next()) {
     int i = it.Value();
@@ -113,7 +121,8 @@ void run_benchmarks() {
   int num_exceptions;
   int i;
   List<BigStr*>* cases = nullptr;
-  StackRoot _root0(&cases);
+  StackRoot _root0(&result);
+  StackRoot _root1(&cases);
 
   n = 100000;
   result = S_Aoo;
@@ -123,6 +132,7 @@ void run_benchmarks() {
   while (i < n) {
     for (ListIter<BigStr*> it(cases); !it.Done(); it.Next()) {
       BigStr* prog = it.Value();
+      StackRoot _for(&prog    );
       try {
         result = f(prog);
       }

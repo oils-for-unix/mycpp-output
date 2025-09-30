@@ -26,6 +26,8 @@ void run_tests() {
   List<int>* mylist = nullptr;
   int x;
   bool a;
+  StackRoot _root0(&mylist);
+
   // if MYCPP
   {
     mylib::print_stderr(S_nDd);

@@ -53,12 +53,16 @@ void Pop(int fd) {
 }
 
 int AppBundleMain(List<BigStr*>* argv) {
+  StackRoot _root0(&argv);
+
   Pop(3);
   return 0;
 }
 
 int TestRethrow() {
   List<BigStr*>* argv = nullptr;
+  StackRoot _root0(&argv);
+
   argv = Alloc<List<BigStr*>>();
   try {
     return AppBundleMain(argv);

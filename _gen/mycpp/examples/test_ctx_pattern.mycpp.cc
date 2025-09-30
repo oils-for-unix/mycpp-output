@@ -50,6 +50,8 @@ ctx_Eval::~ctx_Eval() {
 
 void run_tests() {
   Dict<BigStr*, BigStr*>* d = nullptr;
+  StackRoot _root0(&d);
+
   d = Alloc<Dict<BigStr*, BigStr*>>(std::initializer_list<BigStr*>{S_rqD}, std::initializer_list<BigStr*>{S_vCs});
   for (int i = 0; i < 1000; ++i) {
     {  // with

@@ -29,9 +29,14 @@ namespace escape {  // define
 
 BigStr* BackslashEscape(BigStr* s, BigStr* meta_chars) {
   List<BigStr*>* escaped = nullptr;
+  StackRoot _root0(&s);
+  StackRoot _root1(&meta_chars);
+  StackRoot _root2(&escaped);
+
   escaped = Alloc<List<BigStr*>>();
   for (StrIter it(s); !it.Done(); it.Next()) {
     BigStr* c = it.Value();
+    StackRoot _for(&c  );
     if (str_contains(meta_chars, c)) {
       escaped->append(S_iyu);
     }
@@ -59,6 +64,8 @@ void run_benchmarks() {
   int i;
   int n;
   BigStr* s = nullptr;
+  StackRoot _root0(&s);
+
   i = 0;
   n = 200000;
   while (i < n) {

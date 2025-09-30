@@ -21,6 +21,10 @@ void run_tests() {
   mylib::BufWriter* f = nullptr;
   BigStr* contents = nullptr;
   mylib::Writer* f2 = nullptr;
+  StackRoot _root0(&f);
+  StackRoot _root1(&contents);
+  StackRoot _root2(&f2);
+
   f = Alloc<mylib::BufWriter>();
   for (int i = 0; i < 30; ++i) {
     f->write(chr((i + 65)));
@@ -39,6 +43,8 @@ void run_benchmarks() {
   int result;
   int i;
   mylib::BufWriter* f = nullptr;
+  StackRoot _root0(&f);
+
   n = 10000;
   result = 0;
   i = 0;

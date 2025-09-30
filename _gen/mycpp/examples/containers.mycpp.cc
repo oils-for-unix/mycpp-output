@@ -95,6 +95,13 @@ void ListDemo() {
   BigStr* x = nullptr;
   BigStr* no_str = nullptr;
   List<BigStr*>* blank = nullptr;
+  StackRoot _root0(&intlist);
+  StackRoot _root1(&local_list);
+  StackRoot _root2(&strlist);
+  StackRoot _root3(&x);
+  StackRoot _root4(&no_str);
+  StackRoot _root5(&blank);
+
   intlist = Alloc<List<int>>();
   intlist->append(1);
   intlist->append(2);
@@ -117,6 +124,7 @@ void ListDemo() {
   mylib::print_stderr(StrFormat("len(strlist) = %d", len(strlist)));
   for (ListIter<BigStr*> it(strlist); !it.Done(); it.Next()) {
     BigStr* s = it.Value();
+    StackRoot _for(&s  );
     mylib::print_stderr(StrFormat("s = %s", s));
   }
   mylib::print_stderr(StrFormat("a? %d", list_contains(strlist, S_gCD)));
@@ -141,6 +149,11 @@ void TupleDemo() {
   int x;
   containers::Point* p = nullptr;
   BigStr* s = nullptr;
+  StackRoot _root0(&t2);
+  StackRoot _root1(&mystr);
+  StackRoot _root2(&p);
+  StackRoot _root3(&s);
+
   t2 = (Alloc<Tuple2<int, BigStr*>>(3, S_kfD));
   Tuple2<int, BigStr*>* tup0 = t2;
   myint = tup0->at0();
@@ -176,6 +189,10 @@ void DictDemo() {
   Dict<BigStr*, int>* d = nullptr;
   Dict<BigStr*, int>* ordered = nullptr;
   Dict<BigStr*, int>* lit = nullptr;
+  StackRoot _root0(&d);
+  StackRoot _root1(&ordered);
+  StackRoot _root2(&lit);
+
   d = Alloc<Dict<BigStr*, int>>();
   d->set(S_lqB, 42);
   ordered = Alloc<Dict<BigStr*, int>>();
@@ -205,6 +222,8 @@ void DictDemo() {
 void ContainsDemo() {
   int x;
   BigStr* s = nullptr;
+  StackRoot _root0(&s);
+
   x = 4;
   if (list_contains(NewList<int>(std::initializer_list<int>{3, 4, 5}), x)) {
     print(S_Fia);
@@ -252,12 +271,17 @@ HasDictMember::HasDictMember() {
 }
 
 BigStr* HasDictMember::Get(BigStr* k) {
+  StackRoot _root0(&k);
+
   return this->builtins->get(k);
 }
 
 void NewDict_test() {
   containers::HasDictMember* h = nullptr;
   BigStr* result = nullptr;
+  StackRoot _root0(&h);
+  StackRoot _root1(&result);
+
   h = Alloc<HasDictMember>();
   result = h->Get(S_lqB);
   if (result != nullptr) {
@@ -271,6 +295,8 @@ void NewDict_test() {
 
 void run_tests() {
   List<int>* a = nullptr;
+  StackRoot _root0(&a);
+
   NewDict_test();
   mylib::print_stderr(S_Aoo);
   ListDemo();
@@ -290,6 +316,9 @@ void run_benchmarks() {
   int i;
   List<int>* intlist = nullptr;
   List<BigStr*>* strlist = nullptr;
+  StackRoot _root0(&intlist);
+  StackRoot _root1(&strlist);
+
   n = 1000000;
   i = 0;
   intlist = Alloc<List<int>>();

@@ -38881,6 +38881,9 @@ bool _PrefixBindingsPersist(runtime_asdl::cmd_value_t* cmd_val) {
       break;
     case cmd_value_e::Argv: {
       cmd_value::Argv* cmd_val = static_cast<cmd_value::Argv*>(UP_cmd_val);
+      if (len(cmd_val->argv) == 0) {
+        return true;
+      }
       arg0 = cmd_val->argv->at(0);
       if (str_equals(arg0, S_Evy)) {
         return false;

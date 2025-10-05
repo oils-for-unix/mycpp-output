@@ -11,7 +11,7 @@ update-big() {
   cp -v ../oils/$path $path
 }
 
-update-all() {
+update-from-tar() {
   mkdir -p _tmp
   local tmp_tar=$PWD/_tmp/oils.tar  # absolute path
 
@@ -29,6 +29,16 @@ update-all() {
   popd
 
   tar --extract < $tmp_tar
+}
+
+update-souffle() {
+  pushd ../oils
+
+  local gen=_gen/bin/oils_for_unix.mycpp-souffle.cc
+  ninja $gen
+  cp -v $gen ../mycpp-output/$gen  # this repo
+
+  popd
 }
 
 diff-souffle() {

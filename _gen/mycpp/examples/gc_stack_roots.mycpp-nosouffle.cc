@@ -18,6 +18,7 @@ GLOBAL_STR(S_eBz, "member");
 GLOBAL_STR(S_Dxe, "no");
 GLOBAL_STR(S_vAF, "not");
 GLOBAL_STR(S_uha, "out");
+GLOBAL_STR(S_FaB, "pizza");
 GLOBAL_STR(S_BEE, "swept");
 GLOBAL_STR(S_jzk, "watch");
 
@@ -45,6 +46,8 @@ void alias();
 void collect_scoped_resource();
 void collect_in_loop();
 void collect_in_comprehension();
+void print_things(BigStr* a, BigStr* b);
+void use_and_collect();
 void run_tests();
 void run_benchmarks();
 
@@ -187,6 +190,26 @@ void collect_in_comprehension() {
   }
 }
 
+void print_things(BigStr* a, BigStr* b) {
+  BigStr* s = nullptr;
+  StackRoot _root0(&a);
+  StackRoot _root1(&b);
+  StackRoot _root2(&s);
+
+  s = StrFormat("%d", 999);
+  print(s);
+  print(a);
+  print(b);
+}
+
+void use_and_collect() {
+  BigStr* s = nullptr;
+  StackRoot _root0(&s);
+
+  s = StrFormat("%d", 1);
+  print_things(s, collect_and_slice(S_FaB));
+}
+
 void run_tests() {
   no_collect();
   simple_collect();
@@ -194,6 +217,7 @@ void run_tests() {
   arg_roots();
   alias();
   collect_scoped_resource();
+  use_and_collect();
 }
 
 void run_benchmarks() {

@@ -10874,6 +10874,8 @@ int _Executor::RunSimpleCommand(cmd_value::Argv* cmd_val, runtime_asdl::CommandS
   List<BigStr*>* argv = nullptr;
   StackRoot _root0(&cmd_val);
   StackRoot _root1(&cmd_st);
+  StackRoot _root2(&arg0_loc);
+  StackRoot _root3(&argv);
 
   if (len(cmd_val->arg_locs)) {
     arg0_loc = cmd_val->arg_locs->at(0);
@@ -10905,6 +10907,7 @@ int _Executor::RunBuiltin(int builtin_id, cmd_value::Argv* cmd_val) {
   BigStr* msg = nullptr;
   vm::_Builtin* builtin_proc = nullptr;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&builtin_proc);
 
   if ((this->exec_opts->no_osh_builtins() and (builtin_id == builtin_i::alias || builtin_id == builtin_i::unalias || builtin_id == builtin_i::chdir || builtin_id == builtin_i::colon))) {
     if (builtin_id == builtin_i::chdir) {
@@ -10966,6 +10969,8 @@ int _Executor::_RunInvokable(value_asdl::value_t* proc_val, value_asdl::Obj* sel
   StackRoot _root1(&self_obj);
   StackRoot _root2(&arg0_loc);
   StackRoot _root3(&cmd_val);
+  StackRoot _root4(&b);
+  StackRoot _root5(&proc);
 
   cmd_val->self_obj = self_obj;
   if (this->exec_opts->strict_errexit()) {
@@ -11256,7 +11261,9 @@ void _HNodePrettyPrint(bool perf_stats, bool doc_debug, hnode_asdl::hnode_t* nod
   mylib::BufWriter* buf = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&f);
-  StackRoot _root2(&d);
+  StackRoot _root2(&enc);
+  StackRoot _root3(&d);
+  StackRoot _root4(&p);
 
   mylib::MaybeCollect();
   if (perf_stats) {
@@ -11391,6 +11398,12 @@ int AppBundleMain(List<BigStr*>* argv) {
   Dict<BigStr*, BigStr*>* environ = nullptr;
   BigStr* lang = nullptr;
   StackRoot _root0(&argv);
+  StackRoot _root1(&loader);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&applet);
+  StackRoot _root4(&readline);
+  StackRoot _root5(&environ);
+  StackRoot _root6(&lang);
 
   loader = pyutil::GetResourceLoader();
   b = os_path::basename(argv->at(0));
@@ -11703,6 +11716,8 @@ void _AssignVarForBuiltin(state::Mem* mem, value_asdl::value_t* rval, runtime_as
   StackRoot _root1(&rval);
   StackRoot _root2(&pair);
   StackRoot _root3(&arith_ev);
+  StackRoot _root4(&initializer);
+  StackRoot _root5(&val);
 
   lval = Alloc<LeftName>(pair->var_name, pair->blame_word);
   initializer = nullptr;
@@ -11863,6 +11878,7 @@ int Readonly::Run(cmd_value::Assign* cmd_val) {
   value_asdl::value_t* rval = nullptr;
   StackRoot _root0(&cmd_val);
   StackRoot _root1(&arg);
+  StackRoot _root2(&rval);
 
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
@@ -11934,6 +11950,7 @@ int NewVar::Run(cmd_value::Assign* cmd_val) {
   value_asdl::value_t* rval = nullptr;
   StackRoot _root0(&cmd_val);
   StackRoot _root1(&arg);
+  StackRoot _root2(&rval);
 
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
@@ -12060,6 +12077,7 @@ int Unset::Run(cmd_value::Argv* cmd_val) {
   StackRoot _root1(&arg);
   StackRoot _root2(&argv);
   StackRoot _root3(&arg_locs);
+  StackRoot _root4(&location);
 
   Tuple2<args::_Attributes*, args::Reader*> tup0 = flag_util::ParseCmdVal(S_FxC, cmd_val);
   attrs = tup0.at0();
@@ -12144,6 +12162,7 @@ int CompExport::Run(cmd_value::Argv* cmd_val) {
   mylib::BufWriter* buf = nullptr;
   StackRoot _root0(&cmd_val);
   StackRoot _root1(&arg);
+  StackRoot _root2(&comp);
 
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
@@ -12267,7 +12286,8 @@ int Cd::Run(cmd_value::Argv* cmd_val) {
   int unused;
   (void)unused;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&out_errs);
+  StackRoot _root1(&cmd_frag);
+  StackRoot _root2(&out_errs);
 
   Tuple2<args::_Attributes*, args::Reader*> tup0 = flag_util::ParseCmdVal(S_dyr, cmd_val, true);
   attrs = tup0.at0();
@@ -12571,7 +12591,8 @@ int Try::Run(cmd_value::Argv* cmd_val) {
   int unused;
   (void)unused;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&error_dict);
+  StackRoot _root1(&cmd);
+  StackRoot _root2(&error_dict);
 
   Tuple2<args::_Attributes*, args::Reader*> tup0 = flag_util::ParseCmdVal(S_zfb_1, cmd_val, true);
   arg_r = tup0.at1();
@@ -12676,6 +12697,8 @@ int BoolStatus::Run(cmd_value::Argv* cmd_val) {
   int status;
   StackRoot _root0(&cmd_val);
   StackRoot _root1(&locs);
+  StackRoot _root2(&cmd_val2);
+  StackRoot _root3(&cmd_st);
 
   Tuple2<args::_Attributes*, args::Reader*> tup3 = flag_util::ParseCmdVal(S_ocd, cmd_val);
   arg_r = tup3.at1();
@@ -12726,7 +12749,8 @@ void Assert::_AssertExpression(value::Expr* val, syntax_asdl::loc_t* blame_loc) 
   bool b;
   StackRoot _root0(&val);
   StackRoot _root1(&blame_loc);
-  StackRoot _root2(&result);
+  StackRoot _root2(&exp);
+  StackRoot _root3(&result);
 
   exp = val->e;
   UP_exp = exp;
@@ -12754,6 +12778,8 @@ int Assert::Run(cmd_value::Argv* cmd_val) {
   value_asdl::value_t* UP_val = nullptr;
   bool b;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&rd);
+  StackRoot _root2(&val);
 
   Tuple2<args::_Attributes*, args::Reader*> tup5 = flag_util::ParseCmdVal(S_eln, cmd_val, true);
   arg_r = tup5.at1();
@@ -12812,6 +12838,9 @@ value_asdl::value_t* _MatchCallable::_ReturnValue(value_asdl::RegexMatch* match,
   eggex_ops::Yes* ops = nullptr;
   StackRoot _root0(&match);
   StackRoot _root1(&blame_loc);
+  StackRoot _root2(&val);
+  StackRoot _root3(&convert_func);
+  StackRoot _root4(&convert_tok);
 
   num_groups = (len(match->indices) / 2);
   if (group_index < num_groups) {
@@ -12975,7 +13004,8 @@ value_asdl::value_t* ParseHay::_Call(BigStr* path) {
   source::OtherFile* src = nullptr;
   syntax_asdl::command_t* node = nullptr;
   StackRoot _root0(&path);
-  StackRoot _root1(&node);
+  StackRoot _root1(&c_parser);
+  StackRoot _root2(&node);
 
   call_loc = loc::Missing;
   try {
@@ -13007,6 +13037,7 @@ value_asdl::value_t* ParseHay::_Call(BigStr* path) {
 value_asdl::value_t* ParseHay::Call(typed_args::Reader* rd) {
   BigStr* string = nullptr;
   StackRoot _root0(&rd);
+  StackRoot _root1(&string);
 
   string = rd->PosStr();
   rd->Done();
@@ -13036,6 +13067,7 @@ Dict<BigStr*, value_asdl::value_t*>* EvalHay::_Call(syntax_asdl::command_t* cmd)
 value_asdl::value_t* EvalHay::Call(typed_args::Reader* rd) {
   syntax_asdl::command_t* cmd = nullptr;
   StackRoot _root0(&rd);
+  StackRoot _root1(&cmd);
 
   cmd = rd->PosCommandFrag();
   rd->Done();
@@ -13837,7 +13869,8 @@ value_asdl::value_t* ParseCommand::Call(typed_args::Reader* rd) {
   source::Dynamic* src = nullptr;
   syntax_asdl::command_t* cmd = nullptr;
   StackRoot _root0(&rd);
-  StackRoot _root1(&cmd);
+  StackRoot _root1(&c_parser);
+  StackRoot _root2(&cmd);
 
   code_str = rd->PosStr();
   rd->Done();
@@ -14054,6 +14087,9 @@ int Hay::Run(cmd_value::Argv* cmd_val) {
   mylib::Writer* f = nullptr;
   StackRoot _root0(&cmd_val);
   StackRoot _root1(&var_name);
+  StackRoot _root2(&cmd);
+  StackRoot _root3(&h);
+  StackRoot _root4(&f);
 
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
@@ -14151,7 +14187,8 @@ int HayNode_::Run(cmd_value::Argv* cmd_val) {
   (void)unused_status;
   StackRoot _root0(&cmd_val);
   StackRoot _root1(&result);
-  StackRoot _root2(&bindings);
+  StackRoot _root2(&unbound_frag);
+  StackRoot _root3(&bindings);
 
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   Tuple2<BigStr*, syntax_asdl::loc_t*> tup4 = arg_r->Peek2();
@@ -14440,11 +14477,13 @@ int Pp::Run(cmd_value::Argv* cmd_val) {
   StackRoot _root1(&arg_r);
   StackRoot _root2(&action);
   StackRoot _root3(&action_loc);
-  StackRoot _root4(&argv);
-  StackRoot _root5(&locs);
-  StackRoot _root6(&names);
-  StackRoot _root7(&node);
-  StackRoot _root8(&proc_val);
+  StackRoot _root4(&tree);
+  StackRoot _root5(&argv);
+  StackRoot _root6(&locs);
+  StackRoot _root7(&cell);
+  StackRoot _root8(&names);
+  StackRoot _root9(&node);
+  StackRoot _root10(&proc_val);
 
   Tuple2<args::_Attributes*, args::Reader*> tup1 = flag_util::ParseCmdVal(S_ntm, cmd_val, true);
   arg = tup1.at0();
@@ -14615,6 +14654,7 @@ int RunBlock::Run(cmd_value::Argv* cmd_val) {
   int unused;
   (void)unused;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&cmd_frag);
 
   Tuple2<args::_Attributes*, args::Reader*> tup8 = flag_util::ParseCmdVal(S_xzn, cmd_val, true);
   arg_r = tup8.at1();
@@ -14777,6 +14817,7 @@ int Eval::Run(cmd_value::Argv* cmd_val) {
   cmd_parse::CommandParser* c_parser = nullptr;
   source::Dynamic* src = nullptr;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&c_parser);
 
   Tuple2<args::_Attributes*, args::Reader*> tup0 = flag_util::ParseCmdVal(S_cCk, cmd_val);
   arg_r = tup0.at1();
@@ -15000,6 +15041,10 @@ int ShellFile::_Source(cmd_value::Argv* cmd_val) {
   BigStr* resolved = nullptr;
   mylib::LineReader* f = nullptr;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&path_arg);
+  StackRoot _root3(&load_path);
+  StackRoot _root4(&c_parser);
 
   Tuple2<args::_Attributes*, args::Reader*> tup2 = flag_util::ParseCmdVal(S_cmd, cmd_val);
   attrs = tup2.at0();
@@ -15087,10 +15132,14 @@ int ShellFile::_Use(cmd_value::Argv* cmd_val) {
   BigStr* normalized = nullptr;
   mylib::LineReader* f = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&pick_names);
-  StackRoot _root2(&pick_locs);
-  StackRoot _root3(&var_name);
-  StackRoot _root4(&module_obj);
+  StackRoot _root1(&path_arg);
+  StackRoot _root2(&path_loc);
+  StackRoot _root3(&pick_names);
+  StackRoot _root4(&pick_locs);
+  StackRoot _root5(&var_name);
+  StackRoot _root6(&load_path);
+  StackRoot _root7(&c_parser);
+  StackRoot _root8(&module_obj);
 
   Tuple2<args::_Attributes*, args::Reader*> tup6 = flag_util::ParseCmdVal(S_eas, cmd_val);
   attrs = tup6.at0();
@@ -15290,6 +15339,8 @@ int Command::Run(cmd_value::Argv* cmd_val) {
   runtime_asdl::CommandStatus* cmd_st = nullptr;
   int run_flags;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&cmd_val2);
+  StackRoot _root2(&cmd_st);
 
   Tuple2<args::_Attributes*, args::Reader*> tup14 = flag_util::ParseCmdVal(S_zij, cmd_val, true);
   attrs = tup14.at0();
@@ -15359,6 +15410,7 @@ int Builtin::Run(cmd_value::Argv* cmd_val) {
   syntax_asdl::CompoundWord* location = nullptr;
   cmd_value::Argv* cmd_val2 = nullptr;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&cmd_val2);
 
   Tuple2<args::_Attributes*, args::Reader*> tup17 = flag_util::ParseCmdVal(S_utc, cmd_val, true);
   attrs = tup17.at0();
@@ -15401,6 +15453,8 @@ int RunProc::Run(cmd_value::Argv* cmd_val) {
   runtime_asdl::CommandStatus* cmd_st = nullptr;
   int run_flags;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&cmd_val2);
+  StackRoot _root2(&cmd_st);
 
   Tuple2<args::_Attributes*, args::Reader*> tup19 = flag_util::ParseCmdVal(S_pkv, cmd_val, true);
   arg_r = tup19.at1();
@@ -15459,6 +15513,12 @@ int Invoke::Run(cmd_value::Argv* cmd_val) {
   value::Proc* sh_func = nullptr;
   int to_run;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&cmd_val2);
+  StackRoot _root2(&name);
+  StackRoot _root3(&location);
+  StackRoot _root4(&proc_val);
+  StackRoot _root5(&self_obj);
+  StackRoot _root6(&sh_func);
 
   Tuple2<args::_Attributes*, args::Reader*> tup22 = flag_util::ParseCmdVal(S_wwk, cmd_val, true);
   attrs = tup22.at0();
@@ -15821,7 +15881,9 @@ value_asdl::value_t* EvalExpr::Call(typed_args::Reader* rd) {
   List<BigStr*>* pos_args = nullptr;
   value_asdl::value_t* result = nullptr;
   StackRoot _root0(&rd);
-  StackRoot _root1(&result);
+  StackRoot _root1(&lazy);
+  StackRoot _root2(&blame_tok);
+  StackRoot _root3(&result);
 
   if (this->pure_ex == nullptr) {
     unused_self = rd->PosObj();
@@ -15867,6 +15929,7 @@ value_asdl::value_t* EvalInFrame::Call(typed_args::Reader* rd) {
   int unused_status;
   (void)unused_status;
   StackRoot _root0(&rd);
+  StackRoot _root1(&frag);
 
   unused = rd->PosValue();
   cmd = rd->PosCommand();
@@ -15907,7 +15970,8 @@ value_asdl::value_t* Eval::Call(typed_args::Reader* rd) {
   int unused_status;
   (void)unused_status;
   StackRoot _root0(&rd);
-  StackRoot _root1(&bindings);
+  StackRoot _root1(&frag);
+  StackRoot _root2(&bindings);
 
   if (this->pure_ex == nullptr) {
     unused = rd->PosValue();
@@ -15976,7 +16040,8 @@ value_asdl::value_t* CaptureStdout::Call(typed_args::Reader* rd) {
   BigStr* stdout_str = nullptr;
   Dict<BigStr*, value_asdl::value_t*>* properties = nullptr;
   StackRoot _root0(&rd);
-  StackRoot _root1(&stdout_str);
+  StackRoot _root1(&frag);
+  StackRoot _root2(&stdout_str);
 
   unused = rd->PosValue();
   cmd = rd->PosCommand();
@@ -16011,8 +16076,9 @@ value_asdl::value_t* CaptureAll::Call(typed_args::Reader* rd) {
   BigStr* stderr_str = nullptr;
   Dict<BigStr*, value_asdl::value_t*>* out = nullptr;
   StackRoot _root0(&rd);
-  StackRoot _root1(&stdout_str);
-  StackRoot _root2(&stderr_str);
+  StackRoot _root1(&frag);
+  StackRoot _root2(&stdout_str);
+  StackRoot _root3(&stderr_str);
 
   unused = rd->PosValue();
   cmd = rd->PosCommand();
@@ -16682,6 +16748,9 @@ value_asdl::value_t* Replace::Call(typed_args::Reader* rd) {
   StackRoot _root10(&arg0);
   StackRoot _root11(&argv);
   StackRoot _root12(&named_vars);
+  StackRoot _root13(&val);
+  StackRoot _root14(&convert_func);
+  StackRoot _root15(&convert_tok);
 
   string = rd->PosStr();
   string_val = nullptr;
@@ -17209,6 +17278,8 @@ int ModuleInvoke::Run(cmd_value::Argv* cmd_val) {
   value_asdl::value_t* proc_val = nullptr;
   value_asdl::Obj* self_obj2 = nullptr;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&cmd_val2);
+  StackRoot _root2(&proc);
 
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
@@ -17759,8 +17830,10 @@ int Printf::Run(cmd_value::Argv* cmd_val) {
   StackRoot _root3(&varargs);
   StackRoot _root4(&locs);
   StackRoot _root5(&parts);
-  StackRoot _root6(&result);
-  StackRoot _root7(&lval);
+  StackRoot _root6(&parser);
+  StackRoot _root7(&result);
+  StackRoot _root8(&v_loc);
+  StackRoot _root9(&lval);
 
   Tuple2<args::_Attributes*, args::Reader*> tup2 = flag_util::ParseCmdVal(S_Foo, cmd_val);
   attrs = tup2.at0();
@@ -18124,6 +18197,7 @@ int Fork::Run(cmd_value::Argv* cmd_val) {
   syntax_asdl::loc_t* location = nullptr;
   syntax_asdl::command_t* cmd_frag = nullptr;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&cmd_frag);
 
   Tuple2<args::_Attributes*, args::Reader*> tup1 = flag_util::ParseCmdVal(S_Fzz_1, cmd_val, true);
   arg_r = tup1.at1();
@@ -18147,6 +18221,7 @@ int ForkWait::Run(cmd_value::Argv* cmd_val) {
   syntax_asdl::loc_t* location = nullptr;
   syntax_asdl::command_t* cmd_frag = nullptr;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&cmd_frag);
 
   Tuple2<args::_Attributes*, args::Reader*> tup3 = flag_util::ParseCmdVal(S_xAx, cmd_val, true);
   arg_r = tup3.at1();
@@ -18902,6 +18977,7 @@ int Shopt::Run(cmd_value::Argv* cmd_val) {
   bool ignore_shopt_not_impl;
   StackRoot _root0(&cmd_val);
   StackRoot _root1(&opt_names);
+  StackRoot _root2(&cmd_frag);
 
   Tuple2<args::_Attributes*, args::Reader*> tup7 = flag_util::ParseCmdVal(S_ene, cmd_val, true);
   attrs = tup7.at0();
@@ -19239,6 +19315,7 @@ int Shvar::Run(cmd_value::Argv* cmd_val) {
   int unused;
   (void)unused;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&cmd_frag);
 
   Tuple2<args::_Attributes*, args::Reader*> tup0 = flag_util::ParseCmdVal(S_bBe, cmd_val, true);
   arg_r = tup0.at1();
@@ -19344,6 +19421,8 @@ int Ctx::Run(cmd_value::Argv* cmd_val) {
   syntax_asdl::CompoundWord* field_loc = nullptr;
   value_asdl::value_t* item = nullptr;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&context);
+  StackRoot _root2(&block);
 
   rd = typed_args::ReaderForProc(cmd_val);
   Tuple2<args::_Attributes*, args::Reader*> tup3 = flag_util::ParseCmdVal(S_acj, cmd_val, true);
@@ -19393,6 +19472,7 @@ int PushRegisters::Run(cmd_value::Argv* cmd_val) {
   int unused;
   (void)unused;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&cmd_frag);
 
   Tuple2<args::_Attributes*, args::Reader*> tup6 = flag_util::ParseCmdVal(S_gma, cmd_val, true);
   arg_r = tup6.at1();
@@ -19806,6 +19886,9 @@ int Read::_Run(cmd_value::Argv* cmd_val) {
   int bits;
   int status;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&arg_r);
+  StackRoot _root2(&arg);
+  StackRoot _root3(&names);
 
   Tuple2<args::_Attributes*, args::Reader*> tup9 = flag_util::ParseCmdVal(S_hDl, cmd_val, true);
   attrs = tup9.at0();
@@ -20003,6 +20086,7 @@ Tuple3<int, BigStr*, int> BindXCallback::__call__(BigStr* cmd, BigStr* line_buff
   int post_point;
   StackRoot _root0(&cmd);
   StackRoot _root1(&line_buffer);
+  StackRoot _root2(&cmd_val);
 
   {  // with
     ctx_EnvVars ctx{this->mem, Alloc<Dict<BigStr*, BigStr*>>(std::initializer_list<BigStr*>{S_BkF, S_cbE}, std::initializer_list<BigStr*>{line_buffer, str(point)})};
@@ -20517,7 +20601,8 @@ syntax_asdl::command_t* Trap::_ParseTrapCode(BigStr* code_str) {
   source::Dynamic* src = nullptr;
   syntax_asdl::command_t* node = nullptr;
   StackRoot _root0(&code_str);
-  StackRoot _root1(&node);
+  StackRoot _root1(&c_parser);
+  StackRoot _root2(&node);
 
   line_reader = reader::StringLineReader(code_str, this->arena);
   c_parser = this->parse_ctx->MakeOshParser(line_reader);
@@ -20548,10 +20633,11 @@ int Trap::Run(cmd_value::Argv* cmd_val) {
   int sig_num;
   syntax_asdl::command_t* node = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&sig_spec);
-  StackRoot _root2(&sig_loc);
-  StackRoot _root3(&sig_key);
-  StackRoot _root4(&node);
+  StackRoot _root1(&code_str);
+  StackRoot _root2(&sig_spec);
+  StackRoot _root3(&sig_loc);
+  StackRoot _root4(&sig_key);
+  StackRoot _root5(&node);
 
   Tuple2<args::_Attributes*, args::Reader*> tup1 = flag_util::ParseCmdVal(S_gFu, cmd_val);
   attrs = tup1.at0();
@@ -22201,6 +22287,7 @@ void ShellFuncAction::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
   value_asdl::value_t* UP_val = nullptr;
   List<BigStr*>* strs = nullptr;
   StackRoot _root0(&comp);
+  StackRoot _root1(&argv);
 
   state::SetGlobalArray(this->cmd_ev->mem, S_fot, Alloc<List<BigStr*>>());
   state::SetGlobalArray(this->cmd_ev->mem, S_FiD, comp->partial_argv);
@@ -22542,17 +22629,19 @@ void RootCompleter::Matches(completion::Api* comp, List<BigStr*>* YIELD) {
   bool done;
   StackRoot _root0(&comp);
   StackRoot _root1(&line_until_tab);
-  StackRoot _root2(&debug_f);
-  StackRoot _root3(&trail);
-  StackRoot _root4(&name);
-  StackRoot _root5(&val);
-  StackRoot _root6(&base_opts);
-  StackRoot _root7(&user_spec);
-  StackRoot _root8(&partial_argv);
-  StackRoot _root9(&first);
-  StackRoot _root10(&trail_words);
-  StackRoot _root11(&words2);
-  StackRoot _root12(&w);
+  StackRoot _root2(&c_parser);
+  StackRoot _root3(&debug_f);
+  StackRoot _root4(&trail);
+  StackRoot _root5(&name);
+  StackRoot _root6(&arg_word);
+  StackRoot _root7(&val);
+  StackRoot _root8(&base_opts);
+  StackRoot _root9(&user_spec);
+  StackRoot _root10(&partial_argv);
+  StackRoot _root11(&first);
+  StackRoot _root12(&trail_words);
+  StackRoot _root13(&words2);
+  StackRoot _root14(&w);
 
   line_until_tab = comp->line->slice(0, comp->end);
   this->comp_ui_state->line_until_tab = line_until_tab;
@@ -22910,6 +22999,8 @@ BigStr* ReadlineCallback::_GetNextCompletion(int state) {
   int end;
   completion::Api* comp = nullptr;
   BigStr* next_completion = nullptr;
+  StackRoot _root0(&comp);
+
   if (state == 0) {
     buf = this->readline->get_line_buffer();
     begin = this->readline->get_begidx();
@@ -23227,6 +23318,7 @@ BigStr* Tracer::_EvalPS4(BigStr* punct) {
   StackRoot _root0(&punct);
   StackRoot _root1(&ps4);
   StackRoot _root2(&ps4_word);
+  StackRoot _root3(&w_parser);
 
   val = this->mem->GetValue(S_zyo);
   if (val->tag() == value_e::Str) {
@@ -24152,6 +24244,7 @@ int ShellExecutor::RunExternal(BigStr* arg0, syntax_asdl::loc_t* arg0_loc, cmd_v
   StackRoot _root3(&cmd_st);
   StackRoot _root4(&environ);
   StackRoot _root5(&argv0_path);
+  StackRoot _root6(&p);
 
   environ = this->mem->GetEnv();
   if (cmd_val->proc_args) {
@@ -24247,7 +24340,8 @@ void ShellExecutor::RunPipeline(command::Pipeline* node, runtime_asdl::CommandSt
   syntax_asdl::command_t* last_child = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&status_out);
-  StackRoot _root2(&pipe_locs);
+  StackRoot _root2(&pi);
+  StackRoot _root3(&pipe_locs);
 
   pi = Alloc<process::Pipeline>(this->exec_opts->sigpipe_status_ok(), this->job_control, this->job_list, this->tracer);
   pipe_locs = Alloc<List<syntax_asdl::loc_t*>>();
@@ -24276,6 +24370,7 @@ void ShellExecutor::RunPipeline(command::Pipeline* node, runtime_asdl::CommandSt
 int ShellExecutor::RunSubshell(syntax_asdl::command_t* node) {
   process::Process* p = nullptr;
   StackRoot _root0(&node);
+  StackRoot _root1(&p);
 
   p = this->_MakeProcess(node, true, this->exec_opts->errtrace());
   if (this->job_control->Enabled()) {
@@ -24419,7 +24514,8 @@ BigStr* ShellExecutor::RunCommandSub(syntax_asdl::CommandSub* cs_part) {
   BigStr* stdout_str = nullptr;
   BigStr* msg = nullptr;
   StackRoot _root0(&cs_part);
-  StackRoot _root1(&stdout_str);
+  StackRoot _root1(&node);
+  StackRoot _root2(&stdout_str);
 
   if (!this->exec_opts->_allow_command_sub()) {
     if (!this->exec_opts->_allow_process_sub()) {
@@ -24621,6 +24717,7 @@ BigStr* Headless::EVAL(BigStr* arg) {
   int unused_status;
   (void)unused_status;
   StackRoot _root0(&arg);
+  StackRoot _root1(&c_parser);
 
   line_reader = reader::StringLineReader(arg, this->parse_ctx->arena);
   c_parser = this->parse_ctx->MakeOshParser(line_reader);
@@ -24636,7 +24733,8 @@ int Headless::_Loop() {
   BigStr* arg = nullptr;
   BigStr* reply = nullptr;
   StackRoot _root0(&fd_out);
-  StackRoot _root1(&reply);
+  StackRoot _root1(&arg);
+  StackRoot _root2(&reply);
 
   fanos_log(S_rgn);
   fd_out = Alloc<List<int>>();
@@ -24908,6 +25006,7 @@ Tuple2<bool, int> EvalFile(BigStr* fs_path, process::FdState* fd_state, parse_li
   StackRoot _root2(&parse_ctx);
   StackRoot _root3(&cmd_ev);
   StackRoot _root4(&lang);
+  StackRoot _root5(&c_parser);
 
   try {
     f = fd_state->Open(fs_path);
@@ -26049,7 +26148,8 @@ List<int>* Pipeline::RunLastPart(process::Waiter* waiter, process::FdState* fd_s
   StackRoot _root0(&waiter);
   StackRoot _root1(&fd_state);
   StackRoot _root2(&cmd_ev);
-  StackRoot _root3(&io_errors);
+  StackRoot _root3(&last_node);
+  StackRoot _root4(&io_errors);
 
   this->job_control->MaybeGiveTerminal(this->pgid);
   Tuple2<cmd_eval::CommandEvaluator*, syntax_asdl::command_t*>* tup7 = this->last_thunk;
@@ -30516,6 +30616,7 @@ pretty_asdl::MeasuredDoc* HNodeEncoder::HNode(hnode_asdl::hnode_t* h) {
 pretty_asdl::MeasuredDoc* HNodeEncoder::_Field(hnode_asdl::Field* field) {
   pretty_asdl::MeasuredDoc* name = nullptr;
   StackRoot _root0(&field);
+  StackRoot _root1(&name);
 
   name = AsciiText(str_concat(field->name, S_fyj));
   return _Concat(NewList<pretty_asdl::MeasuredDoc*>(std::initializer_list<pretty_asdl::MeasuredDoc*>{name, this->_HNode(field->val)}));
@@ -31537,6 +31638,8 @@ void PrintAst(syntax_asdl::command_t* node, arg_types::main* flag) {
   hnode_asdl::hnode_t* tree = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&flag);
+  StackRoot _root2(&f);
+  StackRoot _root3(&tree);
 
   if (maybe_str_equals(flag->ast_format, S_rdE_1)) {
     print_stderr(S_ztv);
@@ -33382,7 +33485,8 @@ Tuple2<syntax_asdl::VarDecl*, syntax_asdl::Token*> ParseContext::ParseVarDecl(sy
   syntax_asdl::VarDecl* ast_node = nullptr;
   StackRoot _root0(&kw_token);
   StackRoot _root1(&lexer);
-  StackRoot _root2(&last_token);
+  StackRoot _root2(&e_parser);
+  StackRoot _root3(&last_token);
 
   e_parser = this->_YshParser();
   {  // with
@@ -33404,7 +33508,8 @@ Tuple2<syntax_asdl::Mutation*, syntax_asdl::Token*> ParseContext::ParseMutation(
   syntax_asdl::Mutation* ast_node = nullptr;
   StackRoot _root0(&kw_token);
   StackRoot _root1(&lexer);
-  StackRoot _root2(&last_token);
+  StackRoot _root2(&e_parser);
+  StackRoot _root3(&last_token);
 
   e_parser = this->_YshParser();
   {  // with
@@ -33425,7 +33530,8 @@ void ParseContext::ParseProcCallArgs(lexer::Lexer* lx, syntax_asdl::ArgList* out
   syntax_asdl::Token* last_token = nullptr;
   StackRoot _root0(&lx);
   StackRoot _root1(&out);
-  StackRoot _root2(&last_token);
+  StackRoot _root2(&e_parser);
+  StackRoot _root3(&last_token);
 
   e_parser = this->_YshParser();
   {  // with
@@ -33445,7 +33551,8 @@ Tuple2<syntax_asdl::expr_t*, syntax_asdl::Token*> ParseContext::ParseYshExpr(lex
   syntax_asdl::Token* last_token = nullptr;
   syntax_asdl::expr_t* ast_node = nullptr;
   StackRoot _root0(&lx);
-  StackRoot _root1(&last_token);
+  StackRoot _root1(&e_parser);
+  StackRoot _root2(&last_token);
 
   e_parser = this->_YshParser();
   {  // with
@@ -33466,7 +33573,8 @@ Tuple3<syntax_asdl::pat_t*, syntax_asdl::Token*, syntax_asdl::Token*> ParseConte
   syntax_asdl::Token* left_tok = nullptr;
   syntax_asdl::pat_t* pattern = nullptr;
   StackRoot _root0(&lexer);
-  StackRoot _root1(&last_token);
+  StackRoot _root1(&e_parser);
+  StackRoot _root2(&last_token);
 
   e_parser = this->_YshParser();
   {  // with
@@ -33487,7 +33595,8 @@ syntax_asdl::Token* ParseContext::ParseProc(lexer::Lexer* lexer, syntax_asdl::Pr
   syntax_asdl::Token* last_token = nullptr;
   StackRoot _root0(&lexer);
   StackRoot _root1(&out);
-  StackRoot _root2(&last_token);
+  StackRoot _root2(&e_parser);
+  StackRoot _root3(&last_token);
 
   e_parser = this->_YshParser();
   {  // with
@@ -33507,7 +33616,8 @@ syntax_asdl::Token* ParseContext::ParseFunc(lexer::Lexer* lexer, syntax_asdl::Fu
   syntax_asdl::Token* last_token = nullptr;
   StackRoot _root0(&lexer);
   StackRoot _root1(&out);
-  StackRoot _root2(&last_token);
+  StackRoot _root2(&e_parser);
+  StackRoot _root3(&last_token);
 
   e_parser = this->_YshParser();
   {  // with
@@ -33665,6 +33775,8 @@ BigStr* InteractiveLineReader::_ReadlinePromptInput() {
 
 BigStr* InteractiveLineReader::_GetLine() {
   BigStr* line = nullptr;
+  StackRoot _root0(&line);
+
   if (this->render_ps1) {
     this->prompt_str = this->prompt_ev->EvalFirstPrompt();
     this->prompt_state->SetLastPrompt(this->prompt_str);
@@ -35172,7 +35284,9 @@ List<List<syntax_asdl::word_part_t*>*>* _BraceExpand(List<syntax_asdl::word_part
   List<syntax_asdl::word_part_t*>* tail_parts = nullptr;
   List<List<syntax_asdl::word_part_t*>*>* suffixes = nullptr;
   StackRoot _root0(&parts);
-  StackRoot _root1(&suffixes);
+  StackRoot _root1(&suffix);
+  StackRoot _root2(&tail_parts);
+  StackRoot _root3(&suffixes);
 
   mylib::MaybeCollect();
   num_alts = 0;
@@ -35527,9 +35641,6 @@ bool _PrefixBindingsPersist(runtime_asdl::cmd_value_t* cmd_val) {
       break;
     case cmd_value_e::Argv: {
       cmd_value::Argv* cmd_val = static_cast<cmd_value::Argv*>(UP_cmd_val);
-      if (len(cmd_val->argv) == 0) {
-        return true;
-      }
       arg0 = cmd_val->argv->at(0);
       if (str_equals(arg0, S_Evy)) {
         return false;
@@ -35613,6 +35724,10 @@ int ControlFlowBuiltin::Run(cmd_value::Argv* cmd_val) {
   syntax_asdl::loc_t* arg_loc = nullptr;
   int keyword_id;
   StackRoot _root0(&cmd_val);
+  StackRoot _root1(&keyword_str);
+  StackRoot _root2(&keyword_loc);
+  StackRoot _root3(&arg_str);
+  StackRoot _root4(&arg_loc);
 
   keyword_str = cmd_val->argv->at(0);
   keyword_loc = cmd_val->arg_locs->at(0);
@@ -35715,7 +35830,8 @@ int CommandEvaluator::_RunAssignBuiltin(cmd_value::Assign* cmd_val) {
   int status;
   BigStr* arg0 = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&io_errors);
+  StackRoot _root1(&builtin_func);
+  StackRoot _root2(&io_errors);
 
   builtin_id = cmd_val->builtin_id;
   if ((this->exec_opts->no_osh_builtins() and builtin_id != builtin_i::export_)) {
@@ -35936,6 +36052,8 @@ void CommandEvaluator::_EvalTempEnv(List<syntax_asdl::EnvPair*>* more_env, int f
   value_asdl::LeftName* lval = nullptr;
   value_asdl::value_t* old_val = nullptr;
   StackRoot _root0(&more_env);
+  StackRoot _root1(&val);
+  StackRoot _root2(&initializer);
 
   for (ListIter<syntax_asdl::EnvPair*> it(more_env); !it.Done(); it.Next()) {
     syntax_asdl::EnvPair* e_pair = it.Value();
@@ -36398,6 +36516,8 @@ int CommandEvaluator::_DoShAssignment(command::ShAssignment* node, runtime_asdl:
   StackRoot _root1(&cmd_st);
   StackRoot _root2(&rhs);
   StackRoot _root3(&lval);
+  StackRoot _root4(&initializer);
+  StackRoot _root5(&val);
 
   which_scopes = this->mem->ScopesForWriting();
   for (ListIter<syntax_asdl::AssignPair*> it(node->pairs); !it.Done(); it.Next()) {
@@ -36474,6 +36594,10 @@ int CommandEvaluator::_DoControlFlow(command::ControlFlow* node) {
   syntax_asdl::Token* keyword = nullptr;
   BigStr* keyword_str = nullptr;
   StackRoot _root0(&node);
+  StackRoot _root1(&arg_str);
+  StackRoot _root2(&arg_loc);
+  StackRoot _root3(&keyword);
+  StackRoot _root4(&keyword_str);
 
   w = node->arg_word;
   if (w) {
@@ -36499,6 +36623,8 @@ int CommandEvaluator::_DoAndOr(command::AndOr* node, runtime_asdl::CommandStatus
   int op_id;
   StackRoot _root0(&node);
   StackRoot _root1(&cmd_st);
+  StackRoot _root2(&left);
+  StackRoot _root3(&child);
 
   left = node->children->at(0);
   this->_StrictErrExit(left);
@@ -36598,12 +36724,13 @@ int CommandEvaluator::_DoForEach(command::ForEach* node) {
   StackRoot _root1(&iter_list);
   StackRoot _root2(&iter_expr);
   StackRoot _root3(&expr_blame);
-  StackRoot _root4(&words);
-  StackRoot _root5(&i_name);
-  StackRoot _root6(&name1);
-  StackRoot _root7(&name2);
-  StackRoot _root8(&it2);
-  StackRoot _root9(&val);
+  StackRoot _root4(&iterable);
+  StackRoot _root5(&words);
+  StackRoot _root6(&i_name);
+  StackRoot _root7(&name1);
+  StackRoot _root8(&name2);
+  StackRoot _root9(&it2);
+  StackRoot _root10(&val);
 
   iter_list = nullptr;
   iter_expr = nullptr;
@@ -36788,9 +36915,10 @@ int CommandEvaluator::_DoForExpr(command::ForExpr* node) {
   mops::BigInt cond_int;
   runtime_asdl::flow_t action;
   StackRoot _root0(&node);
-  StackRoot _root1(&for_cond);
-  StackRoot _root2(&body);
-  StackRoot _root3(&update);
+  StackRoot _root1(&init);
+  StackRoot _root2(&for_cond);
+  StackRoot _root3(&body);
+  StackRoot _root4(&update);
 
   status = 0;
   init = node->init;
@@ -36840,7 +36968,8 @@ void CommandEvaluator::_DoProc(syntax_asdl::Proc* node) {
   value::Proc* proc = nullptr;
   StackRoot _root0(&node);
   StackRoot _root1(&proc_name);
-  StackRoot _root2(&proc_defaults);
+  StackRoot _root2(&sig);
+  StackRoot _root3(&proc_defaults);
 
   proc_name = lexer::TokenVal(node->name);
   if (node->sig->tag() == proc_sig_e::Closed) {
@@ -37033,6 +37162,8 @@ int CommandEvaluator::_EvalAndPushRedirects(List<syntax_asdl::Redir*>* redirects
   List<runtime_asdl::RedirValue*>* redir_vals = nullptr;
   List<IOError_OSError*>* io_errors = nullptr;
   StackRoot _root0(&redirects);
+  StackRoot _root1(&redir_vals);
+  StackRoot _root2(&io_errors);
 
   if (redirects == nullptr) {
     return 0;
@@ -37384,7 +37515,9 @@ int CommandEvaluator::_Execute(syntax_asdl::command_t* node) {
   int i;
   List<int>* codes = nullptr;
   StackRoot _root0(&node);
-  StackRoot _root1(&process_sub_st);
+  StackRoot _root1(&cmd_st);
+  StackRoot _root2(&process_sub_st);
+  StackRoot _root3(&errexit_loc);
 
   cmd_st = CommandStatus::CreateNull();
   if (len(this->status_array_pool)) {
@@ -37622,6 +37755,7 @@ void CommandEvaluator::RunTrapsOnExit(syntax_asdl::IntParamBox* mut_status) {
   bool is_return;
   bool is_fatal;
   StackRoot _root0(&mut_status);
+  StackRoot _root1(&node);
 
   this->RunPendingTrapsAndCatch();
   node = this->trap_state->GetHook(S_BDg);
@@ -37647,6 +37781,8 @@ void CommandEvaluator::RunTrapsOnExit(syntax_asdl::IntParamBox* mut_status) {
 
 void CommandEvaluator::_MaybeRunDebugTrap() {
   syntax_asdl::command_t* node = nullptr;
+  StackRoot _root0(&node);
+
   node = this->trap_state->GetHook(S_Fzz);
   if (node == nullptr) {
     return ;
@@ -37674,6 +37810,8 @@ void CommandEvaluator::_MaybeRunDebugTrap() {
 
 void CommandEvaluator::_MaybeRunErrTrap() {
   syntax_asdl::command_t* node = nullptr;
+  StackRoot _root0(&node);
+
   node = this->trap_state->GetHook(S_zDr);
   if (node == nullptr) {
     return ;
@@ -37744,6 +37882,7 @@ int CommandEvaluator::RunFuncForCompletion(value::Proc* proc, List<BigStr*>* arg
   int status;
   StackRoot _root0(&proc);
   StackRoot _root1(&argv);
+  StackRoot _root2(&cmd_val);
 
   cmd_val = MakeBuiltinArgv(argv);
   try {
@@ -37903,9 +38042,11 @@ void _ParseHereDocBody(parse_lib::ParseContext* parse_ctx, syntax_asdl::Redir* r
   StackRoot _root2(&line_reader);
   StackRoot _root3(&arena);
   StackRoot _root4(&h);
-  StackRoot _root5(&here_lines);
-  StackRoot _root6(&last_line);
-  StackRoot _root7(&end_line);
+  StackRoot _root5(&delimiter);
+  StackRoot _root6(&here_lines);
+  StackRoot _root7(&last_line);
+  StackRoot _root8(&w_parser);
+  StackRoot _root9(&end_line);
 
   h = static_cast<redir_param::HereDoc*>(r->arg);
   Tuple3<bool, BigStr*, bool> tup2 = word_::StaticEval(h->here_begin);
@@ -37958,7 +38099,8 @@ syntax_asdl::AssignPair* _MakeAssignPair(parse_lib::ParseContext* parse_ctx, syn
   StackRoot _root2(&arena);
   StackRoot _root3(&left_token);
   StackRoot _root4(&var_name);
-  StackRoot _root5(&index_node);
+  StackRoot _root5(&a_parser);
+  StackRoot _root6(&index_node);
 
   left_token = preparsed->left;
   close_token = preparsed->close;
@@ -38548,7 +38690,8 @@ syntax_asdl::command_t* CommandParser::_MaybeExpandAliases(List<syntax_asdl::Com
   source::Alias* src = nullptr;
   command::CommandList* node = nullptr;
   StackRoot _root0(&words);
-  StackRoot _root1(&node);
+  StackRoot _root1(&cp);
+  StackRoot _root2(&node);
 
   aliases_in_flight = len(this->aliases_in_flight) ? this->aliases_in_flight : Alloc<List<Tuple2<BigStr*, int>*>>();
   first_word_str = nullptr;
@@ -39292,6 +39435,8 @@ command::Case* CommandParser::ParseOldCase(syntax_asdl::Token* case_kw) {
 
 command::Case* CommandParser::ParseCase() {
   syntax_asdl::Token* case_kw = nullptr;
+  StackRoot _root0(&case_kw);
+
   case_kw = word_::AsKeywordToken(this->cur_word);
   this->_SetNext();
   if (this->w_parser->LookPastSpace() == Id::Op_LParen) {
@@ -39477,10 +39622,12 @@ syntax_asdl::command_t* CommandParser::ParseCompoundCommand() {
   command::DParen* n7 = nullptr;
   StackRoot _root0(&n1);
   StackRoot _root1(&n2);
-  StackRoot _root2(&n3);
-  StackRoot _root3(&n4);
-  StackRoot _root4(&n5);
-  StackRoot _root5(&n7);
+  StackRoot _root2(&keyword);
+  StackRoot _root3(&n3);
+  StackRoot _root4(&n4);
+  StackRoot _root5(&n5);
+  StackRoot _root6(&n6);
+  StackRoot _root7(&n7);
 
   this->_GetWord();
   if (this->c_id == Id::Lit_LBrace) {
@@ -39808,11 +39955,12 @@ syntax_asdl::command_t* CommandParser::ParseCommand() {
   List<syntax_asdl::word_part_t*>* parts = nullptr;
   syntax_asdl::word_part_t* part0 = nullptr;
   syntax_asdl::Token* tok = nullptr;
-  StackRoot _root0(&n8);
-  StackRoot _root1(&n9);
-  StackRoot _root2(&keyword);
-  StackRoot _root3(&enode);
-  StackRoot _root4(&tok);
+  StackRoot _root0(&kw_token);
+  StackRoot _root1(&n8);
+  StackRoot _root2(&n9);
+  StackRoot _root3(&keyword);
+  StackRoot _root4(&enode);
+  StackRoot _root5(&tok);
 
   if (this->_AtSecondaryKeyword()) {
     p_die(S_lrE, Alloc<loc::Word>(this->cur_word));
@@ -40703,7 +40851,8 @@ BigStr* Evaluator::Eval(BigStr* line) {
   StackRoot _root2(&parts);
   StackRoot _root3(&prev);
   StackRoot _root4(&ch);
-  StackRoot _root5(&val);
+  StackRoot _root5(&c_parser);
+  StackRoot _root6(&val);
 
   if (!this->readline) {
     return line;
@@ -41079,7 +41228,8 @@ BigStr* Evaluator::EvalPrompt(BigStr* s) {
   StackRoot _root0(&s);
   StackRoot _root1(&ps1_str);
   StackRoot _root2(&ps1_word);
-  StackRoot _root3(&val2);
+  StackRoot _root3(&w_parser);
+  StackRoot _root4(&val2);
 
   tokens = this->tokens_cache->get(s);
   if (tokens == nullptr) {
@@ -41110,7 +41260,9 @@ BigStr* Evaluator::EvalFirstPrompt() {
   BigStr* msg = nullptr;
   value_asdl::value_t* ps1_val = nullptr;
   value_asdl::value_t* UP_ps1_val = nullptr;
-  StackRoot _root0(&val);
+  StackRoot _root0(&pos_args);
+  StackRoot _root1(&val);
+  StackRoot _root2(&ps1_val);
 
   UP_func_val = this->mem->GetValue(S_jAe);
   if (UP_func_val->tag() == value_e::Func) {
@@ -41160,6 +41312,7 @@ void UserPlugin::Run() {
   source::Variable* src = nullptr;
   StackRoot _root0(&prompt_cmd);
   StackRoot _root1(&node);
+  StackRoot _root2(&c_parser);
 
   val = this->mem->GetValue(PROMPT_COMMAND);
   if (val->tag() != value_e::Str) {
@@ -41360,8 +41513,9 @@ value_asdl::sh_lvalue_t* UnsafeArith::ParseLValue(BigStr* s, syntax_asdl::loc_t*
   value_asdl::sh_lvalue_t* lval = nullptr;
   StackRoot _root0(&s);
   StackRoot _root1(&location);
-  StackRoot _root2(&anode);
-  StackRoot _root3(&lval);
+  StackRoot _root2(&a_parser);
+  StackRoot _root3(&anode);
+  StackRoot _root4(&lval);
 
   if (this->parse_ctx->parse_opts->no_parse_sh_arith()) {
     if (!match::IsValidVarName(s)) {
@@ -41402,7 +41556,8 @@ syntax_asdl::BracedVarSub* UnsafeArith::ParseVarRef(BigStr* ref_str, syntax_asdl
   syntax_asdl::BracedVarSub* bvs_part = nullptr;
   StackRoot _root0(&ref_str);
   StackRoot _root1(&blame_tok);
-  StackRoot _root2(&bvs_part);
+  StackRoot _root2(&w_parser);
+  StackRoot _root3(&bvs_part);
 
   line_reader = reader::StringLineReader(ref_str, this->arena);
   lexer = this->parse_ctx->MakeLexer(line_reader);
@@ -41548,7 +41703,8 @@ mops::BigInt ArithEvaluator::StringToBigInt(BigStr* s, syntax_asdl::loc_t* blame
   mops::BigInt integer;
   StackRoot _root0(&s);
   StackRoot _root1(&blame_loc);
-  StackRoot _root2(&node2);
+  StackRoot _root2(&a_parser);
+  StackRoot _root3(&node2);
 
   s = s->strip();
   Tuple2<bool, mops::BigInt> tup7 = _ParseOshInteger(s, blame_loc);
@@ -41634,6 +41790,7 @@ Tuple2<mops::BigInt, value_asdl::sh_lvalue_t*> ArithEvaluator::_EvalLhsAndLookup
   mops::BigInt i;
   StackRoot _root0(&node);
   StackRoot _root1(&lval);
+  StackRoot _root2(&val);
 
   lval = this->EvalArithLhs(node);
   val = OldValue(lval, this->mem, this->exec_opts, location::TokenForArith(node));
@@ -43457,6 +43614,7 @@ syntax_asdl::arith_expr_t* LeftBinaryOp(tdop::TdopParser* p, syntax_asdl::word_t
   StackRoot _root0(&p);
   StackRoot _root1(&w);
   StackRoot _root2(&left);
+  StackRoot _root3(&tok);
 
   tok = static_cast<Token*>(w);
   return Alloc<arith_expr::Binary>(tok, left, p->ParseUntil(rbp));
@@ -45013,6 +45171,8 @@ bool AbstractWordEvaluator::_ApplyTestOp(value_asdl::value_t* val, suffix_op::Un
   StackRoot _root4(&blame_token);
   StackRoot _root5(&vsub_state);
   StackRoot _root6(&tok);
+  StackRoot _root7(&assign_part_vals);
+  StackRoot _root8(&error_part_vals);
 
   eval_flags = IS_SUBST;
   if (quoted) {
@@ -45276,7 +45436,8 @@ value_asdl::value_t* AbstractWordEvaluator::_EvalVarRef(value_asdl::value_t* val
   StackRoot _root1(&blame_tok);
   StackRoot _root2(&vsub_state);
   StackRoot _root3(&vtest_place);
-  StackRoot _root4(&bvs_part);
+  StackRoot _root4(&var_ref_str);
+  StackRoot _root5(&bvs_part);
 
   UP_val = val;
   switch (val->tag()) {
@@ -45777,8 +45938,9 @@ value_asdl::value_t* AbstractWordEvaluator::_ArrayIndex(value_asdl::value_t* val
   StackRoot _root0(&val);
   StackRoot _root1(&part);
   StackRoot _root2(&vtest_place);
-  StackRoot _root3(&UP_val);
-  StackRoot _root4(&s);
+  StackRoot _root3(&anode);
+  StackRoot _root4(&UP_val);
+  StackRoot _root5(&s);
 
   anode = static_cast<bracket_op::ArrayIndex*>(part->bracket_op)->expr;
   UP_val = val;
@@ -45867,6 +46029,7 @@ void AbstractWordEvaluator::_EvalDoubleQuoted(List<syntax_asdl::word_part_t*>* p
 BigStr* AbstractWordEvaluator::EvalDoubleQuotedToString(syntax_asdl::DoubleQuoted* dq_part) {
   List<runtime_asdl::part_value_t*>* part_vals = nullptr;
   StackRoot _root0(&dq_part);
+  StackRoot _root1(&part_vals);
 
   part_vals = Alloc<List<runtime_asdl::part_value_t*>>();
   this->_EvalDoubleQuoted(dq_part->parts, part_vals);
@@ -45981,6 +46144,7 @@ value_asdl::value_t* AbstractWordEvaluator::_VarRefValue(syntax_asdl::BracedVarS
   StackRoot _root0(&part);
   StackRoot _root1(&vsub_state);
   StackRoot _root2(&vtest_place);
+  StackRoot _root3(&val);
 
   if (part->name_tok->id == Id::VSub_Name) {
     vtest_place->name = part->var_name;
@@ -46027,9 +46191,12 @@ void AbstractWordEvaluator::_EvalBracedVarSub(syntax_asdl::BracedVarSub* part, L
   StackRoot _root0(&part);
   StackRoot _root1(&part_vals);
   StackRoot _root2(&var_name);
-  StackRoot _root3(&vsub_state);
-  StackRoot _root4(&suffix_op_);
-  StackRoot _root5(&UP_op);
+  StackRoot _root3(&vtest_place);
+  StackRoot _root4(&vsub_state);
+  StackRoot _root5(&val);
+  StackRoot _root6(&suffix_op_);
+  StackRoot _root7(&UP_op);
+  StackRoot _root8(&op);
 
   var_name = nullptr;
   vtest_place = Alloc<VTestPlace>(var_name, nullptr);
@@ -46191,6 +46358,7 @@ BigStr* AbstractWordEvaluator::_ConcatPartVals(List<runtime_asdl::part_value_t*>
 BigStr* AbstractWordEvaluator::EvalBracedVarSubToString(syntax_asdl::BracedVarSub* part) {
   List<runtime_asdl::part_value_t*>* part_vals = nullptr;
   StackRoot _root0(&part);
+  StackRoot _root1(&part_vals);
 
   part_vals = Alloc<List<runtime_asdl::part_value_t*>>();
   this->_EvalBracedVarSub(part, part_vals, false);
@@ -46322,7 +46490,8 @@ void AbstractWordEvaluator::_EvalWordPart(syntax_asdl::word_part_t* part, List<r
   StackRoot _root0(&part);
   StackRoot _root1(&part_vals);
   StackRoot _root2(&sv);
-  StackRoot _root3(&part_val);
+  StackRoot _root3(&part_vals2);
+  StackRoot _root4(&part_val);
 
   quoted = to_bool((flags & QUOTED));
   is_subst = to_bool((flags & IS_SUBST));
@@ -46483,6 +46652,7 @@ void AbstractWordEvaluator::_EvalWordToParts(syntax_asdl::CompoundWord* w, List<
   int n;
   StackRoot _root0(&w);
   StackRoot _root1(&part_vals);
+  StackRoot _root2(&word_part_vals);
 
   word_part_vals = Alloc<List<runtime_asdl::part_value_t*>>();
   has_extglob = false;
@@ -46583,6 +46753,7 @@ value::Str* AbstractWordEvaluator::EvalWordToString(syntax_asdl::word_t* UP_w, i
   List<runtime_asdl::part_value_t*>* part_vals = nullptr;
   List<BigStr*>* strs = nullptr;
   StackRoot _root0(&UP_w);
+  StackRoot _root1(&part_vals);
 
   CompoundWord* w = static_cast<CompoundWord*>(UP_w);
   if (eval_flags == 0) {
@@ -46606,6 +46777,7 @@ Tuple2<value::Str*, bool> AbstractWordEvaluator::EvalWordToPattern(syntax_asdl::
   List<runtime_asdl::part_value_t*>* part_vals = nullptr;
   List<BigStr*>* strs = nullptr;
   StackRoot _root0(&UP_w);
+  StackRoot _root1(&part_vals);
 
   if (UP_w->tag() == rhs_word_e::Empty) {
     return Tuple2<value::Str*, bool>(Alloc<value::Str>(S_Aoo), false);
@@ -46787,7 +46959,8 @@ List<BigStr*>* AbstractWordEvaluator::_EvalWordToArgv(syntax_asdl::CompoundWord*
   List<BigStr*>* argv = nullptr;
   List<BigStr*>* tmp = nullptr;
   StackRoot _root0(&w);
-  StackRoot _root1(&tmp);
+  StackRoot _root1(&part_vals);
+  StackRoot _root2(&tmp);
 
   part_vals = Alloc<List<runtime_asdl::part_value_t*>>();
   this->_EvalWordToParts(w, part_vals, 0);
@@ -46834,8 +47007,9 @@ cmd_value::Assign* AbstractWordEvaluator::_EvalAssignBuiltin(int builtin_id, Big
   StackRoot _root6(&left_token);
   StackRoot _root7(&close_token);
   StackRoot _root8(&var_name);
-  StackRoot _root9(&right);
-  StackRoot _root10(&argv);
+  StackRoot _root9(&rhs);
+  StackRoot _root10(&right);
+  StackRoot _root11(&argv);
 
   eval_to_pairs = true;
   started_pairs = false;
@@ -46947,7 +47121,8 @@ runtime_asdl::cmd_value_t* AbstractWordEvaluator::SimpleEvalWordSequence2(List<s
   StackRoot _root3(&strs0);
   StackRoot _root4(&cmd_val);
   StackRoot _root5(&val);
-  StackRoot _root6(&tmp);
+  StackRoot _root6(&part_vals);
+  StackRoot _root7(&tmp);
 
   strs = Alloc<List<BigStr*>>();
   locs = Alloc<List<syntax_asdl::CompoundWord*>>();
@@ -47019,9 +47194,12 @@ runtime_asdl::cmd_value_t* AbstractWordEvaluator::EvalWordSequence2(List<syntax_
   StackRoot _root0(&words);
   StackRoot _root1(&strs);
   StackRoot _root2(&locs);
-  StackRoot _root3(&cmd_val);
-  StackRoot _root4(&frames);
-  StackRoot _root5(&hint_buf);
+  StackRoot _root3(&fast_str);
+  StackRoot _root4(&cmd_val);
+  StackRoot _root5(&part_vals);
+  StackRoot _root6(&frames);
+  StackRoot _root7(&hint_buf);
+  StackRoot _root8(&hint_str);
 
   if (this->exec_opts->simple_word_eval()) {
     return this->SimpleEvalWordSequence2(words, is_last_cmd, allow_assign);
@@ -47673,7 +47851,8 @@ syntax_asdl::SingleQuoted* WordParser::_ReadSingleQuoted(syntax_asdl::Token* lef
   BigStr* sval = nullptr;
   syntax_asdl::SingleQuoted* node = nullptr;
   StackRoot _root0(&left_token);
-  StackRoot _root1(&right_quote);
+  StackRoot _root1(&tokens);
+  StackRoot _root2(&right_quote);
 
   tokens = Alloc<List<syntax_asdl::Token*>>();
   right_quote = this->ReadSingleQuoted(lex_mode, left_token, tokens, false);
@@ -47794,7 +47973,8 @@ syntax_asdl::CompoundWord* WordParser::_ReadYshSingleQuoted(int left_id) {
   int triple_left_id;
   syntax_asdl::Token* left_tok = nullptr;
   syntax_asdl::SingleQuoted* sq_part = nullptr;
-  StackRoot _root0(&sq_part);
+  StackRoot _root0(&left_tok);
+  StackRoot _root1(&sq_part);
 
   if (left_id == Id::Left_RSingleQuote) {
     lexer_mode = lex_mode_e::SQ_Raw;
@@ -47842,7 +48022,9 @@ syntax_asdl::word_part_t* WordParser::_ReadUnquotedLeftParts(syntax_asdl::BoolPa
   syntax_asdl::Token* left_sq_token = nullptr;
   StackRoot _root0(&triple_out);
   StackRoot _root1(&dq_part);
-  StackRoot _root2(&sq_part);
+  StackRoot _root2(&left_dq_token);
+  StackRoot _root3(&sq_part);
+  StackRoot _root4(&left_sq_token);
 
   if ((this->token_type == Id::Left_DoubleQuote || this->token_type == Id::Left_DollarDoubleQuote)) {
     dq_part = this->_ReadDoubleQuoted(this->cur_token);
@@ -48090,6 +48272,7 @@ syntax_asdl::DoubleQuoted* WordParser::_ReadDoubleQuoted(syntax_asdl::Token* lef
   List<syntax_asdl::word_part_t*>* parts = nullptr;
   syntax_asdl::Token* right_quote = nullptr;
   StackRoot _root0(&left_token);
+  StackRoot _root1(&parts);
 
   parts = Alloc<List<syntax_asdl::word_part_t*>>();
   this->_ReadLikeDQ(left_token, false, parts);
@@ -48609,6 +48792,8 @@ syntax_asdl::word_part_t* WordParser::_ReadArrayLiteral() {
 
 syntax_asdl::ArgList* WordParser::ParseProcCallArgs(int start_symbol) {
   syntax_asdl::ArgList* arg_list = nullptr;
+  StackRoot _root0(&arg_list);
+
   this->lexer->MaybeUnreadOne();
   arg_list = ArgList::CreateNull(true);
   arg_list->left = this->cur_token;
@@ -50952,7 +51137,8 @@ value_asdl::value_t* ExprEvaluator::PluginCall(value::Func* func_val, List<value
   value_asdl::value_t* val = nullptr;
   StackRoot _root0(&func_val);
   StackRoot _root1(&pos_args);
-  StackRoot _root2(&val);
+  StackRoot _root2(&rd);
+  StackRoot _root3(&val);
 
   {  // with
     state::ctx_YshExpr ctx{this->mutable_opts};
@@ -50991,7 +51177,8 @@ value_asdl::value_t* ExprEvaluator::CallConvertFunc(value_asdl::value_t* func_va
   StackRoot _root1(&arg);
   StackRoot _root2(&convert_tok);
   StackRoot _root3(&call_loc);
-  StackRoot _root4(&val);
+  StackRoot _root4(&rd);
+  StackRoot _root5(&val);
 
   {  // with
     state::ctx_YshExpr ctx{this->mutable_opts};
@@ -51021,6 +51208,7 @@ value_asdl::value_t* ExprEvaluator::_CallMetaMethod(value_asdl::value_t* func_va
   StackRoot _root0(&func_val);
   StackRoot _root1(&pos_args);
   StackRoot _root2(&blame_loc);
+  StackRoot _root3(&rd);
 
   named_args = Alloc<Dict<BigStr*, value_asdl::value_t*>>();
   arg_list = ArgList::CreateNull();
@@ -51387,7 +51575,8 @@ value_asdl::value_t* ExprEvaluator::_EvalCompare(expr::Compare* node) {
   bool eq;
   StackRoot _root0(&node);
   StackRoot _root1(&left);
-  StackRoot _root2(&right);
+  StackRoot _root2(&right_expr);
+  StackRoot _root3(&right);
 
   left = this->_EvalExpr(node->left);
   result = true;
@@ -51575,6 +51764,7 @@ value_asdl::value_t* ExprEvaluator::_EvalFuncCall(expr::FuncCall* node) {
   StackRoot _root2(&to_call);
   StackRoot _root3(&pos_args);
   StackRoot _root4(&named_args);
+  StackRoot _root5(&rd);
 
   func = this->_EvalExpr(node->func);
   UP_func = func;
@@ -51616,6 +51806,8 @@ value_asdl::value_t* ExprEvaluator::_EvalSubscript(value_asdl::value_t* obj, val
   StackRoot _root0(&obj);
   StackRoot _root1(&index);
   StackRoot _root2(&blame_loc);
+  StackRoot _root3(&index_method);
+  StackRoot _root4(&pos_args);
 
   UP_obj = obj;
   UP_index = index;
@@ -52405,7 +52597,9 @@ syntax_asdl::Token* _PushYshTokens(parse_lib::ParseContext* parse_ctx, grammar::
   StackRoot _root11(&left_token);
   StackRoot _root12(&c_parser);
   StackRoot _root13(&node);
-  StackRoot _root14(&part);
+  StackRoot _root14(&parts);
+  StackRoot _root15(&part);
+  StackRoot _root16(&tokens);
 
   last_token = nullptr;
   prev_was_newline = false;
@@ -54286,7 +54480,8 @@ value_asdl::ProcDefaults* EvalProcDefaults(expr_eval::ExprEvaluator* expr_ev, pr
   StackRoot _root3(&val);
   StackRoot _root4(&pos_defaults);
   StackRoot _root5(&named_defaults);
-  StackRoot _root6(&block_default);
+  StackRoot _root6(&exp);
+  StackRoot _root7(&block_default);
 
   no_val = nullptr;
   if (sig->word) {
@@ -55983,7 +56178,8 @@ completion::UserSpec* SpecBuilder::Build(List<BigStr*>* argv, args::_Attributes*
   StackRoot _root2(&base_opts);
   StackRoot _root3(&arg);
   StackRoot _root4(&actions);
-  StackRoot _root5(&arg_word);
+  StackRoot _root5(&w_parser);
+  StackRoot _root6(&arg_word);
 
   cmd_ev = this->cmd_ev;
   arg = Alloc<arg_types::compgen>(attrs->attrs);
@@ -56160,8 +56356,10 @@ int Complete::Run(cmd_value::Argv* cmd_val) {
   completion::UserSpec* user_spec = nullptr;
   List<BigStr*>* patterns = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&commands);
-  StackRoot _root2(&user_spec);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&commands);
+  StackRoot _root3(&base_opts);
+  StackRoot _root4(&user_spec);
 
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
@@ -56215,8 +56413,10 @@ int CompGen::Run(cmd_value::Argv* cmd_val) {
   completion::UserSpec* user_spec = nullptr;
   completion::Api* comp = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&to_complete);
-  StackRoot _root2(&user_spec);
+  StackRoot _root1(&arg);
+  StackRoot _root2(&to_complete);
+  StackRoot _root3(&base_opts);
+  StackRoot _root4(&user_spec);
 
   arg_r = Alloc<args::Reader>(cmd_val->argv, cmd_val->arg_locs);
   arg_r->Next();
@@ -56423,6 +56623,7 @@ void SourceStartupFile(process::FdState* fd_state, BigStr* rc_path, BigStr* lang
   StackRoot _root4(&cmd_ev);
   StackRoot _root5(&errfmt);
   StackRoot _root6(&f);
+  StackRoot _root7(&rc_c_parser);
 
   try {
     f = fd_state->Open(rc_path);
@@ -56655,9 +56856,13 @@ int Main(BigStr* lang, args::Reader* arg_r, Dict<BigStr*, BigStr*>* environ, boo
   StackRoot _root31(&line_reader);
   StackRoot _root32(&rc_paths);
   StackRoot _root33(&rc_path);
-  StackRoot _root34(&c_parser);
-  StackRoot _root35(&tool_name);
-  StackRoot _root36(&node);
+  StackRoot _root34(&loop);
+  StackRoot _root35(&mut_status);
+  StackRoot _root36(&c_parser);
+  StackRoot _root37(&display);
+  StackRoot _root38(&prompt_plugin);
+  StackRoot _root39(&tool_name);
+  StackRoot _root40(&node);
 
   argv0 = arg_r->Peek();
   arg_r->Next();

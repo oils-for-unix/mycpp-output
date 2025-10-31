@@ -27,8 +27,6 @@ namespace tuple_return_value {  // define
 Tuple2<int, BigStr*> f(int x) {
   int i;
   BigStr* s = nullptr;
-  StackRoot _root0(&s);
-
   i = (x + 42);
   s = S_xzC;
   return Tuple2<int, BigStr*>(i, s->slice(1));
@@ -37,8 +35,6 @@ Tuple2<int, BigStr*> f(int x) {
 Tuple2<int, BigStr*> g(Tuple2<int, int>* t) {
   int t0;
   int t1;
-  StackRoot _root0(&t);
-
   Tuple2<int, int>* tup0 = t;
   t0 = tup0->at0();
   t1 = tup0->at1();
@@ -48,8 +44,6 @@ Tuple2<int, BigStr*> g(Tuple2<int, int>* t) {
 Tuple2<int, int> identity(Tuple2<int, int>* t) {
   int a;
   int b;
-  StackRoot _root0(&t);
-
   Tuple2<int, int>* tup1 = t;
   a = tup1->at0();
   b = tup1->at1();
@@ -65,11 +59,6 @@ void run_tests() {
   Tuple2<int, BigStr*>* mytuple = nullptr;
   int myint;
   BigStr* mystr = nullptr;
-  StackRoot _root0(&s);
-  StackRoot _root1(&items);
-  StackRoot _root2(&mytuple);
-  StackRoot _root3(&mystr);
-
   Tuple2<int, BigStr*> tup2 = f(0);
   i = tup2.at0();
   s = tup2.at1();

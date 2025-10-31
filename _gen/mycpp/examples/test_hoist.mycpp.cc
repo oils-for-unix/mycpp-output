@@ -27,8 +27,6 @@ namespace test_hoist {  // define
 
 BigStr* f(BigStr* s) {
   int x;
-  StackRoot _root0(&s);
-
   x = 1;
   if (x > 0) {
     s = S_pee;
@@ -46,8 +44,6 @@ void g() {
 }
 
 BigStr* strfunc(BigStr* s) {
-  StackRoot _root0(&s);
-
   return str_concat(s, S_Aru);
 }
 

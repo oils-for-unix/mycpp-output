@@ -173,8 +173,6 @@ ColorOutput::ColorOutput(mylib::Writer* f) {
 }
 
 void ColorOutput::write(BigStr* s) {
-  StackRoot _root0(&s);
-
   this->f->write(s);
   this->num_chars += len(s);
 }
@@ -239,9 +237,6 @@ Node::Node(classes::Node* n, int i) {
 void TestMethods() {
   mylib::Writer* stdout_ = nullptr;
   classes::TextOutput* out = nullptr;
-  StackRoot _root0(&stdout_);
-  StackRoot _root1(&out);
-
   stdout_ = mylib::Stdout();
   out = Alloc<TextOutput>(stdout_);
   out->write(S_rxu);
@@ -252,8 +247,6 @@ void TestMethods() {
 }
 
 BigStr* f(classes::Base* obj) {
-  StackRoot _root0(&obj);
-
   return obj->TypeString();
 }
 
@@ -261,10 +254,6 @@ void TestInheritance() {
   classes::Base* b = nullptr;
   classes::DerivedI* di = nullptr;
   classes::DerivedSS* dss = nullptr;
-  StackRoot _root0(&b);
-  StackRoot _root1(&di);
-  StackRoot _root2(&dss);
-
   b = Alloc<Base>(nullptr);
   di = Alloc<DerivedI>(nullptr, 1);
   dss = Alloc<DerivedSS>(nullptr, S_saq, S_swE);
@@ -286,9 +275,6 @@ void BenchmarkWriter(int n) {
   mylib::BufWriter* f = nullptr;
   classes::TextOutput* out = nullptr;
   int i;
-  StackRoot _root0(&f);
-  StackRoot _root1(&out);
-
   mylib::print_stderr(S_ACu);
   mylib::print_stderr(S_Aoo);
   f = Alloc<mylib::BufWriter>();
@@ -306,9 +292,6 @@ void BenchmarkWriter(int n) {
 void PrintLength(classes::Node* node) {
   classes::Node* current = nullptr;
   int linked_list_len;
-  StackRoot _root0(&node);
-  StackRoot _root1(&current);
-
   current = node;
   linked_list_len = 0;
   while (true) {
@@ -329,9 +312,6 @@ void PrintLength(classes::Node* node) {
 void BenchmarkSimpleNode(int n) {
   classes::Node* next_ = nullptr;
   classes::Node* node = nullptr;
-  StackRoot _root0(&next_);
-  StackRoot _root1(&node);
-
   mylib::print_stderr(S_foD);
   mylib::print_stderr(S_Aoo);
   next_ = Alloc<Node>(nullptr, -1);
@@ -344,8 +324,6 @@ void BenchmarkSimpleNode(int n) {
 
 void PrintLengthBase(classes::Base* current) {
   int linked_list_len;
-  StackRoot _root0(&current);
-
   linked_list_len = 0;
   while (true) {
     if (linked_list_len < 10) {
@@ -370,14 +348,6 @@ void BenchmarkVirtualNodes(int n) {
   classes::DerivedSS* node2 = nullptr;
   classes::Base* node3 = nullptr;
   classes::Base* current = nullptr;
-  StackRoot _root0(&next_);
-  StackRoot _root1(&node1);
-  StackRoot _root2(&s1);
-  StackRoot _root3(&s2);
-  StackRoot _root4(&node2);
-  StackRoot _root5(&node3);
-  StackRoot _root6(&current);
-
   mylib::print_stderr(S_jqE);
   mylib::print_stderr(S_Aoo);
   next_ = Alloc<Base>(nullptr);

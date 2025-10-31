@@ -141,10 +141,6 @@ void run_tests() {
   modules::Dog* dog = nullptr;
   module1::Cat* cat = nullptr;
   modules::Sphinx* cat2 = nullptr;
-  StackRoot _root0(&dog);
-  StackRoot _root1(&cat);
-  StackRoot _root2(&cat2);
-
   module1::func1();
   func2();
   dog = Alloc<Dog>(S_scd);

@@ -32,8 +32,6 @@ void run_tests() {
 
 void run_benchmarks() {
   BigStr* r = nullptr;
-  StackRoot _root0(&r);
-
   r = str_concat(S_oBf, S_mch);
   for (int i = 0; i < 10000; ++i) {
     mylib::print_stderr(StrFormat("[%%] %d %s %r", 123456789, S_mxm, r));

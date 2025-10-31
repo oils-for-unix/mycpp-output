@@ -60,8 +60,6 @@ arith_expr__Const::arith_expr__Const(int i) : ::asdl_generated::arith_expr_t() {
 
 void run_tests() {
   asdl_generated::arith_expr__Const* x = nullptr;
-  StackRoot _root0(&x);
-
   x = Alloc<arith_expr__Const>(5);
   mylib::print_stderr(StrFormat("x = %d", x->i));
 }
@@ -70,8 +68,6 @@ void run_benchmarks() {
   int i;
   int n;
   asdl_generated::arith_expr__Const* x = nullptr;
-  StackRoot _root0(&x);
-
   i = 0;
   n = 1000000;
   while (i < n) {

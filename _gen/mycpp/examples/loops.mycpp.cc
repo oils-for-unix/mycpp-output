@@ -68,13 +68,6 @@ void TestListComp() {
   List<BigStr*>* parts = nullptr;
   List<BigStr*>* tmp = nullptr;
   List<BigStr*>* tmp2 = nullptr;
-  StackRoot _root0(&x);
-  StackRoot _root1(&y);
-  StackRoot _root2(&z);
-  StackRoot _root3(&parts);
-  StackRoot _root4(&tmp);
-  StackRoot _root5(&tmp2);
-
   mylib::print_stderr(S_skz);
   x = NewList<int>(std::initializer_list<int>{1, 2, 3, 4});
   y = Alloc<List<int>>();
@@ -119,11 +112,6 @@ void TestListCompParity() {
   List<Tuple2<BigStr*, int>*>* pairs = nullptr;
   List<BigStr*>* first = nullptr;
   Dict<BigStr*, BigStr*>* d = nullptr;
-  StackRoot _root0(&mylist);
-  StackRoot _root1(&pairs);
-  StackRoot _root2(&first);
-  StackRoot _root3(&d);
-
   mylib::print_stderr(S_xnh);
   mylib::print_stderr(S_jFE);
   mylist = NewList<int>(std::initializer_list<int>{3, 4, 5});
@@ -133,12 +121,10 @@ void TestListCompParity() {
   for (ListIter<Tuple2<BigStr*, int>*> it(pairs); !it.Done(); it.Next()) {
     Tuple2<BigStr*, int>* tup0 = it.Value();
     BigStr* listcomp_iter_var = tup0->at0();
-    StackRoot _unpack_0(&listcomp_iter_var);
     first->append(listcomp_iter_var);
   }
   for (ListIter<BigStr*> it(first); !it.Done(); it.Next()) {
     BigStr* s2 = it.Value();
-    StackRoot _for(&s2  );
     mylib::print_stderr(StrFormat("first = %s", s2));
   }
   mylib::print_stderr(S_Axw);
@@ -150,8 +136,6 @@ void TestListCompParity() {
 
 void TestDict() {
   Dict<BigStr*, int>* d = nullptr;
-  StackRoot _root0(&d);
-
   mylib::print_stderr(S_jvb);
   d = Alloc<Dict<BigStr*, int>>();
   d->set(S_gCD, 99);
@@ -162,7 +146,6 @@ void TestDict() {
   mylib::print_stderr(StrFormat("c = %d", d->at(S_emj)));
   for (DictIter<BigStr*, int> it(d); !it.Done(); it.Next()) {
     BigStr* k = it.Key();
-    StackRoot _for(&k  );
     mylib::print_stderr(StrFormat("k = %s", k));
   }
   for (DictIter<BigStr*, int> it(d); !it.Done(); it.Next()) {
@@ -181,20 +164,14 @@ void TestForLoop() {
   int index;
   BigStr* s = nullptr;
   List<BigStr*>* list_of_strings = nullptr;
-  StackRoot _root0(&list_of_tuples);
-  StackRoot _root1(&s);
-  StackRoot _root2(&list_of_strings);
-
   mylib::print_stderr(S_Bxm);
   for (StrIter it(S_jng); !it.Done(); it.Next()) {
     BigStr* ch = it.Value();
-    StackRoot _for(&ch  );
     mylib::print_stderr(StrFormat("ch = %s", ch));
   }
   mylib::print_stderr(S_EAn);
   for (ListIter<BigStr*> it(NewList<BigStr*>(std::initializer_list<BigStr*>{S_DEE, S_sfk})); !it.Done(); it.Next()) {
     BigStr* item = it.Value();
-    StackRoot _for(&item  );
     mylib::print_stderr(StrFormat("item = %s", item));
   }
   mylib::print_stderr(S_nFa);
@@ -203,7 +180,6 @@ void TestForLoop() {
     Tuple2<int, BigStr*>* tup1 = it.Value();
     int tuple_iter_1 = tup1->at0();
     BigStr* tuple_iter_2 = tup1->at1();
-    StackRoot _unpack_1(&tuple_iter_2);
     mylib::print_stderr(StrFormat("- [%d] %s", tuple_iter_1, tuple_iter_2));
   }
   mylib::print_stderr(S_Eie);
@@ -228,13 +204,11 @@ void TestForLoop() {
   i = 0;
   for (ListIter<BigStr*> it(CATS); !it.Done(); it.Next(), ++i) {
     BigStr* c = it.Value();
-    StackRoot _for(&c  );
     mylib::print_stderr(StrFormat("%d %s", i, c));
   }
   i = 0;
   for (ListIter<Tuple2<int, BigStr*>*> it(list_of_tuples); !it.Done(); it.Next(), ++i) {
     Tuple2<int, BigStr*>* pair = it.Value();
-    StackRoot _for(&pair  );
     Tuple2<int, BigStr*>* tup2 = pair;
     index = tup2->at0();
     s = tup2->at1();
@@ -244,7 +218,6 @@ void TestForLoop() {
   list_of_strings = NewList<BigStr*>(std::initializer_list<BigStr*>{S_Eow, S_Dne});
   for (ReverseListIter<BigStr*> it(list_of_strings); !it.Done(); it.Next()) {
     BigStr* item = it.Value();
-    StackRoot _for(&item  );
     mylib::print_stderr(StrFormat("- %s", item));
   }
   mylib::print_stderr(S_bdx);
@@ -252,7 +225,6 @@ void TestForLoop() {
     Tuple2<int, BigStr*>* tup3 = it.Value();
     int i = tup3->at0();
     BigStr* item = tup3->at1();
-    StackRoot _unpack_1(&item);
     mylib::print_stderr(StrFormat("- [%d] %s", i, item));
   }
 }
@@ -279,7 +251,6 @@ void run_benchmarks() {
     j = 0;
     for (ListIter<BigStr*> it(CATS); !it.Done(); it.Next(), ++j) {
       BigStr* c = it.Value();
-      StackRoot _for(&c    );
       result += j;
       result += len(c);
     }

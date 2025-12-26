@@ -3,15 +3,16 @@
 #include "_gen/core/runtime.asdl.h"
 #include <assert.h>
 #include "prebuilt/asdl/runtime.mycpp.h"  // generated code uses wrappers here
-#include "_gen/frontend/syntax.asdl.h"  // "use" in ASDL 
-#include "_gen/core/value.asdl.h"  // "use" in ASDL 
+#include "_gen/frontend/id_kind.asdl.h"  // "use" in ASDL
+using id_kind_asdl::Id_str;
+#include "_gen/frontend/syntax.asdl.h"  // "use" in ASDL
+#include "_gen/core/value.asdl.h"  // "use" in ASDL
 
 // Generated code uses these types
 using hnode_asdl::hnode;
 using hnode_asdl::Field;
 using hnode_asdl::color_e;
 
-using id_kind_asdl::Id_str;
 
 namespace runtime_asdl {
 

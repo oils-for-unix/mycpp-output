@@ -3,8 +3,8 @@
 #include "_gen/core/value.asdl.h"
 #include <assert.h>
 #include "prebuilt/asdl/runtime.mycpp.h"  // generated code uses wrappers here
-#include "_gen/frontend/syntax.asdl.h"  // "use" in ASDL 
-#include "_gen/core/runtime.asdl.h"  // "use" in ASDL 
+#include "_gen/frontend/syntax.asdl.h"  // "use" in ASDL
+#include "_gen/core/runtime.asdl.h"  // "use" in ASDL
 
 // Generated code uses these types
 using hnode_asdl::hnode;

@@ -7,9 +7,7 @@
 
 #include "mycpp/runtime.h"
 #include "asdl/cpp_runtime.h"
-#include "_gen/frontend/id_kind.asdl.h"
-using id_kind_asdl::Id_t;
-
+namespace id_kind_asdl { typedef uint16_t Id_t; }
 namespace value_asdl { class value_t; }
 
 namespace syntax_asdl {
@@ -887,7 +885,7 @@ class bracket_op_t {
 
 class bracket_op__WholeArray : public bracket_op_t {
  public:
-  bracket_op__WholeArray(Id_t op_id)
+  bracket_op__WholeArray(id_kind_asdl::Id_t op_id)
       : op_id(op_id) {
   }
 
@@ -905,7 +903,7 @@ class bracket_op__WholeArray : public bracket_op_t {
     return
   ObjHeader::AsdlClass(static_cast<uint16_t>(bracket_op_e::WholeArray), 0);
   }
-  Id_t op_id;
+  id_kind_asdl::Id_t op_id;
 
   DISALLOW_COPY_AND_ASSIGN(bracket_op__WholeArray)
 };
@@ -1022,8 +1020,8 @@ class suffix_op__Static : public suffix_op_t {
 
 class suffix_op__PatSub : public suffix_op_t {
  public:
-  suffix_op__PatSub(CompoundWord* pat, rhs_word_t* replace, Id_t replace_mode,
-                    Token* slash_tok)
+  suffix_op__PatSub(CompoundWord* pat, rhs_word_t* replace, id_kind_asdl::Id_t
+                    replace_mode, Token* slash_tok)
       : pat(pat),
         replace(replace),
         slash_tok(slash_tok),
@@ -1046,7 +1044,7 @@ class suffix_op__PatSub : public suffix_op_t {
   CompoundWord* pat;
   rhs_word_t* replace;
   Token* slash_tok;
-  Id_t replace_mode;
+  id_kind_asdl::Id_t replace_mode;
 
   DISALLOW_COPY_AND_ASSIGN(suffix_op__PatSub)
 };
@@ -1355,8 +1353,8 @@ class word_part__BracedTuple : public word_part_t {
 
 class word_part__BracedRange : public word_part_t {
  public:
-  word_part__BracedRange(Token* blame_tok, Id_t kind, BigStr* start, BigStr*
-                         end, int step)
+  word_part__BracedRange(Token* blame_tok, id_kind_asdl::Id_t kind, BigStr*
+                         start, BigStr* end, int step)
       : blame_tok(blame_tok),
         start(start),
         end(end),
@@ -1382,7 +1380,7 @@ class word_part__BracedRange : public word_part_t {
   Token* blame_tok;
   BigStr* start;
   BigStr* end;
-  Id_t kind;
+  id_kind_asdl::Id_t kind;
   int step;
 
   DISALLOW_COPY_AND_ASSIGN(word_part__BracedRange)
@@ -1616,7 +1614,7 @@ class word__BracedTree : public word_t {
 
 class word__String : public word_t {
  public:
-  word__String(Id_t id, BigStr* s, CompoundWord* blame_loc)
+  word__String(id_kind_asdl::Id_t id, BigStr* s, CompoundWord* blame_loc)
       : s(s),
         blame_loc(blame_loc),
         id(id) {
@@ -1637,7 +1635,7 @@ class word__String : public word_t {
   }
   BigStr* s;
   CompoundWord* blame_loc;
-  Id_t id;
+  id_kind_asdl::Id_t id;
 
   DISALLOW_COPY_AND_ASSIGN(word__String)
 };
@@ -1860,7 +1858,7 @@ class arith_expr__EmptyOne : public arith_expr_t {
 
 class arith_expr__UnaryAssign : public arith_expr_t {
  public:
-  arith_expr__UnaryAssign(Id_t op_id, arith_expr_t* child)
+  arith_expr__UnaryAssign(id_kind_asdl::Id_t op_id, arith_expr_t* child)
       : child(child),
         op_id(op_id) {
   }
@@ -1880,14 +1878,15 @@ class arith_expr__UnaryAssign : public arith_expr_t {
   ObjHeader::AsdlClass(static_cast<uint16_t>(arith_expr_e::UnaryAssign), 1);
   }
   arith_expr_t* child;
-  Id_t op_id;
+  id_kind_asdl::Id_t op_id;
 
   DISALLOW_COPY_AND_ASSIGN(arith_expr__UnaryAssign)
 };
 
 class arith_expr__BinaryAssign : public arith_expr_t {
  public:
-  arith_expr__BinaryAssign(Id_t op_id, arith_expr_t* left, arith_expr_t* right)
+  arith_expr__BinaryAssign(id_kind_asdl::Id_t op_id, arith_expr_t* left,
+                           arith_expr_t* right)
       : left(left),
         right(right),
         op_id(op_id) {
@@ -1909,14 +1908,14 @@ class arith_expr__BinaryAssign : public arith_expr_t {
   }
   arith_expr_t* left;
   arith_expr_t* right;
-  Id_t op_id;
+  id_kind_asdl::Id_t op_id;
 
   DISALLOW_COPY_AND_ASSIGN(arith_expr__BinaryAssign)
 };
 
 class arith_expr__Unary : public arith_expr_t {
  public:
-  arith_expr__Unary(Id_t op_id, arith_expr_t* child)
+  arith_expr__Unary(id_kind_asdl::Id_t op_id, arith_expr_t* child)
       : child(child),
         op_id(op_id) {
   }
@@ -1935,7 +1934,7 @@ class arith_expr__Unary : public arith_expr_t {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(arith_expr_e::Unary), 1);
   }
   arith_expr_t* child;
-  Id_t op_id;
+  id_kind_asdl::Id_t op_id;
 
   DISALLOW_COPY_AND_ASSIGN(arith_expr__Unary)
 };
@@ -2066,7 +2065,7 @@ class bool_expr__WordTest : public bool_expr_t {
 
 class bool_expr__Binary : public bool_expr_t {
  public:
-  bool_expr__Binary(Id_t op_id, word_t* left, word_t* right)
+  bool_expr__Binary(id_kind_asdl::Id_t op_id, word_t* left, word_t* right)
       : left(left),
         right(right),
         op_id(op_id) {
@@ -2087,14 +2086,14 @@ class bool_expr__Binary : public bool_expr_t {
   }
   word_t* left;
   word_t* right;
-  Id_t op_id;
+  id_kind_asdl::Id_t op_id;
 
   DISALLOW_COPY_AND_ASSIGN(bool_expr__Binary)
 };
 
 class bool_expr__Unary : public bool_expr_t {
  public:
-  bool_expr__Unary(Id_t op_id, word_t* child)
+  bool_expr__Unary(id_kind_asdl::Id_t op_id, word_t* child)
       : child(child),
         op_id(op_id) {
   }
@@ -2113,7 +2112,7 @@ class bool_expr__Unary : public bool_expr_t {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(bool_expr_e::Unary), 1);
   }
   word_t* child;
-  Id_t op_id;
+  id_kind_asdl::Id_t op_id;
 
   DISALLOW_COPY_AND_ASSIGN(bool_expr__Unary)
 };
@@ -3619,7 +3618,7 @@ class glob_part_t {
 
 class glob_part__Literal : public glob_part_t {
  public:
-  glob_part__Literal(Id_t id, BigStr* s)
+  glob_part__Literal(id_kind_asdl::Id_t id, BigStr* s)
       : s(s),
         id(id) {
   }
@@ -3638,14 +3637,14 @@ class glob_part__Literal : public glob_part_t {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(glob_part_e::Literal), 1);
   }
   BigStr* s;
-  Id_t id;
+  id_kind_asdl::Id_t id;
 
   DISALLOW_COPY_AND_ASSIGN(glob_part__Literal)
 };
 
 class glob_part__Operator : public glob_part_t {
  public:
-  glob_part__Operator(Id_t op_id)
+  glob_part__Operator(id_kind_asdl::Id_t op_id)
       : op_id(op_id) {
   }
 
@@ -3663,7 +3662,7 @@ class glob_part__Operator : public glob_part_t {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(glob_part_e::Operator),
                                 0);
   }
-  Id_t op_id;
+  id_kind_asdl::Id_t op_id;
 
   DISALLOW_COPY_AND_ASSIGN(glob_part__Operator)
 };
@@ -4700,7 +4699,7 @@ class re_t {
 
 class re__Primitive : public re_t {
  public:
-  re__Primitive(Token* blame_tok, Id_t id)
+  re__Primitive(Token* blame_tok, id_kind_asdl::Id_t id)
       : blame_tok(blame_tok),
         id(id) {
   }
@@ -4719,7 +4718,7 @@ class re__Primitive : public re_t {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(re_e::Primitive), 1);
   }
   Token* blame_tok;
-  Id_t id;
+  id_kind_asdl::Id_t id;
 
   DISALLOW_COPY_AND_ASSIGN(re__Primitive)
 };
@@ -5080,7 +5079,8 @@ class Token : public loc_t, public debug_frame_t, public suffix_op_t, public
 word_part_t, public word_t, public arith_expr_t, public printf_part_t, public
 y_lhs_t, public re_repeat_t {
  public:
-  Token(Id_t id, int length, int col, SourceLine* line, BigStr* tval)
+  Token(id_kind_asdl::Id_t id, int length, int col, SourceLine* line, BigStr*
+        tval)
       : line(line),
         tval(tval),
         id(id),
@@ -5103,7 +5103,7 @@ y_lhs_t, public re_repeat_t {
   }
   SourceLine* line;
   BigStr* tval;
-  Id_t id;
+  id_kind_asdl::Id_t id;
   int length;
   int col;
 

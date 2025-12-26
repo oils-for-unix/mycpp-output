@@ -3,7 +3,7 @@
 #include "_gen/asdl/examples/typed_demo.asdl.h"
 #include <assert.h>
 #include "prebuilt/asdl/runtime.mycpp.h"  // generated code uses wrappers here
-#include "_gen/asdl/examples/demo_lib.asdl.h"  // "use" in ASDL 
+#include "_gen/asdl/examples/demo_lib.asdl.h"  // "use" in ASDL
 
 // Generated code uses these types
 using hnode_asdl::hnode;

@@ -7,9 +7,7 @@
 
 #include "mycpp/runtime.h"
 #include "asdl/cpp_runtime.h"
-#include "_gen/frontend/id_kind.asdl.h"
-using id_kind_asdl::Id_t;
-
+namespace id_kind_asdl { typedef uint16_t Id_t; }
 namespace syntax_asdl { class loc_t; class Token; class expr_t; class word_t; class command_t; class CompoundWord; class DoubleQuoted; class ArgList; class re_t; class redir_loc_t; class proc_sig_t; class Func; }
 
 namespace value_asdl { class value_t; class Obj; }
@@ -1125,8 +1123,8 @@ class VTestPlace {
 
 class RedirValue {
  public:
-  RedirValue(Id_t op_id, syntax_asdl::loc_t* op_loc, syntax_asdl::redir_loc_t*
-             loc, redirect_arg_t* arg)
+  RedirValue(id_kind_asdl::Id_t op_id, syntax_asdl::loc_t* op_loc,
+             syntax_asdl::redir_loc_t* loc, redirect_arg_t* arg)
       : op_loc(op_loc),
         loc(loc),
         arg(arg),
@@ -1149,7 +1147,7 @@ class RedirValue {
   syntax_asdl::loc_t* op_loc;
   syntax_asdl::redir_loc_t* loc;
   redirect_arg_t* arg;
-  Id_t op_id;
+  id_kind_asdl::Id_t op_id;
 
   DISALLOW_COPY_AND_ASSIGN(RedirValue)
 };

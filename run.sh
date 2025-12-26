@@ -23,7 +23,7 @@ update-from-tar() {
   # This builds the files we'll release
   devtools/release-native.sh make-tar
 
-  find _gen -name '*.mycpp.cc' -o -name '*.mycpp-nosouffle.cc' |
+  find _gen -name '*.mycpp.cc' -o -name '*.mycpp-nosouffle.cc' -o -name '*.asdl.*' |
     xargs tar --create --file $tmp_tar
 
   popd

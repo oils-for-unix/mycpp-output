@@ -2,10 +2,10 @@
 
 #include "mycpp/runtime.h"
 
+GLOBAL_STR(S_zFn, "stdout\n");
+
 namespace files {  // forward declare
 }
-
-GLOBAL_STR(S_zFn, "stdout\n");
 
 namespace files {  // declare
 

@@ -2,10 +2,6 @@
 
 #include "mycpp/runtime.h"
 
-namespace gc_stack_roots {  // forward declare
-  class ctx_Stasher;
-}
-
 GLOBAL_STR(S_CCy, "OK");
 GLOBAL_STR(S_clt, "bar");
 GLOBAL_STR(S_mos, "bing");
@@ -21,6 +17,10 @@ GLOBAL_STR(S_uha, "out");
 GLOBAL_STR(S_FaB, "pizza");
 GLOBAL_STR(S_BEE, "swept");
 GLOBAL_STR(S_jzk, "watch");
+
+namespace gc_stack_roots {  // forward declare
+  class ctx_Stasher;
+}
 
 namespace gc_stack_roots {  // declare
 

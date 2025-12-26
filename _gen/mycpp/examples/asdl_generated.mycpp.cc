@@ -2,11 +2,11 @@
 
 #include "mycpp/runtime.h"
 
+
 namespace asdl_generated {  // forward declare
   class arith_expr_t;
   class arith_expr__Const;
 }
-
 
 namespace asdl_generated {  // declare
 

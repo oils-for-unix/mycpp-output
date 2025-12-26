@@ -2,9 +2,6 @@
 
 #include "mycpp/runtime.h"
 
-namespace cgi {  // forward declare
-}
-
 GLOBAL_STR(S_krt, "\"");
 GLOBAL_STR(S_Clt, "&");
 GLOBAL_STR(S_usD, "&amp;");
@@ -19,6 +16,9 @@ GLOBAL_STR(S_iyu, "\\");
 GLOBAL_STR(S_jrm, "\\d+");
 GLOBAL_STR(S_rqD, "x");
 GLOBAL_STR(S_lmB, "xo--xo");
+
+namespace cgi {  // forward declare
+}
 
 namespace cgi {  // declare
 

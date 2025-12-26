@@ -2,15 +2,15 @@
 
 #include "mycpp/runtime.h"
 
-namespace test_conditional {  // forward declare
-}
-
 GLOBAL_STR(S_akp, "123");
 GLOBAL_STR(S_nDd, "CPP");
 GLOBAL_STR(S_lmi, "PYTHON");
 GLOBAL_STR(S_xbf, "mylist");
 GLOBAL_STR(S_Dxe, "no");
 GLOBAL_STR(S_Bxn, "yes");
+
+namespace test_conditional {  // forward declare
+}
 
 namespace test_conditional {  // declare
 

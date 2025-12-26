@@ -2,15 +2,6 @@
 
 #include "mycpp/runtime.h"
 
-namespace scoped_resource {  // forward declare
-  class MyError;
-  class ctx_BadName;
-  class ctx_NoArgs;
-  class ctx_DirStack;
-  class DirStack;
-  class ctx_MaybePure;
-}
-
 GLOBAL_STR(S_Aoo, "");
 GLOBAL_STR(S_kEC, "< NoArgs");
 GLOBAL_STR(S_zrp, "> NoArgs");
@@ -20,6 +11,15 @@ GLOBAL_STR(S_Dsq, "exception");
 GLOBAL_STR(S_zCe, "exited with exception");
 GLOBAL_STR(S_lqB, "foo");
 GLOBAL_STR(S_cEk, "hi");
+
+namespace scoped_resource {  // forward declare
+  class MyError;
+  class ctx_BadName;
+  class ctx_NoArgs;
+  class ctx_DirStack;
+  class DirStack;
+  class ctx_MaybePure;
+}
 
 namespace scoped_resource {  // declare
 

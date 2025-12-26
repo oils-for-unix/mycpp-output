@@ -2,14 +2,14 @@
 
 #include "mycpp/runtime.h"
 
-namespace test_hoist {  // forward declare
-}
-
 GLOBAL_STR(S_Aru, ".");
 GLOBAL_STR(S_lqB, "foo");
 GLOBAL_STR(S_xrC, "global string");
 GLOBAL_STR(S_pee, "greater");
 GLOBAL_STR(S_lyq, "less");
+
+namespace test_hoist {  // forward declare
+}
 
 namespace test_hoist {  // declare
 

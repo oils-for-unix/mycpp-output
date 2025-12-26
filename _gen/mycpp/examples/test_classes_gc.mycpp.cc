@@ -2,6 +2,16 @@
 
 #include "mycpp/runtime.h"
 
+GLOBAL_STR(S_jsr, "Printf");
+GLOBAL_STR(S_cqk, "S");
+GLOBAL_STR(S_cor, "T");
+GLOBAL_STR(S_sDr, "U");
+GLOBAL_STR(S_Ema, "_Builtin");
+GLOBAL_STR(S_lqB, "foo");
+GLOBAL_STR(S_oxc, "heap");
+GLOBAL_STR(S_gDl, "key");
+GLOBAL_STR(S_tFk, "value");
+
 namespace test_classes_gc {  // forward declare
   class Opaque;
   class OpaqueBase;
@@ -15,16 +25,6 @@ namespace test_classes_gc {  // forward declare
   class _Builtin;
   class Printf;
 }
-
-GLOBAL_STR(S_jsr, "Printf");
-GLOBAL_STR(S_cqk, "S");
-GLOBAL_STR(S_cor, "T");
-GLOBAL_STR(S_sDr, "U");
-GLOBAL_STR(S_Ema, "_Builtin");
-GLOBAL_STR(S_lqB, "foo");
-GLOBAL_STR(S_oxc, "heap");
-GLOBAL_STR(S_gDl, "key");
-GLOBAL_STR(S_tFk, "value");
 
 namespace test_classes_gc {  // declare
 

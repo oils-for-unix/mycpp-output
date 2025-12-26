@@ -2,9 +2,6 @@
 
 #include "mycpp/runtime.h"
 
-namespace loops {  // forward declare
-}
-
 GLOBAL_STR(S_Aoo, "");
 GLOBAL_STR(S_Bjq, "-");
 GLOBAL_STR(S_Axw, "-- list comp dict");
@@ -45,6 +42,9 @@ GLOBAL_STR(S_Ado, "v");
 GLOBAL_STR(S_bfb, "v2");
 GLOBAL_STR(S_DEE, "xx");
 GLOBAL_STR(S_sfk, "yy");
+
+namespace loops {  // forward declare
+}
 
 namespace loops {  // declare
 

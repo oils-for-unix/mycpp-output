@@ -2,10 +2,6 @@
 
 #include "mycpp/runtime.h"
 
-namespace control_flow {  // forward declare
-  class ParseError;
-}
-
 GLOBAL_STR(S_Aoo, "");
 GLOBAL_STR(S_clt, "bar");
 GLOBAL_STR(S_ksc, "f");
@@ -17,6 +13,10 @@ GLOBAL_STR(S_aDv, "other number");
 GLOBAL_STR(S_wfa, "started with f");
 GLOBAL_STR(S_yva, "three");
 GLOBAL_STR(S_nfE, "two");
+
+namespace control_flow {  // forward declare
+  class ParseError;
+}
 
 namespace control_flow {  // declare
 

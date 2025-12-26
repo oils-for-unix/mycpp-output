@@ -2,10 +2,6 @@
 
 #include "mycpp/runtime.h"
 
-namespace test_strings {  // forward declare
-  class Foo;
-}
-
 GLOBAL_STR(S_Aoo, "");
 GLOBAL_STR(S_ayy, "\u0000bar");
 GLOBAL_STR(S_Clk, "\"double\"");
@@ -57,6 +53,10 @@ GLOBAL_STR(S_ecE, "zz no");
 GLOBAL_STR(S_yfv, "zzyyxx");
 GLOBAL_STR(S_yCt, "zzzzzz");
 GLOBAL_STR(S_xEt, "zzzzzz no");
+
+namespace test_strings {  // forward declare
+  class Foo;
+}
 
 namespace test_strings {  // declare
 

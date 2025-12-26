@@ -2,6 +2,15 @@
 
 #include "mycpp/runtime.h"
 
+GLOBAL_STR(S_edf, "CONST module1");
+GLOBAL_STR(S_yCx, "CONST module2");
+GLOBAL_STR(S_mxp, "abstract");
+GLOBAL_STR(S_ruz, "brown");
+GLOBAL_STR(S_Deg, "cat");
+GLOBAL_STR(S_odg, "func1");
+GLOBAL_STR(S_nAe, "func2");
+GLOBAL_STR(S_scd, "white");
+
 namespace module1 {  // forward declare
   class Cat;
 }
@@ -13,15 +22,6 @@ namespace modules {  // forward declare
   class Dog;
   class Sphinx;
 }
-
-GLOBAL_STR(S_edf, "CONST module1");
-GLOBAL_STR(S_yCx, "CONST module2");
-GLOBAL_STR(S_mxp, "abstract");
-GLOBAL_STR(S_ruz, "brown");
-GLOBAL_STR(S_Deg, "cat");
-GLOBAL_STR(S_odg, "func1");
-GLOBAL_STR(S_nAe, "func2");
-GLOBAL_STR(S_scd, "white");
 
 namespace module1 {  // declare
 

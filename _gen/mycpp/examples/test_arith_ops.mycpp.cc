@@ -2,10 +2,10 @@
 
 #include "mycpp/runtime.h"
 
+GLOBAL_STR(S_Aoo, "");
+
 namespace test_arith_ops {  // forward declare
 }
-
-GLOBAL_STR(S_Aoo, "");
 
 namespace test_arith_ops {  // declare
 

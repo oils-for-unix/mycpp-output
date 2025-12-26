@@ -2,9 +2,6 @@
 
 #include "mycpp/runtime.h"
 
-namespace escape {  // forward declare
-}
-
 GLOBAL_STR(S_Aoo, "");
 GLOBAL_STR(S_Fgw, "*");
 GLOBAL_STR(S_Aru, ".");
@@ -13,6 +10,9 @@ GLOBAL_STR(S_bma, "NOT IN .");
 GLOBAL_STR(S_iyu, "\\");
 GLOBAL_STR(S_Dvk, "\\*?[]-:!");
 GLOBAL_STR(S_smA, "echo *.[ch] *.?");
+
+namespace escape {  // forward declare
+}
 
 namespace escape {  // declare
 

@@ -2,12 +2,12 @@
 
 #include "mycpp/runtime.h"
 
+GLOBAL_STR(S_rqD, "x");
+GLOBAL_STR(S_vCs, "y");
+
 namespace test_ctx_pattern {  // forward declare
   class ctx_Eval;
 }
-
-GLOBAL_STR(S_rqD, "x");
-GLOBAL_STR(S_vCs, "y");
 
 namespace test_ctx_pattern {  // declare
 

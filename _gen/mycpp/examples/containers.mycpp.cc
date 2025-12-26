@@ -2,11 +2,6 @@
 
 #include "mycpp/runtime.h"
 
-namespace containers {  // forward declare
-  class Point;
-  class HasDictMember;
-}
-
 GLOBAL_STR(S_Aoo, "");
 GLOBAL_STR(S_DAB, "345 no");
 GLOBAL_STR(S_Fia, "345 yes");
@@ -32,6 +27,11 @@ GLOBAL_STR(S_und, "tu 345 yes");
 GLOBAL_STR(S_mgb, "tu 357 no");
 GLOBAL_STR(S_brh, "tu 357 yes");
 GLOBAL_STR(S_Bxn, "yes");
+
+namespace containers {  // forward declare
+  class Point;
+  class HasDictMember;
+}
 
 namespace containers {  // declare
 

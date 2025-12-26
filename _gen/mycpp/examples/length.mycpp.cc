@@ -2,9 +2,6 @@
 
 #include "mycpp/runtime.h"
 
-namespace length {  // forward declare
-}
-
 GLOBAL_STR(S_Aoo, "");
 GLOBAL_STR(S_gCD, "a");
 GLOBAL_STR(S_buF, "abcd");
@@ -16,6 +13,9 @@ GLOBAL_STR(S_pfC, "w");
 GLOBAL_STR(S_rqD, "x");
 GLOBAL_STR(S_vCs, "y");
 GLOBAL_STR(S_zjx, "z");
+
+namespace length {  // forward declare
+}
 
 namespace length {  // declare
 

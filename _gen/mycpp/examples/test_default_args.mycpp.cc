@@ -2,13 +2,13 @@
 
 #include "mycpp/runtime.h"
 
-namespace test_default_args {  // forward declare
-  class Foo;
-}
-
 GLOBAL_STR(S_Aoo, "");
 GLOBAL_STR(S_uDl, "const");
 GLOBAL_STR(S_lqB, "foo");
+
+namespace test_default_args {  // forward declare
+  class Foo;
+}
 
 namespace test_default_args {  // declare
 

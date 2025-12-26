@@ -2,13 +2,13 @@
 
 #include "mycpp/runtime.h"
 
-namespace test_iterators {  // forward declare
-  class Foo;
-}
-
 GLOBAL_STR(S_zAF, "--- iterator assignment");
 GLOBAL_STR(S_Bzr, "--- nested iterators");
 GLOBAL_STR(S_Fpa, "--- simple iterators");
+
+namespace test_iterators {  // forward declare
+  class Foo;
+}
 
 namespace test_iterators {  // declare
 

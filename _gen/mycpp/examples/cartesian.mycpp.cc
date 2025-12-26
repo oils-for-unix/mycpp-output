@@ -2,13 +2,13 @@
 
 #include "mycpp/runtime.h"
 
-namespace cartesian {  // forward declare
-}
-
 GLOBAL_STR(S_gpk, "--");
 GLOBAL_STR(S_bum, "-|_");
 GLOBAL_STR(S_Cja, "ABC");
 GLOBAL_STR(S_AEi, "ab");
+
+namespace cartesian {  // forward declare
+}
 
 namespace cartesian {  // declare
 

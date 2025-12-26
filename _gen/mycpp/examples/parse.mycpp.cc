@@ -2,34 +2,6 @@
 
 #include "mycpp/examples/parse_preamble.h"
 
-namespace runtime {  // forward declare
-  class TraversalState;
-}
-
-namespace format {  // forward declare
-}
-
-namespace j8_lite {  // forward declare
-}
-
-namespace ansi {  // forward declare
-}
-
-namespace pp_hnode {  // forward declare
-  class BaseEncoder;
-  class HNodeEncoder;
-}
-
-namespace pretty {  // forward declare
-  class PrettyPrinter;
-}
-
-namespace parse {  // forward declare
-  class Lexer;
-  class ParseError;
-  class Parser;
-}
-
 GLOBAL_STR(S_Aoo, "");
 GLOBAL_STR(S_nfs, "\n");
 GLOBAL_STR(S_yfk, "\u001b[0;0m");
@@ -82,6 +54,34 @@ GLOBAL_STR(S_ysz, "e");
 GLOBAL_STR(S_lqB, "foo");
 GLOBAL_STR(S_wkf, "not null");
 GLOBAL_STR(S_xww, "zz");
+
+namespace runtime {  // forward declare
+  class TraversalState;
+}
+
+namespace format {  // forward declare
+}
+
+namespace j8_lite {  // forward declare
+}
+
+namespace ansi {  // forward declare
+}
+
+namespace pp_hnode {  // forward declare
+  class BaseEncoder;
+  class HNodeEncoder;
+}
+
+namespace pretty {  // forward declare
+  class PrettyPrinter;
+}
+
+namespace parse {  // forward declare
+  class Lexer;
+  class ParseError;
+  class Parser;
+}
 
 namespace runtime {  // declare
 

@@ -2,9 +2,9 @@
 
 #include "mycpp/runtime.h"
 
+
 namespace fib_recursive {  // forward declare
 }
-
 
 namespace fib_recursive {  // declare
 

@@ -2,10 +2,10 @@
 
 #include "mycpp/runtime.h"
 
+GLOBAL_STR(S_zbt, "food");
+
 namespace test_small_str {  // forward declare
 }
-
-GLOBAL_STR(S_zbt, "food");
 
 namespace test_small_str {  // declare
 

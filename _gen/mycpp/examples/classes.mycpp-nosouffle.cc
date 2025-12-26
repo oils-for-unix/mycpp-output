@@ -2,16 +2,6 @@
 
 #include "mycpp/runtime.h"
 
-namespace classes {  // forward declare
-  class ColorOutput;
-  class TextOutput;
-  class Abstract;
-  class Base;
-  class DerivedI;
-  class DerivedSS;
-  class Node;
-}
-
 GLOBAL_STR(S_Aoo, "");
 GLOBAL_STR(S_foD, "BenchmarkSimpleNode");
 GLOBAL_STR(S_jqE, "BenchmarkVirtualNodes");
@@ -23,6 +13,16 @@ GLOBAL_STR(S_saq, "left");
 GLOBAL_STR(S_nxB, "next");
 GLOBAL_STR(S_lbA, "null");
 GLOBAL_STR(S_swE, "right");
+
+namespace classes {  // forward declare
+  class ColorOutput;
+  class TextOutput;
+  class Abstract;
+  class Base;
+  class DerivedI;
+  class DerivedSS;
+  class Node;
+}
 
 namespace classes {  // declare
 

@@ -2,19 +2,19 @@
 
 #include "mycpp/runtime.h"
 
-namespace test_cast {  // forward declare
-  class ColorOutput;
-  class value_t;
-  class value__Int;
-  class value__Eggex;
-}
-
 GLOBAL_STR(S_xlg, "Eggex");
 GLOBAL_STR(S_Ckc, "Int");
 GLOBAL_STR(S_zlE, "[0-9]");
 GLOBAL_STR(S_gpF, "[0-9]+");
 GLOBAL_STR(S_qgf, "other");
 GLOBAL_STR(S_eog, "yo");
+
+namespace test_cast {  // forward declare
+  class ColorOutput;
+  class value_t;
+  class value__Int;
+  class value__Eggex;
+}
 
 namespace test_cast {  // declare
 

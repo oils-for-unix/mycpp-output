@@ -2,10 +2,10 @@
 
 #include "mycpp/runtime.h"
 
+
 namespace test_globals {  // forward declare
   class MyClass;
 }
-
 
 namespace test_globals {  // declare
 

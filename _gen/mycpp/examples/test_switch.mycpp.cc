@@ -2,9 +2,6 @@
 
 #include "mycpp/runtime.h"
 
-namespace test_switch {  // forward declare
-}
-
 GLOBAL_STR(S_Aoo, "");
 GLOBAL_STR(S_gpk, "--");
 GLOBAL_STR(S_fnv, "BAR");
@@ -22,6 +19,9 @@ GLOBAL_STR(S_toa, "three or four");
 GLOBAL_STR(S_Bxn, "yes");
 GLOBAL_STR(S_kfd, "zero");
 GLOBAL_STR(S_asE, "zzz");
+
+namespace test_switch {  // forward declare
+}
 
 namespace test_switch {  // declare
 

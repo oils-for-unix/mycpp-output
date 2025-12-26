@@ -2,9 +2,9 @@
 
 #include "mycpp/runtime.h"
 
+
 namespace fib_iter {  // forward declare
 }
-
 
 namespace fib_iter {  // declare
 

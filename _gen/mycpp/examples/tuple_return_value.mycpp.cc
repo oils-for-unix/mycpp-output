@@ -2,14 +2,14 @@
 
 #include "mycpp/runtime.h"
 
-namespace tuple_return_value {  // forward declare
-}
-
 GLOBAL_STR(S_Aoo, "");
 GLOBAL_STR(S_clt, "bar");
 GLOBAL_STR(S_xzC, "foo bar");
 GLOBAL_STR(S_Eow, "spam");
 GLOBAL_STR(S_asE, "zzz");
+
+namespace tuple_return_value {  // forward declare
+}
 
 namespace tuple_return_value {  // declare
 

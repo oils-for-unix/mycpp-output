@@ -2,15 +2,15 @@
 
 #include "mycpp/examples/varargs_preamble.h"
 
-namespace varargs {  // forward declare
-}
-
 GLOBAL_STR(S_mch, " \"repr\"");
 GLOBAL_STR(S_oBf, "'repr'");
 GLOBAL_STR(S_uay, "LL");
 GLOBAL_STR(S_jCe, "constant string");
 GLOBAL_STR(S_okc, "stderr_line");
 GLOBAL_STR(S_mxm, "string");
+
+namespace varargs {  // forward declare
+}
 
 namespace varargs {  // declare
 

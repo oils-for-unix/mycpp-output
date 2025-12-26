@@ -2,10 +2,6 @@
 
 #include "mycpp/runtime.h"
 
-namespace test_io_os_error {  // forward declare
-  class ctx_TerminalControl;
-}
-
 GLOBAL_STR(S_Aoo, "");
 GLOBAL_STR(S_FcA, "TerminalControl exit");
 GLOBAL_STR(S_fko, "TerminalControl init");
@@ -13,6 +9,10 @@ GLOBAL_STR(S_vwC, "TestDestructor");
 GLOBAL_STR(S_dmc, "Throw and Catch within destructor seems OK");
 GLOBAL_STR(S_cEk, "hi");
 GLOBAL_STR(S_epA, "osh I/O error (main)");
+
+namespace test_io_os_error {  // forward declare
+  class ctx_TerminalControl;
+}
 
 namespace test_io_os_error {  // declare
 

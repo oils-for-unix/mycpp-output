@@ -2,12 +2,12 @@
 
 #include "mycpp/runtime.h"
 
-namespace test_integers {  // forward declare
-}
-
 GLOBAL_STR(S_Aoo, "");
 GLOBAL_STR(S_Alb, "ok");
 GLOBAL_STR(S_sbi, "round trip equal");
+
+namespace test_integers {  // forward declare
+}
 
 namespace test_integers {  // declare
 

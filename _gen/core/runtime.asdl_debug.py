@@ -1,0 +1,23 @@
+cpp_namespace = 'runtime_asdl'
+tags_to_types = \
+{'a_index_t': {1: 'a_index__Str', 2: 'a_index__Int'},
+ 'cmd_value_t': {1: 'cmd_value__Argv', 2: 'cmd_value__Assign'},
+ 'part_value_t': {2: 'part_value__Array',
+                  3: 'part_value__ExtGlob',
+                  66: 'Piece'},
+ 'redirect_arg_t': {1: 'redirect_arg__Path',
+                    2: 'redirect_arg__CopyFd',
+                    3: 'redirect_arg__MoveFd',
+                    4: 'redirect_arg__CloseFd',
+                    5: 'redirect_arg__HereDoc'},
+ 'trace_t': {1: 'trace__External',
+             2: 'trace__CommandSub',
+             3: 'trace__ForkWait',
+             4: 'trace__Fork',
+             5: 'trace__PipelinePart',
+             6: 'trace__ProcessSub',
+             7: 'trace__HereDoc'},
+ 'trap_action_t': {1: 'trap_action__Ignored', 2: 'trap_action__Command'},
+ 'wait_status_t': {1: 'wait_status__Proc',
+                   2: 'wait_status__Pipeline',
+                   3: 'wait_status__Cancelled'}}

@@ -9,7 +9,6 @@ using hnode_asdl::hnode;
 using hnode_asdl::Field;
 using hnode_asdl::color_e;
 
-
 namespace expr_asdl {
 
 BigStr* tok_str(tok_e tag, bool dot) {

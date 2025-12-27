@@ -9,7 +9,6 @@ using hnode_asdl::hnode;
 using hnode_asdl::Field;
 using hnode_asdl::color_e;
 
-
 namespace nil8_asdl {
 
 BigStr* nvalue_str(int tag, bool dot) {

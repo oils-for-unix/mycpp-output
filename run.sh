@@ -11,6 +11,15 @@ update-big() {
   cp -v ../oils/$path $path
 }
 
+files-to-copy() {
+  find _gen \
+    -name '*.mycpp.cc' \
+    -o -name '*.mycpp-nosouffle.cc' \
+    -o -name '*.asdl*'
+
+  find _devbuild/gen -name '*.py'
+}
+
 update-from-tar() {
   mkdir -p _tmp
   local tmp_tar=$PWD/_tmp/oils.tar  # absolute path
@@ -23,8 +32,7 @@ update-from-tar() {
   # This builds the files we'll release
   devtools/release-native.sh make-tar
 
-  find _gen -name '*.mycpp.cc' -o -name '*.mycpp-nosouffle.cc' -o -name '*.asdl.*' |
-    xargs tar --create --file $tmp_tar
+  files-to-copy | xargs tar --create --file $tmp_tar
 
   popd
 

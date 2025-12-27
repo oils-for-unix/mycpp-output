@@ -40,9 +40,6 @@ class hnode_t {
   int tag() const {
     return ObjHeader::FromObject(this)->type_tag;
   }
-  constexpr int sum_type_id() {
-    return 256;
-  }
 
   DISALLOW_COPY_AND_ASSIGN(hnode_t)
 };
@@ -57,10 +54,6 @@ class hnode__AlreadySeen : public hnode_t {
     return Alloc<hnode__AlreadySeen>(-1);
   }
 
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(hnode_e::AlreadySeen), 0);
   }
@@ -80,10 +73,6 @@ class hnode__Leaf : public hnode_t {
     return Alloc<hnode__Leaf>(kEmptyString, color_e::TypeName);
   }
 
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(hnode_e::Leaf), 1);
   }
@@ -103,10 +92,6 @@ class hnode__Array : public hnode_t {
     return Alloc<hnode__Array>(alloc_lists ? Alloc<List<hnode_t*>>() : nullptr);
   }
 
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(hnode_e::Array), 1);
   }
@@ -132,10 +117,6 @@ class hnode__Record : public hnode_t {
                                 nullptr);
   }
 
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(hnode_e::Record), 5);
   }
@@ -173,10 +154,6 @@ class Field {
     return Alloc<Field>(kEmptyString, nullptr);
   }
 
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(64, 2);
   }

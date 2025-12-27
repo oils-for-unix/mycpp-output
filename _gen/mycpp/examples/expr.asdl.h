@@ -47,9 +47,6 @@ class expr_t {
   int tag() const {
     return ObjHeader::FromObject(this)->type_tag;
   }
-  constexpr int sum_type_id() {
-    return 256;
-  }
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
 
   DISALLOW_COPY_AND_ASSIGN(expr_t)
@@ -66,10 +63,6 @@ class expr__Const : public expr_t {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(expr_e::Const), 0);
@@ -90,10 +83,6 @@ class expr__Var : public expr_t {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(expr_e::Var), 1);
@@ -116,10 +105,6 @@ class expr__Binary : public expr_t {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(expr_e::Binary), 3);
@@ -150,10 +135,6 @@ class Measure_v {
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
   
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(65, 0);
   }
@@ -175,10 +156,6 @@ class MeasuredDoc {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(66, 2);

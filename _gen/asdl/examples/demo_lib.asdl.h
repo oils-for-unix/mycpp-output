@@ -35,9 +35,6 @@ class value_t {
   int tag() const {
     return ObjHeader::FromObject(this)->type_tag;
   }
-  constexpr int sum_type_id() {
-    return 256;
-  }
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
 
   DISALLOW_COPY_AND_ASSIGN(value_t)
@@ -48,10 +45,6 @@ class value__Str : public value_t {
   value__Str() {}
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(value_e::Str), 0);
@@ -71,10 +64,6 @@ class value__Array : public value_t {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(value_e::Array), 0);
@@ -103,10 +92,6 @@ class t2 {
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
   
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(64, 0);
   }
@@ -128,10 +113,6 @@ class t3 {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(65, 0);
@@ -155,10 +136,6 @@ class t4 {
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
   
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(66, 0);
   }
@@ -180,10 +157,6 @@ class LibToken {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(67, 1);

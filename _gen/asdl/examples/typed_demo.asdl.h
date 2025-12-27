@@ -69,9 +69,6 @@ class cflow_t {
   int tag() const {
     return ObjHeader::FromObject(this)->type_tag;
   }
-  constexpr int sum_type_id() {
-    return 256;
-  }
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
 
   DISALLOW_COPY_AND_ASSIGN(cflow_t)
@@ -82,10 +79,6 @@ class cflow__Break : public cflow_t {
   cflow__Break() {}
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(cflow_e::Break), 0);
@@ -99,10 +92,6 @@ class cflow__Continue : public cflow_t {
   cflow__Continue() {}
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(cflow_e::Continue), 0);
@@ -122,10 +111,6 @@ class cflow__Return : public cflow_t {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(cflow_e::Return), 0);
@@ -147,10 +132,6 @@ class cflow__PrimitiveList : public cflow_t {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(cflow_e::PrimitiveList),
@@ -188,9 +169,6 @@ class cflow2_t {
   int tag() const {
     return ObjHeader::FromObject(this)->type_tag;
   }
-  constexpr int sum_type_id() {
-    return 320;
-  }
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
 
   DISALLOW_COPY_AND_ASSIGN(cflow2_t)
@@ -201,10 +179,6 @@ class cflow2__Break : public cflow2_t {
   cflow2__Break() {}
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(cflow2_e::Break), 0);
@@ -218,10 +192,6 @@ class cflow2__Continue : public cflow2_t {
   cflow2__Continue() {}
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(cflow2_e::Continue), 0);
@@ -241,10 +211,6 @@ class cflow2__Return : public cflow2_t {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(cflow2_e::Return), 0);
@@ -279,9 +245,6 @@ class word_part_t {
   int tag() const {
     return ObjHeader::FromObject(this)->type_tag;
   }
-  constexpr int sum_type_id() {
-    return 384;
-  }
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
 
   DISALLOW_COPY_AND_ASSIGN(word_part_t)
@@ -298,10 +261,6 @@ class word_part__BoolSub : public word_part_t {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(word_part_e::BoolSub), 1);
@@ -332,9 +291,6 @@ class word2_t {
   int tag() const {
     return ObjHeader::FromObject(this)->type_tag;
   }
-  constexpr int sum_type_id() {
-    return 448;
-  }
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
 
   DISALLOW_COPY_AND_ASSIGN(word2_t)
@@ -352,10 +308,6 @@ class word2__Compound : public word2_t {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(word2_e::Compound), 1);
@@ -389,9 +341,6 @@ class bool_expr_t {
   int tag() const {
     return ObjHeader::FromObject(this)->type_tag;
   }
-  constexpr int sum_type_id() {
-    return 512;
-  }
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
 
   DISALLOW_COPY_AND_ASSIGN(bool_expr_t)
@@ -408,10 +357,6 @@ class bool_expr__WordTest : public bool_expr_t {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(bool_expr_e::WordTest),
@@ -434,10 +379,6 @@ class bool_expr__Unary : public bool_expr_t {
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
   
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(bool_expr_e::Unary), 1);
   }
@@ -459,10 +400,6 @@ class bool_expr__Binary : public bool_expr_t {
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
   
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(bool_expr_e::Binary), 2);
   }
@@ -483,10 +420,6 @@ class bool_expr__LogicalNot : public bool_expr_t {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(bool_expr_e::LogicalNot),
@@ -510,10 +443,6 @@ class bool_expr__LogicalBinary : public bool_expr_t {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return
@@ -554,9 +483,6 @@ class flag_type_t {
   int tag() const {
     return ObjHeader::FromObject(this)->type_tag;
   }
-  constexpr int sum_type_id() {
-    return 576;
-  }
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
 
   DISALLOW_COPY_AND_ASSIGN(flag_type_t)
@@ -567,10 +493,6 @@ class flag_type__Bool : public flag_type_t {
   flag_type__Bool() {}
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(flag_type_e::Bool), 0);
@@ -585,10 +507,6 @@ class flag_type__Int : public flag_type_t {
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
   
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(flag_type_e::Int), 0);
   }
@@ -602,10 +520,6 @@ class flag_type__Float : public flag_type_t {
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
   
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(flag_type_e::Float), 0);
   }
@@ -618,10 +532,6 @@ class flag_type__Str : public flag_type_t {
   flag_type__Str() {}
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(flag_type_e::Str), 0);
@@ -642,10 +552,6 @@ class flag_type__Enum : public flag_type_t {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(flag_type_e::Enum), 1);
@@ -684,9 +590,6 @@ class arith_expr_t {
   int tag() const {
     return ObjHeader::FromObject(this)->type_tag;
   }
-  constexpr int sum_type_id() {
-    return 640;
-  }
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
 
   DISALLOW_COPY_AND_ASSIGN(arith_expr_t)
@@ -697,10 +600,6 @@ class arith_expr__NoOp : public arith_expr_t {
   arith_expr__NoOp() {}
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(arith_expr_e::NoOp), 0);
@@ -720,10 +619,6 @@ class arith_expr__Const : public arith_expr_t {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(arith_expr_e::Const), 0);
@@ -756,9 +651,6 @@ class a_word_t {
   int tag() const {
     return ObjHeader::FromObject(this)->type_tag;
   }
-  constexpr int sum_type_id() {
-    return 704;
-  }
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
 
   DISALLOW_COPY_AND_ASSIGN(a_word_t)
@@ -775,10 +667,6 @@ class a_word__String : public a_word_t {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return this->sum_type_id() + this->tag();
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(static_cast<uint16_t>(a_word_e::String), 1);
@@ -804,10 +692,6 @@ class op_array {
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
   
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(64, 1);
   }
@@ -829,10 +713,6 @@ class assign {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(65, 2);
@@ -858,10 +738,6 @@ class source_location {
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
   
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(66, 1);
   }
@@ -885,10 +761,6 @@ class word {
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
   
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(67, 1);
   }
@@ -909,10 +781,6 @@ class Token : public word_part_t, public word2_t {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(68, 1);
@@ -938,10 +806,6 @@ class Dicts {
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
   
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(69, 3);
   }
@@ -966,10 +830,6 @@ class SetToArg_ {
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
   
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(70, 2);
   }
@@ -993,10 +853,6 @@ class Strings {
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
   
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(71, 2);
   }
@@ -1019,10 +875,6 @@ class Maybes {
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
   
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(72, 2);
   }
@@ -1043,10 +895,6 @@ class OptionalList {
   }
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
-  
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
   
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(73, 1);
@@ -1069,10 +917,6 @@ class foo {
 
   hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
   
-  int type_id() {
-    return ObjHeader::FromObject(this)->type_tag;
-  }
-  
   static constexpr ObjHeader obj_header() {
     return ObjHeader::AsdlClass(75, 2);
   }
@@ -1084,3 +928,48 @@ class foo {
 
 class ContainsLib {
  public:
+  ContainsLib(demo_lib_asdl::LibToken* t)
+      : t(t) {
+  }
+
+  static ContainsLib* CreateNull(bool alloc_lists = false) { 
+    return Alloc<ContainsLib>(nullptr);
+  }
+
+  hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
+  
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::AsdlClass(76, 1);
+  }
+  demo_lib_asdl::LibToken* t;
+
+  DISALLOW_COPY_AND_ASSIGN(ContainsLib)
+};
+
+class CompoundWord : public a_word_t, public List<arith_expr_t*> {
+ public:
+  CompoundWord() : List<arith_expr_t*>() {
+  }
+  CompoundWord(List<arith_expr_t*>* plain_list) :
+               List<arith_expr_t*>(plain_list) {
+  }
+  static CompoundWord* New() {
+    return Alloc<CompoundWord>();
+  }
+  static CompoundWord* Take(List<arith_expr_t*>* plain_list) {
+    auto* result = Alloc<CompoundWord>(plain_list);
+    plain_list->SetTaken();
+    return result;
+  }
+  hnode_t* PrettyTree(bool do_abbrev, Dict<int, bool>* seen = nullptr);
+  
+  static constexpr ObjHeader obj_header() {
+    return ObjHeader::TaggedSubtype(74, field_mask());
+  }
+  DISALLOW_COPY_AND_ASSIGN(CompoundWord)
+};
+
+
+}  // namespace typed_demo_asdl
+
+#endif  // TYPED_DEMO_ASDL

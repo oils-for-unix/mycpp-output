@@ -1,0 +1,21 @@
+cpp_namespace = 'typed_demo_asdl'
+tags_to_types = \
+{'a_word_t': {1: 'a_word__String', 74: 'CompoundWord'},
+ 'arith_expr_t': {1: 'arith_expr__NoOp', 2: 'arith_expr__Const'},
+ 'bool_expr_t': {1: 'bool_expr__WordTest',
+                 2: 'bool_expr__Unary',
+                 3: 'bool_expr__Binary',
+                 4: 'bool_expr__LogicalNot',
+                 5: 'bool_expr__LogicalBinary'},
+ 'cflow2_t': {1: 'cflow2__Break', 2: 'cflow2__Continue', 3: 'cflow2__Return'},
+ 'cflow_t': {1: 'cflow__Break',
+             2: 'cflow__Continue',
+             3: 'cflow__Return',
+             4: 'cflow__PrimitiveList'},
+ 'flag_type_t': {1: 'flag_type__Bool',
+                 2: 'flag_type__Int',
+                 3: 'flag_type__Float',
+                 4: 'flag_type__Str',
+                 5: 'flag_type__Enum'},
+ 'word2_t': {2: 'word2__Compound', 68: 'Token'},
+ 'word_part_t': {2: 'word_part__BoolSub', 68: 'Token'}}

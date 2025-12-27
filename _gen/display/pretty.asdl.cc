@@ -2,7 +2,7 @@
 
 #include "_gen/display/pretty.asdl.h"
 #include <assert.h>
-#include "prebuilt/asdl/runtime.mycpp.h"  // generated code uses wrappers here
+#include "prebuilt/asdl/runtime.mycpp.h"  // from mycpp
 
 // Generated code uses these types
 using hnode_asdl::hnode;

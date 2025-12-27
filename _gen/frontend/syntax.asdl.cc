@@ -3,7 +3,7 @@
 #include "_gen/frontend/syntax.asdl.h"
 #include <assert.h>
 #include "prebuilt/frontend/syntax_abbrev.mycpp.h"
-#include "prebuilt/asdl/runtime.mycpp.h"  // generated code uses wrappers here
+#include "prebuilt/asdl/runtime.mycpp.h"  // from mycpp
 #include "_gen/frontend/id_kind.asdl.h"  // "use" in ASDL
 using id_kind_asdl::Id_str;
 #include "_gen/core/value.asdl.h"  // "use" in ASDL

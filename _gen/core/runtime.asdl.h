@@ -4,8 +4,8 @@
 #define RUNTIME_ASDL
 
 #include <cstdint>
-
 #include "mycpp/runtime.h"
+
 #include "asdl/cpp_runtime.h"
 namespace id_kind_asdl { typedef uint16_t Id_t; }
 namespace syntax_asdl { class loc_t; class Token; class expr_t; class word_t; class command_t; class CompoundWord; class DoubleQuoted; class ArgList; class re_t; class redir_loc_t; class proc_sig_t; class Func; }

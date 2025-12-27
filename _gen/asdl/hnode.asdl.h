@@ -4,8 +4,8 @@
 #define HNODE_ASDL
 
 #include <cstdint>
-
 #include "mycpp/runtime.h"
+
 namespace hnode_asdl {
 
 // use struct instead of namespace so 'using' works consistently

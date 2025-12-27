@@ -4,8 +4,8 @@
 #define SHARED_VARIANT_ASDL
 
 #include <cstdint>
-
 #include "mycpp/runtime.h"
+
 #include "asdl/cpp_runtime.h"
 namespace shared_variant_asdl {
 

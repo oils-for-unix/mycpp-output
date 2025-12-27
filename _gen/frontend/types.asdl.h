@@ -4,8 +4,8 @@
 #define TYPES_ASDL
 
 #include <cstdint>
-
 #include "mycpp/runtime.h"
+
 namespace types_asdl {
 
 // use struct instead of namespace so 'using' works consistently

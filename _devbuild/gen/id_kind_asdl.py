@@ -1,4 +1,10 @@
 from asdl import pybase
+from mycpp import mops
+from typing import Optional, List, Tuple, Dict, Any, cast, TYPE_CHECKING
+
+from asdl import runtime  # For runtime.NO_SPID
+from asdl.runtime import NewRecord, NewLeaf, TraversalState
+from _devbuild.gen.hnode_asdl import color_e, hnode, hnode_e, hnode_t, Field
 
 Id_t = int  # type alias for integer
 

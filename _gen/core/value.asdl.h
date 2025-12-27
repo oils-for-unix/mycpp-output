@@ -4,8 +4,8 @@
 #define VALUE_ASDL
 
 #include <cstdint>
-
 #include "mycpp/runtime.h"
+
 #include "asdl/cpp_runtime.h"
 namespace syntax_asdl { class loc_t; class Token; class expr_t; class command_t; class DoubleQuoted; class re_t; class proc_sig_t; class Func; class NameType; class EggexFlag; class BraceGroup; class SourceLine; class debug_frame_t; class ShFunction; class cmd_frag_t; }
 

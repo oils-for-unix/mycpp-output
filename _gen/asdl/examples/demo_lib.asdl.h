@@ -4,8 +4,8 @@
 #define DEMO_LIB_ASDL
 
 #include <cstdint>
-
 #include "mycpp/runtime.h"
+
 #include "asdl/cpp_runtime.h"
 namespace demo_lib_asdl {
 

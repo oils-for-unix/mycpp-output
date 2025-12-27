@@ -4,8 +4,8 @@
 #define TYPED_ARITH_ASDL
 
 #include <cstdint>
-
 #include "mycpp/runtime.h"
+
 #include "asdl/cpp_runtime.h"
 namespace typed_arith_asdl {
 

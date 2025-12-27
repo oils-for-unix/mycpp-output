@@ -4,8 +4,8 @@
 #define SYNTAX_ASDL
 
 #include <cstdint>
-
 #include "mycpp/runtime.h"
+
 #include "asdl/cpp_runtime.h"
 namespace id_kind_asdl { typedef uint16_t Id_t; }
 namespace value_asdl { class value_t; }

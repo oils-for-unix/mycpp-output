@@ -12,12 +12,11 @@ update-big() {
 }
 
 files-to-copy() {
-  find _gen \
-    -name '*.mycpp.cc' \
-    -o -name '*.mycpp-nosouffle.cc' \
-    -o -name '*.asdl*'
+  find _gen -type f -a -print
+  find _devbuild/gen -name '*.pyc' -o -type f -a -print
 
-  find _devbuild/gen -name '*.py'
+  # Note: we don't have _gen/_tmp in the tarball
+  # Could add that
 }
 
 update-from-tar() {

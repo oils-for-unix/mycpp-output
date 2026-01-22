@@ -41,6 +41,7 @@ GLOBAL_STR(S_eyD, " \"\"\"");
 GLOBAL_STR(S_ppj, " %-");
 GLOBAL_STR(S_Brw, " '''");
 GLOBAL_STR(S_sge, " (");
+GLOBAL_STR(S_Cwe, " (core dumped)");
 GLOBAL_STR(S_oBy, " (noclobber)");
 GLOBAL_STR(S_dwC, " )\n");
 GLOBAL_STR(S_dtA, " --> ");
@@ -828,6 +829,7 @@ GLOBAL_STR(S_pns, "evalExpr");
 GLOBAL_STR(S_mul, "evalHay");
 GLOBAL_STR(S_tlu, "eval_unsafe_arith is off");
 GLOBAL_STR(S_Evy, "exec");
+GLOBAL_STR(S_sAo, "exec_");
 GLOBAL_STR(S_Ewo, "exit");
 GLOBAL_STR(S_bxm, "expected --add, --remove, -l, or -p (simple_trap_builtin)");
 GLOBAL_STR(S_mrk, "expected 1 or more commands");
@@ -13520,7 +13522,7 @@ value_asdl::value_t* ParseHay::_Call(BigStr* path) {
   }
   catch (error::Parse* e) {
     this->errfmt->PrettyPrintError(e);
-    return nullptr;
+    throw Alloc<error::Expr>(StrFormat("Failed to parse %r", path), call_loc);
   }
   return Alloc<value::Command>(Alloc<cmd_frag::Expr>(node), this->mem->CurrentFrame(), this->mem->GlobalFrame());
 }
@@ -19706,21 +19708,29 @@ Exec::Exec(state::Mem* mem, process::ExternalProgram* ext_prog, process::FdState
 }
 
 int Exec::Run(cmd_value::Argv* cmd_val) {
+  args::_Attributes* attrs = nullptr;
   args::Reader* arg_r = nullptr;
+  arg_types::exec_* arg = nullptr;
   Dict<BigStr*, BigStr*>* environ = nullptr;
   int i;
   BigStr* cmd = nullptr;
   BigStr* argv0_path = nullptr;
+  List<BigStr*>* c2_argv = nullptr;
   cmd_value::Argv* c2 = nullptr;
   StackRoot _root0(&cmd_val);
-  StackRoot _root1(&arg_r);
-  StackRoot _root2(&environ);
-  StackRoot _root3(&cmd);
-  StackRoot _root4(&argv0_path);
-  StackRoot _root5(&c2);
+  StackRoot _root1(&attrs);
+  StackRoot _root2(&arg_r);
+  StackRoot _root3(&arg);
+  StackRoot _root4(&environ);
+  StackRoot _root5(&cmd);
+  StackRoot _root6(&argv0_path);
+  StackRoot _root7(&c2_argv);
+  StackRoot _root8(&c2);
 
-  Tuple2<args::_Attributes*, args::Reader*> tup5 = flag_util::ParseCmdVal(S_Evy, cmd_val);
+  Tuple2<args::_Attributes*, args::Reader*> tup5 = flag_util::ParseCmdVal(S_sAo, cmd_val);
+  attrs = tup5.at0();
   arg_r = tup5.at1();
+  arg = Alloc<arg_types::exec_>(attrs->attrs);
   if (arg_r->AtEnd()) {
     this->fd_state->MakePermanent();
     return 0;
@@ -19732,7 +19742,11 @@ int Exec::Run(cmd_value::Argv* cmd_val) {
   if (argv0_path == nullptr) {
     e_die_status(127, StrFormat("exec: %r not found", cmd), cmd_val->arg_locs->at(1));
   }
-  c2 = Alloc<cmd_value::Argv>(cmd_val->argv->slice(i), cmd_val->arg_locs->slice(i), cmd_val->is_last_cmd, cmd_val->self_obj, nullptr);
+  c2_argv = cmd_val->argv->slice(i);
+  if (arg->a != nullptr) {
+    c2_argv->set(0, arg->a);
+  }
+  c2 = Alloc<cmd_value::Argv>(c2_argv, cmd_val->arg_locs->slice(i), cmd_val->is_last_cmd, cmd_val->self_obj, nullptr);
   this->ext_prog->Exec(argv0_path, c2, environ);
   assert(0);  // AssertionError
 }
@@ -29348,7 +29362,7 @@ int W1_NO_CHANGE = -14;
 int NO_ARG = -20;
 
 BigStr* GetSignalMessage(int sig_num) {
-  return nullptr;
+  return libc::strsignal(sig_num);
 }
 
 Waiter::Waiter(process::JobList* job_list, optview::Exec* exec_opts, iolib::SignalSafe* signal_safe, dev::Tracer* tracer) {
@@ -29412,6 +29426,9 @@ Tuple2<int, int> Waiter::WaitForOne(int waitpid_options) {
     else {
       msg = GetSignalMessage(term_sig);
       if (msg != nullptr) {
+        if (WCOREDUMP(status)) {
+          msg = str_concat(msg, S_Cwe);
+        }
         print_stderr(msg);
       }
     }

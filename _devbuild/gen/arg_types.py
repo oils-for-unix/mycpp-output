@@ -127,6 +127,14 @@ class echo(object):
     self.n = cast(value.Bool, attrs['n']).b  # type: bool
 
 
+class exec_(object):
+  def __init__(self, attrs):
+    # type: (Dict[str, value_t]) -> None
+
+    val0 = attrs['a']
+    self.a = None if val0.tag() == value_e.Undef else cast(value.Str, val0).s  # type: Optional[str]
+
+
 class export_(object):
   def __init__(self, attrs):
     # type: (Dict[str, value_t]) -> None
